@@ -1,0 +1,43 @@
+name: Test WebApp
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '*'
+    paths:
+      - 'web/**'
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'web/**'
+
+jobs:
+  build-testing:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to registry
+        uses: docker/login-action@v2.2.0
+        with:
+          registry: doktorupnos/wip-chat
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          ecr: auto
+          logout: true
+
+      - name: Build WebApp image
+        run: |
+            docker build web -t doktorupnos/wip-chat/web:${GITHUB_REF##*/}
+
+      - name: Push WebApp image
+        run: |
+            docker push doktorupnos/wip-chat/web:${GITHUB_REF##*/}
+
