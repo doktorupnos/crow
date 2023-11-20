@@ -13,7 +13,8 @@ The License of the project is signed under GPLv3.
 During the development of this project, we will be using a private access [Kanban](https://en.wikipedia.org/wiki/Kanban) 
 Board using [Trello](https://trello.com/).
 
-![image](https://github.com/doktorupnos/wip-chat/assets/30930688/38cbcd4e-4971-4af7-97ae-e1ba7aefd6fc)
+![image](https://github.com/doktorupnos/wip-chat/assets/30930688/aa7fe0d2-fd69-407e-a94c-65f87049da84)
+
 
 
 # Team Members
