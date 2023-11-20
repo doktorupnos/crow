@@ -24,6 +24,8 @@ The project review will take place at the end of the examination period, which a
 
 # Architecture
 
+![image](https://github.com/doktorupnos/wip-chat/assets/30930688/3b5c089a-182e-4041-982c-31e4cb80a316)
+
 ## Frontend
 
 The interface will be built using React, a widely adopted component based library
@@ -34,6 +36,7 @@ that simplifies the process of building complex UI.
 The backend will be developed using Go, chosen for its simplicity and efficiency.
 We are constructing a resilient REST API for our application.
 As for the database, we've opted for PostgreSQL, and our interaction with it will be facilitated by GORM.
+In addition the photos of the users will be saved on SeaweedFS.
 
 ## Testing
 
