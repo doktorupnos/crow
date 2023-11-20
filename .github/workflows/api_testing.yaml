@@ -13,6 +13,11 @@ on:
     paths:
       - 'api/**'
 
+env:
+  REGISTRY: ghcr.io/doktorupnos
+  USERNAME: ${{ github.actor }}
+  PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   build-testing:
     runs-on: ubuntu-22.04
@@ -27,17 +32,18 @@ jobs:
       - name: Login to registry
         uses: docker/login-action@v2.2.0
         with:
-          registry: doktorupnos/wip-chat
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.USERNAME }}
+          password: ${{ env.PASSWORD }}
           ecr: auto
           logout: true
 
       - name: Build API image
         run: |
-            docker build api -t doktorupnos/wip-chat/api:${GITHUB_REF##*/}
+
+            docker build api -t ${{ env.REGISTRY }}/wip-chat/api:${GITHUB_REF##*/}
 
       - name: Push API image
         run: |
-            docker push doktorupnos/wip-chat/api:${GITHUB_REF##*/}
+            docker push ${{ env.REGISTRY }}/wip-chat/api:${GITHUB_REF##*/}
 
