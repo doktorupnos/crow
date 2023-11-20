@@ -1,3 +1,7 @@
+"use client"
+
+import { useState } from "react"
+
 const apiendpoint = "//localhost:8000/users"
 
 export default function RegisterBox() {
@@ -10,13 +14,36 @@ export default function RegisterBox() {
 }
 
 function RegisterForm() {
+
+	// JSON body values.
+	let [post, setPost] = useState({
+		name: '',
+		password: ''
+	})
+
+	// Input field handlers.
+	function handleInput(event) {
+		setPost({...post, [event.target.name]: event.target.value})
+	}
+
+	// Submit button handler.
+	function handleSubmit(event) {
+		event.preventDefault()
+		console.log(post)
+		axios.post({apiendpoint}, post)
+		.then(response => console.log(response))
+		.catch(err => console.log(err))
+	}
+
+	// Html elements.
 	return (
 		<div>
-			<form action={apiendpoint} method="post">
-				<input id="username" type="text" maxlength="20" placeholder="Username" required /><br />
-				<input id="password" type="password" maxlength="64" placeholder="Password" required /><br />
+			<form onSubmit={createUser}>
+				<input name="name" type="text" maxlength="20" onChange={handleInput} placeholder="Username" required /><br /><br />
+				<input name="password" type="password" maxlength="64" onChange={handleInput} placeholder="Password" required /><br /><br />
 				<input type="submit" value="Join" />
 			</form>
 		</div>
 	)
+
 }
