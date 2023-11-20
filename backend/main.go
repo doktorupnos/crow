@@ -20,9 +20,10 @@ type ApiConfig struct {
 }
 
 func main() {
+	// .env will only be used for local development
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Error loading .env : %q", err)
+		log.Printf("Error loading .env : %q", err)
 	}
 
 	port, ok := os.LookupEnv("PORT")
@@ -81,6 +82,7 @@ func main() {
 
 func ping(db *gorm.DB) {
 	sqlDB, err := db.DB()
+	// Realistically this shouldn't fail
 	if err != nil {
 		log.Fatalf("Failed to get generic *sql.DB : %q", err)
 	}
