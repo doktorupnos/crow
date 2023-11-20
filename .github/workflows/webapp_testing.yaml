@@ -40,9 +40,9 @@ jobs:
 
       - name: Build WebApp image
         run: |
-            docker build web -t ${{ secrets.REGISTRY }}/wip-chat/web:${GITHUB_REF##*/}
+            docker build web -t ${{ env.REGISTRY }}/wip-chat/web:${GITHUB_REF##*/}
 
       - name: Push WebApp image
         run: |
-            docker push ${{ secrets.REGISTRY }}/wip-chat/web:${GITHUB_REF##*/}
+            docker push ${{ env.REGISTRY }}/wip-chat/web:${GITHUB_REF##*/}
 
