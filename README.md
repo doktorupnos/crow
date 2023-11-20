@@ -15,8 +15,6 @@ Board using [Trello](https://trello.com/).
 
 ![image](https://github.com/doktorupnos/wip-chat/assets/30930688/aa7fe0d2-fd69-407e-a94c-65f87049da84)
 
-
-
 # Team Members
 * @doktorupnos Frontend / UI/UX
 * @marios-pz Frontend / DevOps

@@ -5,6 +5,6 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "golang"
-    directory: "api"
+    directory: "backend"
     schedule:
       interval: "daily"

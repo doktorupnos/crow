@@ -31,7 +31,7 @@ jobs:
 
       - name: Build web image
         run: |
-            docker build web -t ${{ env.REGISTRY }}/wip-chat/api:${GITHUB_REF##*/}
+            docker build web -t ${{ env.REGISTRY }}/wip-chat/backend:${GITHUB_REF##*/}
 
       - name: Push web image
         run: |

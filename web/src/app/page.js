@@ -1,6 +1,22 @@
 import Image from "next/image";
-import styles from "./page.module.css";
+import Link from "next/link";
+
+import styles from "../public/globals.css";
 
 export default function Home() {
-  return "Hello World!";
+	return (
+		<div>
+			<WelcomeForm />
+		</div>
+	)
+}
+
+function WelcomeForm() {
+	return (
+		<div>
+			<h1>CROW</h1>
+			<Link href="/register">REGISTER</Link><br/>
+			<Link href="/">LOGIN</Link>
+		</div>
+	)
 }
