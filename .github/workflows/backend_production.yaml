@@ -1,17 +1,9 @@
-name: Test API
+name: Release backend to Production
 
 on:
   workflow_dispatch:
-  push:
-    branches:
+    tags:
       - '*'
-    paths:
-      - 'api/**'
-  pull_request:
-    branches:
-      - 'main'
-    paths:
-      - 'api/**'
 
 env:
   REGISTRY: ghcr.io/doktorupnos
@@ -38,12 +30,11 @@ jobs:
           ecr: auto
           logout: true
 
-      - name: Build API image
+      - name: Build backend image
         run: |
+            docker build backend -t ${{ env.REGISTRY }}/wip-chat/backend:${GITHUB_REF##*/}
 
-            docker build api -t ${{ env.REGISTRY }}/wip-chat/api:${GITHUB_REF##*/}
-
-      - name: Push API image
+      - name: Push backend image
         run: |
-            docker push ${{ env.REGISTRY }}/wip-chat/api:${GITHUB_REF##*/}
+            docker push ${{ env.REGISTRY }}/wip-chat/backend:${GITHUB_REF##*/}
 
