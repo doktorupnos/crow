@@ -13,14 +13,10 @@ The License of the project is signed under GPLv3.
 During the development of this project, we will be using a private access [Kanban](https://en.wikipedia.org/wiki/Kanban) 
 Board using [Trello](https://trello.com/).
 
-## Team Members
+# Team Members
 * @doktorupnos Frontend / UI/UX
 * @marios-pz Frontend / DevOps
 * @zoumas Backend 
-
-## Deadline
-The work begins on Monday, November 20, 2023, and concludes on January 10, 2024.
-The project review will take place at the end of the examination period, which also marks the end date.
 
 # Architecture
 
@@ -42,3 +38,7 @@ In addition the photos of the users will be saved on SeaweedFS.
 
 Unit testing is performed within a docker environment as part of the CI/CD process
 because it is crucial for our code to undergo testing in as clean an environment as possible.
+
+# Deadline
+The work begins on Monday, November 20, 2023, and concludes on January 10, 2024.
+The project review will take place at the end of the examination period, which also marks the end date.
