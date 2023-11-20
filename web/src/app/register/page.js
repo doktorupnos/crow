@@ -3,7 +3,7 @@
 import { useState } from "react"
 import axios from "axios"
 
-const apiendpoint = "//localhost:8000/users"
+const apiendpoint = "//localhost:8000"
 
 export default function RegisterBox() {
 	return (
@@ -30,7 +30,7 @@ function RegisterForm() {
 	// Submit button handler.
 	function handleSubmit(event) {
 		event.preventDefault()
-		axios.post({apiendpoint}, post)
+		axios.post(apiendpoint, post)
 		.then(response => console.log(response))
 		.catch(err => console.log(err))
 	}
@@ -39,8 +39,8 @@ function RegisterForm() {
 	return (
 		<div>
 			<form onSubmit={handleSubmit}>
-				<input name="name" type="text" maxlength="20" onChange={handleInput} placeholder="Username" required /><br /><br />
-				<input name="password" type="password" maxlength="64" onChange={handleInput} placeholder="Password" required /><br /><br />
+				<input name="name" type="text" maxLength="20" onChange={handleInput} placeholder="Username" required /><br /><br />
+				<input name="password" type="password" maxLength="64" onChange={handleInput} placeholder="Password" required /><br /><br />
 				<input type="submit" value="Join" />
 			</form>
 		</div>
