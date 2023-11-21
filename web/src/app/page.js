@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import styles from "../public/globals.css";
+import styles from "./page.module.css"
 
 export default function Home() {
 	return (
@@ -14,9 +14,22 @@ export default function Home() {
 function WelcomeForm() {
 	return (
 		<div>
-			<h1>CROW</h1>
-			<Link href="/register">REGISTER</Link><br/>
-			<Link href="/">LOGIN</Link>
+			<AppTitle />
+			<br /><br />
+			<Link className={styles.testLink} href="/register">REGISTER</Link><br/><br />
+			<Link className={styles.testLink} href="/">LOGIN</Link>
 		</div>
+	)
+}
+
+function AppTitle() {
+	return (
+		<Image
+			src="/images/title.svg"
+			width={300}
+			height={150}
+			alt="app title"
+			draggable="false"
+		/>
 	)
 }

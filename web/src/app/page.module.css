@@ -1,0 +1,27 @@
+.test {
+	color: white;
+}
+
+.menuBox {
+	color: black;
+}
+
+.testLink {
+	color: black;
+	background-color: #e7e7e7;
+	border: none;
+	text-decoration: none;
+	text-align: center;
+	display: inline-block;
+	padding: 15px;
+	width: 12%;
+}
+
+.unselectable {
+  user-drag: none; 
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
