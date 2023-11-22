@@ -7,8 +7,8 @@ import (
 
 type User struct {
 	Model
-	Name     string `gorm:"size:20;unique;not null"`
-	Password string `gorm:"size:64;not null"`
+	Name     string `json:"name" gorm:"size:20;unique;not null"`
+	Password string `json:"-"    gorm:"size:64;not null"`
 }
 
 func (cfg *ApiConfig) CreateUser(w http.ResponseWriter, r *http.Request) {
