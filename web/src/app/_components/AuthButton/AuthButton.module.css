@@ -1,0 +1,11 @@
+.authButton {
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+	padding-top: 0.3rem;
+	padding-bottom: 0.3rem;
+	display: inline-block;
+	min-width: 13rem;
+	text-align: center;
+	background-color: #e7e7e7;
+	color: black;
+}
