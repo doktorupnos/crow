@@ -7,13 +7,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/doktorupnos/wip-chat/backend/internal/database"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 
 	"github.com/joho/godotenv"
 
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -42,17 +42,10 @@ func main() {
 		log.Fatal("ERROR: DSN environment variable is not set")
 	}
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := database.New(dsn)
 	if err != nil {
-		log.Fatalf(
-			"ERROR: Failed to connect to database\nData Source Name : %q\nError : %q",
-			dsn,
-			err,
-		)
+		log.Fatal(err)
 	}
-
-	ping(db)
-	migrate(db)
 
 	cfg := &ApiConfig{DB: db}
 
@@ -84,9 +77,12 @@ func main() {
 		)
 	})
 
+	mainRouter.Post("/login", cfg.Login)
+
 	userRouter := chi.NewRouter()
 	userRouter.Route("/", func(r chi.Router) {
 		r.Post("/", cfg.CreateUser)
+		r.Get("/{name}", cfg.GetUserByName)
 		r.Get("/", cfg.GetAllUsers)
 	})
 	mainRouter.Mount("/users", userRouter)
@@ -108,26 +104,5 @@ func main() {
 	err = server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
-	}
-}
-
-func ping(db *gorm.DB) {
-	sqlDB, err := db.DB()
-	if err != nil {
-		log.Fatalf(
-			"failed to get generic *sql.DB while trying to ping the database\nError : %q",
-			err,
-		)
-	}
-
-	err = sqlDB.Ping()
-	if err != nil {
-		log.Fatalf("ERROR: database ping failed : %q", err)
-	}
-}
-
-func migrate(db *gorm.DB) {
-	if err := db.AutoMigrate(&User{}); err != nil {
-		log.Fatalf("failed to perform migration on the User type : %q", err)
 	}
 }

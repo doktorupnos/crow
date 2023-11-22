@@ -5,14 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/doktorupnos/wip-chat/backend/internal/database"
+	"github.com/go-chi/chi/v5"
 	"golang.org/x/crypto/bcrypt"
 )
-
-type User struct {
-	Model
-	Name     string `json:"name" gorm:"size:20;unique;not null"`
-	Password string `json:"-"    gorm:"size:64;not null"`
-}
 
 func (cfg *ApiConfig) CreateUser(w http.ResponseWriter, r *http.Request) {
 	type RequestBody struct {
@@ -43,23 +39,59 @@ func (cfg *ApiConfig) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := User{
-		Name:     body.Name,
-		Password: string(hashed),
-	}
-
-	if err := cfg.DB.Create(&user).Error; err != nil {
-		respondWithError(w, http.StatusInternalServerError, "failed to create user")
-		return
+	user, err := database.CreateUser(cfg.DB, database.CreateUserParams{
+		Name:           body.Name,
+		HashedPassword: string(hashed),
+	})
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
 	}
 
 	respondWithJSON(w, http.StatusCreated, user)
 }
 
+func (cfg *ApiConfig) Login(w http.ResponseWriter, r *http.Request) {
+	name, password, ok := r.BasicAuth()
+	if !ok {
+		respondWithError(w, http.StatusBadRequest, "malformed Authorization header")
+		return
+	}
+
+	user, err := database.GetUserByName(cfg.DB, name)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password))
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, fmt.Sprintf("passwords do not match"))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (cfg *ApiConfig) GetUserByName(w http.ResponseWriter, r *http.Request) {
+	name := chi.URLParam(r, "name")
+	if name == "" {
+		respondWithError(w, http.StatusBadRequest, "missing url parameter : {name}")
+		return
+	}
+
+	user, err := database.GetUserByName(cfg.DB, name)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, user)
+}
+
 func (cfg *ApiConfig) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	var users []User
-	if err := cfg.DB.Find(&users).Error; err != nil {
-		respondWithError(w, http.StatusInternalServerError, "failed to retrieve users")
+	users, err := database.GetAllUsers(cfg.DB)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, err.Error())
 		return
 	}
 
