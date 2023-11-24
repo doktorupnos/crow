@@ -15,7 +15,7 @@ func registerRoutes(app *app.App) http.Handler {
 
 	// NOTE: cors not final
 	mainRouter.Use(cors.Handler(cors.Options{
-		AllowedOrigins: []string{"*"},
+		AllowedOrigins: []string{app.ORIGIN},
 		AllowedMethods: []string{
 			http.MethodGet,
 			http.MethodPost,
@@ -23,9 +23,10 @@ func registerRoutes(app *app.App) http.Handler {
 			http.MethodDelete,
 			http.MethodOptions,
 		},
-		AllowedHeaders: []string{"*"},
-		ExposedHeaders: []string{"Link"},
-		MaxAge:         300,
+		AllowedHeaders:   []string{"*"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
 	}))
 	// NOTE: Explore chi's middleware package for more userful handlers
 	mainRouter.Use(middleware.Logger)
@@ -37,6 +38,7 @@ func registerRoutes(app *app.App) http.Handler {
 	})
 
 	mainRouter.Post("/login", app.WithBasicAuth(app.Login))
+	mainRouter.Post("/logout", app.WithJWT(app.Logout))
 
 	userRouter := chi.NewRouter()
 	userRouter.Route("/", func(r chi.Router) {

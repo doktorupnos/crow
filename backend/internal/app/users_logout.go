@@ -2,21 +2,23 @@ package app
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/doktorupnos/crow/backend/internal/database"
 )
 
-func (app *App) Login(w http.ResponseWriter, r *http.Request, user database.User) {
+func (app *App) Logout(w http.ResponseWriter, r *http.Request, user database.User) {
 	defer r.Body.Close()
 
-	signedToken, err := NewJWT(app.JWT_SECRET, user.ID.String(), app.JWT_EXPIRES_IN_MINUTES)
+	signedToken, err := NewJWT(app.JWT_SECRET, user.Name, 0)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:  "token",
-		Value: signedToken,
+		Name:    "token",
+		Value:   signedToken,
+		Expires: time.Now(),
 	})
 }

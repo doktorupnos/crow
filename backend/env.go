@@ -23,6 +23,9 @@ type Env struct {
 
 	// The duraction a JWT access token expires in
 	JWT_EXPIRES_IN_MINUTES time.Duration
+
+	// The origin used in CORS for the header Access-Control-Allowed-Origins
+	ORIGIN string
 }
 
 func loadEnv() (*Env, error) {
@@ -63,10 +66,16 @@ func loadEnv() (*Env, error) {
 		)
 	}
 
+	origin, ok := os.LookupEnv("ORIGIN")
+	if !ok {
+		origin = "http://*"
+	}
+
 	return &Env{
 		PORT:                   port,
 		DSN:                    dsn,
 		JWT_SECRET:             jwtSecret,
 		JWT_EXPIRES_IN_MINUTES: time.Minute * time.Duration(jwtExpiresInMinutes),
+		ORIGIN:                 origin,
 	}, nil
 }

@@ -11,4 +11,5 @@ type App struct {
 	DB                     *gorm.DB
 	JWT_SECRET             string
 	JWT_EXPIRES_IN_MINUTES time.Duration
+	ORIGIN                 string
 }

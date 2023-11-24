@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/doktorupnos/crow/backend/internal/database"
+	"github.com/google/uuid"
 )
 
 type AuthenticatedHandler func(w http.ResponseWriter, r *http.Request, user database.User)
@@ -33,65 +34,37 @@ func (app *App) WithBasicAuth(handler AuthenticatedHandler) http.HandlerFunc {
 	}
 }
 
-// WithJWT authenticates a user's JWT token.
+// WithJWT authenticates a user's JWT token through Cookies.
 func (app *App) WithJWT(handler AuthenticatedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c, err := r.Cookie("token")
 		if err != nil {
-			respondWithError(w, http.StatusUnauthorized, "missing Cookie header")
+			respondWithError(w, http.StatusUnauthorized, err.Error())
 			return
 		}
 		tokenString := c.Value
 
-		// authHeader := r.Header.Get("Authorization")
-		// if authHeader == "" {
-		// 	respondWithJSON(w, http.StatusUnauthorized, "missing Authorization header")
-		// 	return
-		// }
-		//
-		// fields := strings.Fields(authHeader)
-		// if len(fields) != 2 {
-		// 	respondWithError(w, http.StatusUnauthorized, "malformed Authorization header")
-		// 	return
-		// }
-		//
-		// const methodBearer = "Bearer"
-		// authMethod := fields[0]
-		// if authMethod != methodBearer {
-		// 	respondWithError(w, http.StatusUnauthorized, "unsupported Authorization method")
-		// 	return
-		// }
-
-		// TODO: Improve Error Messages
-
-		// tokenString := fields[1]
 		token, err := ParseJWT(app.JWT_SECRET, tokenString)
 		if err != nil {
-			respondWithError(
-				w,
-				http.StatusUnauthorized,
-				fmt.Sprintf("failed to parse token : %s", err),
-			)
+			respondWithError(w, http.StatusUnauthorized, err.Error())
 			return
 		}
 
-		username, err := token.Claims.GetSubject()
+		idString, err := token.Claims.GetSubject()
 		if err != nil {
-			respondWithError(
-				w,
-				http.StatusUnauthorized,
-				fmt.Sprintf("failed to parse token : %s", err),
-			)
+			respondWithError(w, http.StatusUnauthorized, err.Error())
 			return
 		}
 
-		user, err := database.GetUserByName(app.DB, username)
+		id, err := uuid.Parse(idString)
 		if err != nil {
-			respondWithError(
-				w,
-				http.StatusUnauthorized,
-				fmt.Sprintf("failed to retrieve user : %s", err),
-			)
+			respondWithError(w, http.StatusUnauthorized, err.Error())
+			return
+		}
+
+		user, err := database.GetUserByID(app.DB, id)
+		if err != nil {
+			respondWithError(w, http.StatusUnauthorized, err.Error())
 			return
 		}
 
