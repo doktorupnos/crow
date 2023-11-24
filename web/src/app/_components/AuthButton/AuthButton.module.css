@@ -1,0 +1,17 @@
+.authButton {
+	background-color: #e7e7e7;
+	color: black;
+	text-align: center;
+	font-family: var(--font-garamond);
+	display: inline-block;
+	min-width: 13rem;
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+	padding-top: 0.3rem;
+	padding-bottom: 0.3rem;
+}
+
+.authButton:hover {
+	background-color: #d22b2b;
+	cursor: pointer;
+}
