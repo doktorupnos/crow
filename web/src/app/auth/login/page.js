@@ -29,7 +29,7 @@ function RegisterForm() {
 	function handleSubmit(event) {
 		event.preventDefault();
 		axios
-			.get(
+			.post(
 				process.env.authLoginEndPoint,
 				{},
 				{
@@ -37,8 +37,8 @@ function RegisterForm() {
 						username: `${post.name}`,
 						password: `${post.password}`,
 					},
-				},
-				{ withCredentials: true }
+					withCredentials: true,
+				}
 			)
 			.then((response) => console.log(response))
 			.catch((err) => console.log(err));
