@@ -34,7 +34,7 @@ func (app *App) WithBasicAuth(handler AuthenticatedHandler) http.HandlerFunc {
 	}
 }
 
-// WithJWT authenticates a user's JWT token through Cookies.
+// WithJWT authenticates a user's JWT token through cookies.
 func (app *App) WithJWT(handler AuthenticatedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c, err := r.Cookie("token")

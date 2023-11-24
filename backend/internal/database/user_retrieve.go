@@ -5,9 +5,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetUserByID(db *gorm.DB, id uuid.UUID) (User, error) {
+func GetUserByID(db *gorm.DB, userID uuid.UUID) (User, error) {
 	var user User
-	if err := db.First(&user, id).Error; err != nil {
+	if err := db.First(&user, userID).Error; err != nil {
 		return User{}, err
 	}
 	return user, nil

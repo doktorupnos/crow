@@ -40,15 +40,24 @@ func registerRoutes(app *app.App) http.Handler {
 	mainRouter.Post("/login", app.WithBasicAuth(app.Login))
 	mainRouter.Post("/logout", app.WithJWT(app.Logout))
 
-	userRouter := chi.NewRouter()
-	userRouter.Route("/", func(r chi.Router) {
+	usersRouter := chi.NewRouter()
+	usersRouter.Route("/", func(r chi.Router) {
 		r.Post("/", app.CreateUser)
 		r.Get("/{name}", app.GetUserByName)
 		r.Get("/", app.GetAllUsers)
 		r.Put("/", app.WithJWT(app.UpdateUser))
 		r.Delete("/", app.WithBasicAuth(app.DeleteUser))
 	})
-	mainRouter.Mount("/users", userRouter)
+	mainRouter.Mount("/users", usersRouter)
+
+	postsRouter := chi.NewRouter()
+	postsRouter.Route("/", func(r chi.Router) {
+		r.Post("/", app.WithJWT(app.CreatePost))
+		r.Get("/", app.WithJWT(app.RetrievePosts))
+		r.Put("/{id}", app.WithJWT(app.UpdatePost))
+		r.Delete("/{id}", app.WithJWT(app.DeletePost))
+	})
+	mainRouter.Mount("/posts", postsRouter)
 
 	return mainRouter
 }

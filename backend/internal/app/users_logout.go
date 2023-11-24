@@ -19,6 +19,6 @@ func (app *App) Logout(w http.ResponseWriter, r *http.Request, user database.Use
 	http.SetCookie(w, &http.Cookie{
 		Name:    "token",
 		Value:   signedToken,
-		Expires: time.Now(),
+		Expires: time.Now(), // NOTE: probably don't need this
 	})
 }

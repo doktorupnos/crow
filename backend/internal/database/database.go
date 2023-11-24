@@ -40,9 +40,16 @@ func ping(db *gorm.DB) error {
 }
 
 func automigrate(db *gorm.DB) error {
-	err := db.AutoMigrate(&User{})
+	var err error
+
+	err = db.AutoMigrate(&User{})
 	if err != nil {
-		return fmt.Errorf("failed to migrate User type: %s", err)
+		return fmt.Errorf("failed to migrate the User type: %s", err)
+	}
+
+	err = db.AutoMigrate(&Post{})
+	if err != nil {
+		return fmt.Errorf("failed to migrate the Post type: %s", err)
 	}
 
 	return nil
