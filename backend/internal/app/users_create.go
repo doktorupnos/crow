@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"encoding/json"
@@ -34,6 +34,7 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
 	if err := validatePassword(body.Password); err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return

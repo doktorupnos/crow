@@ -3,13 +3,14 @@ package main
 import (
 	"net/http"
 
+	"github.com/doktorupnos/crow/backend/internal/app"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
 
 // registerRoutes groups the definition of all the endpoints.
-func registerRoutes(app *App) http.Handler {
+func registerRoutes(app *app.App) http.Handler {
 	mainRouter := chi.NewRouter()
 
 	// NOTE: cors not final
@@ -31,15 +32,8 @@ func registerRoutes(app *App) http.Handler {
 
 	// health-check, readiness endpoint.
 	mainRouter.Get("/healthz", func(w http.ResponseWriter, _ *http.Request) {
-		type StatusResponse struct {
-			Status string `json:"status"`
-		}
 		// TODO: enhance to return a http.StatusServiceUnavailable.
-		respondWithJSON(
-			w,
-			http.StatusOK,
-			StatusResponse{Status: http.StatusText(http.StatusOK)},
-		)
+		w.WriteHeader(http.StatusOK)
 	})
 
 	mainRouter.Post("/login", app.WithBasicAuth(app.Login))

@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"time"
@@ -7,15 +7,17 @@ import (
 )
 
 // NewJWT returns a signed jwt token to respond with to the client.
-func NewJWT(secret, subject string) (signedToken string, err error) {
+func NewJWT(
+	secret, subject string,
+	expiresInMinutes time.Duration,
+) (signedToken string, err error) {
 	// TODO: Make the expiration configurable or define some good standards.
-	expiresIn := 5 * time.Minute
 	now := time.Now()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
 		Issuer:    "crow",
 		IssuedAt:  jwt.NewNumericDate(now.UTC()),
-		ExpiresAt: jwt.NewNumericDate(now.Add(expiresIn).UTC()),
+		ExpiresAt: jwt.NewNumericDate(now.Add(expiresInMinutes).UTC()),
 		Subject:   subject,
 	})
 

@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/doktorupnos/crow/backend/internal/database"
-	"github.com/google/uuid"
 )
 
 type AuthenticatedHandler func(w http.ResponseWriter, r *http.Request, user database.User)
@@ -70,32 +69,22 @@ func (app *App) WithJWT(handler AuthenticatedHandler) http.HandlerFunc {
 			return
 		}
 
-		idStr, err := token.Claims.GetSubject()
+		username, err := token.Claims.GetSubject()
 		if err != nil {
 			respondWithError(
 				w,
 				http.StatusUnauthorized,
-				fmt.Sprintf("failed to parse token's subject : %s", err),
+				fmt.Sprintf("failed to parse token : %s", err),
 			)
 			return
 		}
 
-		id, err := uuid.Parse(idStr)
+		user, err := database.GetUserByName(app.DB, username)
 		if err != nil {
 			respondWithError(
 				w,
 				http.StatusUnauthorized,
-				fmt.Sprintf("failed to parse id : %q", err),
-			)
-			return
-		}
-
-		user, err := database.GetUserByID(app.DB, id)
-		if err != nil {
-			respondWithError(
-				w,
-				http.StatusUnauthorized,
-				fmt.Sprintf("failed to retrieve user : %q", err),
+				fmt.Sprintf("failed to retrieve user : %s", err),
 			)
 			return
 		}

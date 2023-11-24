@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"encoding/json"
@@ -9,26 +9,29 @@ import (
 )
 
 func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request, user database.User) {
+	defer r.Body.Close()
+
 	type RequestBody struct {
 		Name     string `json:"name"`
 		Password string `json:"password"`
 	}
 	body := RequestBody{}
 
-	defer r.Body.Close()
-	err := json.NewDecoder(r.Body).Decode(&body)
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(&body)
 	if err != nil {
 		respondWithError(
 			w,
 			http.StatusBadRequest,
-			fmt.Sprintf("failed to parse request body : %s", err),
+			fmt.Sprintf("failed to decode request body : %s", err),
 		)
 		return
 	}
 
 	hashedPassword, err := HashPassword(body.Password)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("failed to hash passwrod : %s", err))
+		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("failed to hash password : %s", err))
 		return
 	}
 

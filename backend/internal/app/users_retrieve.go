@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"fmt"
@@ -9,6 +9,8 @@ import (
 )
 
 func (app *App) GetUserByName(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
 	name := chi.URLParam(r, "name")
 	if name == "" {
 		respondWithError(w, http.StatusBadRequest, "missing {name} url parameter")
@@ -28,6 +30,8 @@ func (app *App) GetUserByName(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
 	users, err := database.GetAllUsers(app.DB)
 	if err != nil {
 		respondWithError(

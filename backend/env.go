@@ -6,6 +6,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -18,6 +20,9 @@ type Env struct {
 	DSN string
 	// The secret to sign JWTs
 	JWT_SECRET string
+
+	// The duraction a JWT access token expires in
+	JWT_EXPIRES_IN_MINUTES time.Duration
 }
 
 func loadEnv() (*Env, error) {
@@ -46,9 +51,22 @@ func loadEnv() (*Env, error) {
 		return nil, errors.New("JWT_SECRET environment variable is not set")
 	}
 
+	jwtExpiresInMinutesString, ok := os.LookupEnv("JWT_EXPIRES_IN_MINUTES")
+	if !ok {
+		return nil, errors.New("JWT_EXPIRES_IN_MINUTES enviornment variable is not set")
+	}
+	jwtExpiresInMinutes, err := strconv.Atoi(jwtExpiresInMinutesString)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to parse JWT_EXPIRES_IN_MINUTES environment variable : %s",
+			err,
+		)
+	}
+
 	return &Env{
-		PORT:       port,
-		DSN:        dsn,
-		JWT_SECRET: jwtSecret,
+		PORT:                   port,
+		DSN:                    dsn,
+		JWT_SECRET:             jwtSecret,
+		JWT_EXPIRES_IN_MINUTES: time.Minute * time.Duration(jwtExpiresInMinutes),
 	}, nil
 }

@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"fmt"
@@ -8,6 +8,8 @@ import (
 )
 
 func (app *App) DeleteUser(w http.ResponseWriter, r *http.Request, user database.User) {
+	defer r.Body.Close()
+
 	err := database.DeleteUser(app.DB, user)
 	if err != nil {
 		respondWithError(

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/doktorupnos/crow/backend/internal/app"
 	"github.com/doktorupnos/crow/backend/internal/database"
 )
 
@@ -19,9 +20,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	app := &App{
-		DB:         db,
-		JWT_SECRET: env.DSN,
+	app := &app.App{
+		DB:                     db,
+		JWT_SECRET:             env.JWT_SECRET,
+		JWT_EXPIRES_IN_MINUTES: env.JWT_EXPIRES_IN_MINUTES,
 	}
 
 	router := registerRoutes(app)

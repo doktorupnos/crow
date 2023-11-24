@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"fmt"
@@ -9,7 +9,9 @@ import (
 )
 
 func (app *App) Login(w http.ResponseWriter, r *http.Request, user database.User) {
-	signedToken, err := NewJWT(app.JWT_SECRET, user.ID.String())
+	defer r.Body.Close()
+
+	signedToken, err := NewJWT(app.JWT_SECRET, user.Name, app.JWT_EXPIRES_IN_MINUTES)
 	if err != nil {
 		respondWithError(
 			w,
