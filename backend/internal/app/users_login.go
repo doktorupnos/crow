@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/doktorupnos/crow/backend/internal/database"
-	"github.com/google/uuid"
 )
 
 func (app *App) Login(w http.ResponseWriter, r *http.Request, user database.User) {
@@ -21,15 +20,8 @@ func (app *App) Login(w http.ResponseWriter, r *http.Request, user database.User
 		return
 	}
 
-	type ResponseBody struct {
-		ID    uuid.UUID `json:"id"`
-		Name  string    `json:"name"`
-		Token string    `json:"token"`
-	}
-
-	respondWithJSON(w, http.StatusOK, ResponseBody{
-		ID:    user.ID,
-		Name:  user.Name,
-		Token: signedToken,
+	http.SetCookie(w, &http.Cookie{
+		Name:  "token",
+		Value: signedToken,
 	})
 }
