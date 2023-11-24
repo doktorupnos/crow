@@ -7,7 +7,7 @@ export default function AuthButton({ name, link }) {
 		<div className="max-w-md mx-auto">
 			<Link
 				type="button"
-				className={`${styles.authButton} hover:bg-[#D22B2B] focus:outline-none font-medium text-sm items-center`}
+				className={`${styles.authButton} hover:bg-[#D22B2B] focus:outline-none font-medium text-md items-center`}
 				href={link}
 			>
 				{name}

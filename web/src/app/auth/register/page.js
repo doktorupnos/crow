@@ -3,8 +3,6 @@
 import { useState } from "react";
 import axios from "axios";
 
-const apiendpoint = "//localhost:8000";
-
 export default function RegisterPage() {
 	return (
 		<div className="container mx-auto">
@@ -32,7 +30,7 @@ function RegisterForm() {
 		event.preventDefault();
 		console.log(post);
 		axios
-			.post(apiendpoint, post)
+			.post(process.env.authRegEndPoint, post)
 			.then((response) => console.log(response))
 			.catch((err) => console.log(err));
 	}
