@@ -1,25 +1,11 @@
 "use client";
 
-import axios from "axios";
+import { jwtTest } from "../_modules/jwt.js";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
-	axios
-		.post(
-			process.env.jwtEndPoint,
-			{},
-			{
-				void: {},
-				withCredentials: true,
-			}
-		)
-		.then((response) => {
-			if (response.status == 200) {
-				console.log("success");
-			} else {
-				console.log("makaronia");
-			}
-		})
-		.catch((error) => console.log(error));
+	const router = useRouter();
+	jwtTest(router).catch((error) => console.log(error));
 	return (
 		<div>
 			<h1>HOME</h1>

@@ -1,14 +1,9 @@
-import AppTitle from "./_components/AppTitle/AppTitle";
-import AuthButton from "./_components/AuthButton/AuthButton";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { jwtValidHome } from "./_modules/jwt";
 
 export default function Home() {
-	return (
-		<div className="container mx-auto">
-			<div className="flex flex-col h-screen justify-center">
-				<AppTitle />
-				<AuthButton name="Register" link="/auth/register" />
-				<AuthButton name="Login" link="/auth/login" />
-			</div>
-		</div>
-	);
+	const router = useRouter();
+	jwtValidHome(router).catch((error) => console.log(error));
 }
