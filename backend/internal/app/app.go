@@ -14,6 +14,7 @@ type App struct {
 	Env         *env.Env
 	DB          *gorm.DB
 	userService *UserService
+	postService *PostService
 }
 
 func New(env *env.Env, db *gorm.DB) *App {
@@ -21,6 +22,7 @@ func New(env *env.Env, db *gorm.DB) *App {
 		Env:         env,
 		DB:          db,
 		userService: NewUserService(database.NewGormUserRepo(db)),
+		postService: NewPostService(database.NewGormPostRepo(db)),
 	}
 }
 

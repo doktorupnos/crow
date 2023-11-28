@@ -34,6 +34,7 @@ func ConfiguredRouter(app *App) http.Handler {
 	router.Post("/logout", app.JWT(app.Logout))
 
 	router.Mount("/users", UserRouter(app))
+	router.Mount("/posts", PostRouter(app))
 
 	router.Mount("/admin", AdminRouter(app))
 
@@ -49,6 +50,16 @@ func UserRouter(app *App) http.Handler {
 	router.Get("/{name}", app.GetUserByName)
 	router.Put("/", app.JWT(app.UpdateUser))
 	router.Delete("/", app.BasicAuth(app.DeleteUser))
+
+	return router
+}
+
+// PostRouter returns a configured router that handles all post endpoints.
+func PostRouter(app *App) http.Handler {
+	router := chi.NewRouter()
+
+	router.Post("/", app.JWT(app.CreatePost))
+	router.Get("/", app.JWT(app.GetAllPosts))
 
 	return router
 }

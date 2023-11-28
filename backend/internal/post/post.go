@@ -1,9 +1,8 @@
 package post
 
 import (
-	"os/user"
-
 	"github.com/doktorupnos/crow/backend/internal/model"
+	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/google/uuid"
 )
 
@@ -17,4 +16,5 @@ type Post struct {
 
 type PostRepo interface {
 	Create(p Post) error
+	GetAll() ([]Post, error)
 }
