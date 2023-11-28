@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/doktorupnos/crow/backend/internal/post"
 	"github.com/doktorupnos/crow/backend/internal/user"
+	"github.com/google/uuid"
 )
 
 type PostService struct {
@@ -26,6 +27,41 @@ func (s *PostService) GetAll() ([]post.Post, error) {
 	return s.pr.GetAll()
 }
 
+func (s *PostService) GetByID(id uuid.UUID) (post.Post, error) {
+	return s.pr.GetByID(id)
+}
+
+func (s *PostService) Update(postID, userID uuid.UUID, body string) error {
+	if err := validateBody(body); err != nil {
+		return err
+	}
+
+	p, err := s.GetByID(postID)
+	if err != nil {
+		return err
+	}
+
+	if p.UserID != userID {
+		return PostErrNotOwner
+	}
+
+	p.Body = body
+	return s.pr.Update(p)
+}
+
+func (s *PostService) Delete(id, userID uuid.UUID) error {
+	p, err := s.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	if p.UserID != userID {
+		return PostErrNotOwner
+	}
+
+	return s.pr.Delete(p)
+}
+
 type PostErr string
 
 func (e PostErr) Error() string {
@@ -33,8 +69,9 @@ func (e PostErr) Error() string {
 }
 
 const (
-	PostErrEmpty  = PostErr("Post is empty")
-	PostErrTooBig = PostErr("Post is too big")
+	PostErrEmpty    = PostErr("Post is empty")
+	PostErrTooBig   = PostErr("Post is too big")
+	PostErrNotOwner = PostErr("Post does not belong this user")
 )
 
 func validateBody(body string) error {

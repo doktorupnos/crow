@@ -60,6 +60,8 @@ func PostRouter(app *App) http.Handler {
 
 	router.Post("/", app.JWT(app.CreatePost))
 	router.Get("/", app.JWT(app.GetAllPosts))
+	router.Put("/{id}", app.JWT(app.UpdatePost))
+	router.Delete("/{id}", app.JWT(app.DeletePost))
 
 	return router
 }

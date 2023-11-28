@@ -17,4 +17,7 @@ type Post struct {
 type PostRepo interface {
 	Create(p Post) error
 	GetAll() ([]Post, error)
+	GetByID(id uuid.UUID) (Post, error)
+	Update(p Post) error
+	Delete(p Post) error
 }

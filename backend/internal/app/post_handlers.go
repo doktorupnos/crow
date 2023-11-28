@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/doktorupnos/crow/backend/internal/user"
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
 
@@ -37,7 +38,7 @@ func (app *App) GetAllPosts(w http.ResponseWriter, r *http.Request, u user.User)
 	}
 
 	type ResponseItem struct {
-		ID        uuid.UUID `json:"id"`
+		ID        uuid.UUID `json:"post_id"`
 		UserID    uuid.UUID `json:"user_id"`
 		UserName  string    `json:"user_name"`
 		CreatedAt time.Time `json:"created_at"`
@@ -56,4 +57,56 @@ func (app *App) GetAllPosts(w http.ResponseWriter, r *http.Request, u user.User)
 	}
 
 	respondWithJSON(w, http.StatusOK, response)
+}
+
+func (app *App) UpdatePost(w http.ResponseWriter, r *http.Request, u user.User) {
+	postIDString := chi.URLParam(r, "id")
+	if postIDString == "" {
+		respondWithError(w, http.StatusBadRequest, "missing URL parameter")
+		return
+	}
+
+	postID, err := uuid.Parse(postIDString)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	type RequestBody struct {
+		Body string `json:"body"`
+	}
+	body := RequestBody{}
+
+	defer r.Body.Close()
+	err = json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := app.postService.Update(postID, u.ID, body.Body); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+}
+
+func (app *App) DeletePost(w http.ResponseWriter, r *http.Request, u user.User) {
+	postIDString := chi.URLParam(r, "id")
+	if postIDString == "" {
+		respondWithError(w, http.StatusBadRequest, "missing URL parameter")
+		return
+	}
+
+	postID, err := uuid.Parse(postIDString)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := app.postService.Delete(postID, u.ID); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
