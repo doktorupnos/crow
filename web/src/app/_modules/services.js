@@ -22,4 +22,19 @@ module.exports = {
 				return false;
 			});
 	},
+	async getPosts() {
+		await axios
+			.get(process.env.postGetEndPoint, {}, { withCredentials: true })
+			.then((response) => {
+				if (response.status == 200) {
+					return response.body;
+				} else {
+					return null;
+				}
+			})
+			.catch((error) => {
+				console.log("Connection error!");
+				return null;
+			});
+	},
 };
