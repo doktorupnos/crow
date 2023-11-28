@@ -1,15 +1,34 @@
 package app
 
 import (
-	"time"
+	"context"
+	"log"
 
+	"github.com/doktorupnos/crow/backend/internal/database"
+	"github.com/doktorupnos/crow/backend/internal/env"
 	"gorm.io/gorm"
 )
 
-// App is used to implement stateful http handlers.
+// App groups all the state the server needs to run.
 type App struct {
-	DB                     *gorm.DB
-	JWT_SECRET             string
-	JWT_EXPIRES_IN_MINUTES time.Duration
-	ORIGIN                 string
+	Env         *env.Env
+	DB          *gorm.DB
+	userService *UserService
+}
+
+func New(env *env.Env, db *gorm.DB) *App {
+	return &App{
+		Env:         env,
+		DB:          db,
+		userService: NewUserService(database.NewGormUserRepo(db)),
+	}
+}
+
+func (app *App) Run() {
+	router := ConfiguredRouter(app)
+	server := GracefulServer(app, router)
+	if err := server.ListenAndServe(context.Background()); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("graceful shutdown!")
 }
