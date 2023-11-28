@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -34,7 +35,7 @@ func ConfiguredRouter(app *App) http.Handler {
 
 	router.Mount("/users", UserRouter(app))
 
-	router.Mount("/admin", AdminRouter())
+	router.Mount("/admin", AdminRouter(app))
 
 	return router
 }
@@ -53,7 +54,7 @@ func UserRouter(app *App) http.Handler {
 }
 
 // AdminRouter returns a configured router that handles all admin endpoints.
-func AdminRouter() http.Handler {
+func AdminRouter(app *App) http.Handler {
 	router := chi.NewRouter()
 
 	router.Post("/panic", func(w http.ResponseWriter, _ *http.Request) {
@@ -72,6 +73,10 @@ func AdminRouter() http.Handler {
 		time.Sleep(time.Minute)
 		w.WriteHeader(http.StatusOK)
 	})
+
+	router.Post("/jwt", app.JWT(func(w http.ResponseWriter, _ *http.Request, _ user.User) {
+		w.WriteHeader(http.StatusOK)
+	}))
 
 	return router
 }

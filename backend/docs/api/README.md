@@ -7,13 +7,13 @@
 
 ## Admin Endpoints
 
-### POST /panic
+### POST /admin/panic
 
 * Description: Make the server panic.
 * Status Code: 500
 * Goal: The server should automatically recover from panics.
 
-### GET /error
+### GET /admin/error
 
 * Description: Test the JSON reporting.
 * Status Code: 500
@@ -24,8 +24,16 @@
 }
 ```
 
-### POST /sleep
+### POST /admin/sleep
 
 * Description: Sleep for a minute before responding.
 * Status Code: 200 if not cancelled.
 * Goal: Handle cancellation with timeouts & graceful shutdown.
+
+### POST /admin/jwt
+
+* Description: Validates a JWT.
+* Status Code:
+* 200 - Valid
+* 401 - Not Valid
+* Goal: Test the implementatio of JWTs.
