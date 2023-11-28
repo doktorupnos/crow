@@ -4,17 +4,16 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/doktorupnos/crow/backend/internal/env"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
 
-func ConfiguredRouter(env *env.Env) http.Handler {
+func ConfiguredRouter(app *App) http.Handler {
 	router := chi.NewRouter()
 
 	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins: []string{env.CorsOrigin},
+		AllowedOrigins: []string{app.Env.CorsOrigin},
 		AllowedHeaders: []string{"*"},
 		AllowedMethods: []string{
 			http.MethodGet,
@@ -29,7 +28,26 @@ func ConfiguredRouter(env *env.Env) http.Handler {
 	router.Use(middleware.Recoverer)
 
 	router.Get("/healthz", HealthCheck)
+
+	router.Post("/login", app.BasicAuth(app.Login))
+	router.Post("/logout", app.JWT(app.Logout))
+
+	router.Mount("/users", UserRouter(app))
+
 	router.Mount("/admin", AdminRouter())
+
+	return router
+}
+
+// UserRouter returns a configured router that handles all user endpoints.
+func UserRouter(app *App) http.Handler {
+	router := chi.NewRouter()
+
+	router.Post("/", app.CreateUser)
+	router.Get("/", app.GetAllUsers)
+	router.Get("/{name}", app.GetUserByName)
+	router.Put("/", app.JWT(app.UpdateUser))
+	router.Delete("/", app.BasicAuth(app.DeleteUser))
 
 	return router
 }

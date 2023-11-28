@@ -7,6 +7,8 @@ The server expects the following environment variables to be set:
 * `ADDR` - `hostname:port`. The address for the server to bind to and listen for incoming requests.
 * `CORS_ORIGIN` - `http://*`. The single origin allowed by the server. This is to be the URL of the front-end.
 * `DSN` - `postgres://postgres:postgres@localhost:5432/crow`. The Data Source Name for the Postgres database. 
+* `JWT_SECRET` - the secret key used to sign JWTs. Use `openssl rand -base64 64` to generate one for youself.
+* `JWT_LIFETIME` - a parsable strings by Go's `time.ParseDuration` function. Serves as the lifetime of a JWT.
 
 ## Local Development
 

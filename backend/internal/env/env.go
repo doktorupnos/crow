@@ -4,15 +4,18 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 )
 
 // Env groups all the environment variables the server depends on
 type Env struct {
-	ServerAddr string
-	CorsOrigin string
-	DSN        string
+	ServerAddr  string
+	CorsOrigin  string
+	DSN         string
+	JwtSecret   string
+	JwtLifetime time.Duration
 }
 
 // Load is a Env constructor.
@@ -41,10 +44,26 @@ func Load() (*Env, error) {
 		return nil, envNotSet("DSN")
 	}
 
+	jwtSecret, ok := os.LookupEnv("JWT_SECRET")
+	if !ok {
+		return nil, envNotSet("JWT_SECRET")
+	}
+
+	jwtLifetimeString, ok := os.LookupEnv("JWT_LIFETIME")
+	if !ok {
+		return nil, envNotSet("JWT_LIFETIME")
+	}
+	jwtLifetime, err := time.ParseDuration(jwtLifetimeString)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Env{
-		ServerAddr: serverAddr,
-		CorsOrigin: corsOrigin,
-		DSN:        dsn,
+		ServerAddr:  serverAddr,
+		CorsOrigin:  corsOrigin,
+		DSN:         dsn,
+		JwtSecret:   jwtSecret,
+		JwtLifetime: jwtLifetime,
 	}, nil
 }
 
