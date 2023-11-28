@@ -1,40 +1,31 @@
 const axios = require("axios");
 module.exports = {
 	async jwtCheck() {
+		let valid = false;
 		await axios
-			.post(
-				process.env.jwtEndPoint,
-				{},
-				{
-					void: {},
-					withCredentials: true,
-				}
-			)
+			.post(process.env.jwtEndPoint, {}, { withCredentials: true })
 			.then((response) => {
 				if (response.status == 200) {
-					return true;
-				} else {
-					return false;
+					valid = true;
 				}
 			})
 			.catch((error) => {
 				console.log("Connection error!");
-				return false;
 			});
+		return valid;
 	},
 	async getPosts() {
+		let posts = null;
 		await axios
 			.get(process.env.postGetEndPoint, {}, { withCredentials: true })
 			.then((response) => {
 				if (response.status == 200) {
-					return response.body;
-				} else {
-					return null;
+					posts = response.body;
 				}
 			})
 			.catch((error) => {
 				console.log("Connection error!");
-				return null;
 			});
+		return posts;
 	},
 };

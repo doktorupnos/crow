@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios";
 import { redirect } from "next/navigation";
 import { useState, useEffect } from "react";
 import { jwtCheck, getPosts } from "../_modules/services.js";
@@ -26,8 +25,12 @@ export default function HomePage() {
 	}
 }
 
-async function PostBlock(id, username, date, body) {
-	const posts = await getPosts();
+function PostBlock(id, username, date, body) {
+	const [posts, setPosts] = useState(null);
+	getPosts().then((response) => {
+		setPosts(response);
+	});
+
 	let postList = [];
 	for (let post of posts) {
 		postList.push(<li key={post.id}>{post.body}</li>);
