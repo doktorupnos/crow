@@ -7,7 +7,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go test ./... && CGO_ENABLED=0 GOOS=linux go build ./cmd/backend -a -installsuffix cgo -o backend .
+RUN go test ./... && CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o backend ./cmd/backend/
 
 FROM scratch
 WORKDIR /app
