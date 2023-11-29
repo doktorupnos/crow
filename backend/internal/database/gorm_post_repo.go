@@ -18,10 +18,34 @@ func (r *GormPostRepo) Create(p post.Post) error {
 	return r.db.Create(&p).Error
 }
 
-func (r *GormPostRepo) GetAll() ([]post.Post, error) {
+func (r *GormPostRepo) GetAll() ([]post.FeedPost, error) {
 	var posts []post.Post
 	err := r.db.Find(&posts).Error
-	return posts, err
+	if err != nil {
+		return nil, err
+	}
+
+	feedPosts := make([]post.FeedPost, 0, len(posts))
+	for _, p := range posts {
+		var username string
+
+		err := r.db.
+			Table("users").
+			Select("name").
+			Where("id = ?", p.UserID).
+			Scan(&username).
+			Error
+		if err != nil {
+			return nil, err
+		}
+
+		feedPosts = append(feedPosts, post.FeedPost{
+			Post:     p,
+			UserName: username,
+		})
+	}
+
+	return feedPosts, err
 }
 
 func (r *GormPostRepo) GetByID(id uuid.UUID) (post.Post, error) {

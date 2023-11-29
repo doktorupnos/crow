@@ -14,9 +14,14 @@ type Post struct {
 	User   user.User `json:"-"       gorm:"foreignKey:UserID; not null;constraint:onDelete:CASCADE"`
 }
 
+type FeedPost struct {
+	Post
+	UserName string `json:"user_name"`
+}
+
 type PostRepo interface {
 	Create(p Post) error
-	GetAll() ([]Post, error)
+	GetAll() ([]FeedPost, error)
 	GetByID(id uuid.UUID) (Post, error)
 	Update(p Post) error
 	Delete(p Post) error

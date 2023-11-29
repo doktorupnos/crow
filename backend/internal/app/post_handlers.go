@@ -3,7 +3,6 @@ package app
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/go-chi/chi/v5"
@@ -36,27 +35,7 @@ func (app *App) GetAllPosts(w http.ResponseWriter, r *http.Request, u user.User)
 		respondWithError(w, http.StatusNotFound, err.Error())
 		return
 	}
-
-	type ResponseItem struct {
-		ID        uuid.UUID `json:"post_id"`
-		UserID    uuid.UUID `json:"user_id"`
-		UserName  string    `json:"user_name"`
-		CreatedAt time.Time `json:"created_at"`
-		Body      string    `json:"body"`
-	}
-
-	response := make([]ResponseItem, 0, len(posts))
-	for _, post := range posts {
-		response = append(response, ResponseItem{
-			ID:        post.ID,
-			UserID:    post.UserID,
-			UserName:  post.User.Name,
-			CreatedAt: post.CreatedAt,
-			Body:      post.Body,
-		})
-	}
-
-	respondWithJSON(w, http.StatusOK, response)
+	respondWithJSON(w, http.StatusOK, posts)
 }
 
 func (app *App) UpdatePost(w http.ResponseWriter, r *http.Request, u user.User) {

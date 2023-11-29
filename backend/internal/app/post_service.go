@@ -23,7 +23,7 @@ func (s *PostService) Create(u user.User, body string) error {
 	return s.pr.Create(p)
 }
 
-func (s *PostService) GetAll() ([]post.Post, error) {
+func (s *PostService) GetAll() ([]post.FeedPost, error) {
 	return s.pr.GetAll()
 }
 
