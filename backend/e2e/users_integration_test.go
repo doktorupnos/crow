@@ -11,6 +11,10 @@ import (
 )
 
 func TestUserWorkFlowIntegration(t *testing.T) {
+  if testing.Short() {
+    t.SkipNow()
+  }
+
   router := app.ConfiguredRouter(application)
   server := httptest.NewServer(router)
   client := server.Client()
@@ -155,6 +159,10 @@ func TestUserWorkFlowIntegration(t *testing.T) {
 }
 
 func TestUserCreateIntegeration(t *testing.T) {
+  if testing.Short() {
+    t.SkipNow()
+  }
+
   server := httptest.NewServer(http.HandlerFunc(application.CreateUser))
   defer server.Close()
 

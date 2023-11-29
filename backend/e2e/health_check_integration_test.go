@@ -9,6 +9,10 @@ import (
 )
 
 func TestHealthCheckIntegration(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
+
 	server := NewTestServer(app.HealthCheck)
 	defer server.Close()
 
