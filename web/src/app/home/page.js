@@ -8,12 +8,19 @@ export default function HomePage() {
 	const [session, setSession] = useState(null);
 
 	useEffect(() => {
-		jwtCheck().then((response) => {
-			setSession(response);
-		});
+		jwtCheck()
+			.then((response) => {
+				setSession(response);
+			})
+			.catch((error) => {
+				console.error("Token validation error!");
+				setSession(false);
+			});
 	}, []);
 
-	if (session) {
+	if (session === null) {
+		return null;
+	} else if (session) {
 		return (
 			<div>
 				<h1>HOME</h1>
@@ -21,6 +28,7 @@ export default function HomePage() {
 			</div>
 		);
 	} else {
+		console.error("Invalid session!\nRedirecting...");
 		redirect("/auth");
 	}
 }

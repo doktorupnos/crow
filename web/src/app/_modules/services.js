@@ -10,7 +10,7 @@ module.exports = {
 				}
 			})
 			.catch((error) => {
-				console.log("Connection error!");
+				console.error("Could not validate session!");
 			});
 		return valid;
 	},
