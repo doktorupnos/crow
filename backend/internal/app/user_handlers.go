@@ -72,7 +72,7 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request, u user.User) 
 	defer r.Body.Close()
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "unable to decode request body")
+		respondWithError(w, http.StatusBadRequest, "is this even running")
 		return
 	}
 

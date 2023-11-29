@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -70,6 +69,8 @@ func PostRouter(app *App) http.Handler {
 func AdminRouter(app *App) http.Handler {
 	router := chi.NewRouter()
 
+	router.Post("/jwt", app.ValidateJWT)
+
 	router.Post("/panic", func(w http.ResponseWriter, _ *http.Request) {
 		panic("The server automatically recovers from panics")
 	})
@@ -86,10 +87,6 @@ func AdminRouter(app *App) http.Handler {
 		time.Sleep(time.Minute)
 		w.WriteHeader(http.StatusOK)
 	})
-
-	router.Post("/jwt", app.JWT(func(w http.ResponseWriter, _ *http.Request, _ user.User) {
-		w.WriteHeader(http.StatusOK)
-	}))
 
 	return router
 }
