@@ -6,18 +6,27 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/doktorupnos/crow/backend/internal/app"
 )
 
 func TestUserWorkFlowIntegration(t *testing.T) {
-  createUserServer := NewTestServer(application.CreateUser)
-  defer createUserServer.Close()
+  router := app.ConfiguredRouter(application)
+  server := httptest.NewServer(router)
+  client := server.Client()
+  defer server.Close()
+
+  usersEndpoint := server.URL + "/users"
+  loginEndpoint := server.URL + "/login"
+  logoutEndpoint := server.URL + "/logout"
+  validateJWTEndpoint := server.URL + "/admin/jwt"
 
   payload := strings.NewReader(`
   {
     "name": "user",
     "password": "password"
   }`)
-  resp, err := http.Post(createUserServer.URL, "application/json", payload)
+  resp, err := client.Post(usersEndpoint, "application/json", payload)
   if err != nil {
     t.Fatal(err)
   }
@@ -27,7 +36,7 @@ func TestUserWorkFlowIntegration(t *testing.T) {
   assertStatusCode(t, got, http.StatusCreated)
 
   // Try to create the same user again
-  resp, err = http.Post(createUserServer.URL, "application/json", payload)
+  resp, err = client.Post(usersEndpoint, "application/json", payload)
   if err != nil {
     t.Fatal(err)
   }
@@ -36,17 +45,13 @@ func TestUserWorkFlowIntegration(t *testing.T) {
   got = resp.StatusCode
   assertStatusCode(t, got, http.StatusBadRequest)
 
-
-  loginServer := NewTestServer(application.BasicAuth(application.Login))
-  defer loginServer.Close()
-  
-  loginRequest, err := http.NewRequest(http.MethodPost, loginServer.URL, strings.NewReader(``))
+  loginRequest, err := http.NewRequest(http.MethodPost, loginEndpoint, strings.NewReader(``))
   if err != nil {
     t.Fatal(err)
   }
   loginRequest.SetBasicAuth("user", "password")
 
-  loginResp, err := http.DefaultClient.Do(loginRequest)
+  loginResp, err := client.Do(loginRequest)
   if err != nil {
     t.Fatal(err)
   }
@@ -67,16 +72,13 @@ func TestUserWorkFlowIntegration(t *testing.T) {
   }
   t.Logf("%s : %s", tokenCookie.Name, tokenCookie.Value)
 
-  jwtValidateServer := NewTestServer(application.ValidateJWT)
-  defer jwtValidateServer.Close()
-
-  jwtValidateReq, err := http.NewRequest(http.MethodPost, jwtValidateServer.URL, strings.NewReader(``))
+  jwtValidateReq, err := http.NewRequest(http.MethodPost, validateJWTEndpoint, strings.NewReader(``))
   if err != nil {
     t.Fatal(err)
   }
   jwtValidateReq.AddCookie(tokenCookie)
 
-  jwtValidateResp, err := http.DefaultClient.Do(jwtValidateReq)
+  jwtValidateResp, err := client.Do(jwtValidateReq)
   if err != nil {
     return
   }
@@ -84,10 +86,7 @@ func TestUserWorkFlowIntegration(t *testing.T) {
 
   assertStatusCode(t, jwtValidateResp.StatusCode, http.StatusOK)
 
-  updateUserServer := NewTestServer(application.JWT(application.UpdateUser))
-  defer updateUserServer.Close()
-
-  updateReq, err := http.NewRequest(http.MethodPut, updateUserServer.URL, strings.NewReader(`
+  updateReq, err := http.NewRequest(http.MethodPut, usersEndpoint, strings.NewReader(`
     {
       "name": "updated_user",
       "password": "updated_password"
@@ -98,7 +97,7 @@ func TestUserWorkFlowIntegration(t *testing.T) {
   }
   updateReq.AddCookie(tokenCookie)
 
-  updateResp, err := http.DefaultClient.Do(updateReq)
+  updateResp, err := client.Do(updateReq)
   if err != nil {
     t.Fatal(err)
   }
@@ -107,16 +106,13 @@ func TestUserWorkFlowIntegration(t *testing.T) {
   assertStatusCode(t, updateResp.StatusCode, http.StatusOK)
 
 
-  logoutServer := NewTestServer(application.JWT(application.Logout))
-  defer logoutServer.Close()
-
-  logoutReq, err := http.NewRequest(http.MethodPost, logoutServer.URL, strings.NewReader(``))
+  logoutReq, err := http.NewRequest(http.MethodPost, logoutEndpoint, strings.NewReader(``))
   if err != nil {
     t.Fatal(err)
   }
   logoutReq.AddCookie(tokenCookie)
 
-  logoutResp, err := http.DefaultClient.Do(logoutReq)
+  logoutResp, err := client.Do(logoutReq)
   if err != nil {
     t.Fatal(err)
   }
@@ -135,7 +131,7 @@ func TestUserWorkFlowIntegration(t *testing.T) {
   }
   jwtValidateReq.AddCookie(tokenCookie)
   
-  jwtValidateResp, err = http.DefaultClient.Do(jwtValidateReq)
+  jwtValidateResp, err = client.Do(jwtValidateReq)
   if err != nil {
     return
   }
@@ -143,16 +139,13 @@ func TestUserWorkFlowIntegration(t *testing.T) {
 
   assertStatusCode(t, jwtValidateResp.StatusCode, http.StatusOK)
 
-  deleteUserServer := NewTestServer(application.BasicAuth(application.DeleteUser))
-  defer deleteUserServer.Close()
-
-  req, err := http.NewRequest(http.MethodDelete, deleteUserServer.URL, strings.NewReader(``))
+  deleteReq, err := http.NewRequest(http.MethodDelete, usersEndpoint, strings.NewReader(``))
   if err != nil {
     t.Fatal(err)
   }
-  req.SetBasicAuth("updated_user", "updated_password")
+  deleteReq.SetBasicAuth("updated_user", "updated_password")
 
-  deleteResp, err := http.DefaultClient.Do(req)
+  deleteResp, err := client.Do(deleteReq)
   if err != nil {
     return 
   }
