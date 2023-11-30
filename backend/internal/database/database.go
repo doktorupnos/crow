@@ -2,6 +2,7 @@
 package database
 
 import (
+	"github.com/doktorupnos/crow/backend/internal/post"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -23,6 +24,10 @@ func Connect(dataSourceName string) (*gorm.DB, error) {
 
 func automigrate(db *gorm.DB) error {
 	if err := db.AutoMigrate(&user.User{}); err != nil {
+		return err
+	}
+
+	if err := db.AutoMigrate(&post.Post{}); err != nil {
 		return err
 	}
 

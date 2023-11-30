@@ -1,12 +1,9 @@
 package env
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"time"
-
-	"github.com/joho/godotenv"
 )
 
 // Env groups all the environment variables the server depends on
@@ -18,17 +15,7 @@ type Env struct {
 	JwtLifetime time.Duration
 }
 
-// Load is a Env constructor.
-// If a -local flag was specified when running the program then Load will depend on a .env file using godotenv.
 func Load() (*Env, error) {
-	local := flag.Bool("local", false, "Depend on a .env file for local development")
-	flag.Parse()
-	if *local {
-		if err := godotenv.Load(); err != nil {
-			return nil, err
-		}
-	}
-
 	serverAddr, ok := os.LookupEnv("ADDR")
 	if !ok {
 		return nil, envNotSet("ADDR")

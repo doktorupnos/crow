@@ -33,8 +33,9 @@ func ConfiguredRouter(app *App) http.Handler {
 	router.Post("/logout", app.JWT(app.Logout))
 
 	router.Mount("/users", UserRouter(app))
+	router.Mount("/posts", PostRouter(app))
 
-	router.Mount("/admin", AdminRouter())
+	router.Mount("/admin", AdminRouter(app))
 
 	return router
 }
@@ -52,9 +53,23 @@ func UserRouter(app *App) http.Handler {
 	return router
 }
 
-// AdminRouter returns a configured router that handles all admin endpoints.
-func AdminRouter() http.Handler {
+// PostRouter returns a configured router that handles all post endpoints.
+func PostRouter(app *App) http.Handler {
 	router := chi.NewRouter()
+
+	router.Post("/", app.JWT(app.CreatePost))
+	router.Get("/", app.JWT(app.GetAllPosts))
+	router.Put("/{id}", app.JWT(app.UpdatePost))
+	router.Delete("/{id}", app.JWT(app.DeletePost))
+
+	return router
+}
+
+// AdminRouter returns a configured router that handles all admin endpoints.
+func AdminRouter(app *App) http.Handler {
+	router := chi.NewRouter()
+
+	router.Post("/jwt", app.JWT(app.ValidateJWT))
 
 	router.Post("/panic", func(w http.ResponseWriter, _ *http.Request) {
 		panic("The server automatically recovers from panics")
