@@ -18,41 +18,17 @@ func TestUserWorkFlowIntegration(t *testing.T) {
     "name": "user",
     "password": "password"
   }`)
-  resp, err := client.Post(usersEndpoint, "application/json", payload)
+  createResp, err := client.Post(usersEndpoint, "application/json", payload)
   if err != nil {
     t.Fatal(err)
   }
-  defer resp.Body.Close()
+  defer createResp.Body.Close()
 
-  got := resp.StatusCode
+  got := createResp.StatusCode
   assertStatusCode(t, got, http.StatusCreated)
 
-  // Try to create the same user again
-  resp, err = client.Post(usersEndpoint, "application/json", payload)
-  if err != nil {
-    t.Fatal(err)
-  }
-  defer resp.Body.Close()
-
-  got = resp.StatusCode
-  assertStatusCode(t, got, http.StatusBadRequest)
-
-  loginRequest, err := http.NewRequest(http.MethodPost, loginEndpoint, strings.NewReader(``))
-  if err != nil {
-    t.Fatal(err)
-  }
-  loginRequest.SetBasicAuth("user", "password")
-
-  loginResp, err := client.Do(loginRequest)
-  if err != nil {
-    t.Fatal(err)
-  }
-  defer loginResp.Body.Close()
-
-  assertStatusCode(t, loginResp.StatusCode, http.StatusOK)
-
-  cookies := loginResp.Cookies()
   var tokenCookie *http.Cookie
+  cookies := createResp.Cookies()
   for _, c := range cookies {
     if c.Name == "token" {
       tokenCookie = c
@@ -71,6 +47,51 @@ func TestUserWorkFlowIntegration(t *testing.T) {
   jwtValidateReq.AddCookie(tokenCookie)
 
   jwtValidateResp, err := client.Do(jwtValidateReq)
+  if err != nil {
+    return
+  }
+  defer jwtValidateResp.Body.Close()
+
+  assertStatusCode(t, jwtValidateResp.StatusCode, http.StatusOK)
+
+
+  // Try to create the same user again
+  createResp, err = client.Post(usersEndpoint, "application/json", payload)
+  if err != nil {
+    t.Fatal(err)
+  }
+  defer createResp.Body.Close()
+
+  got = createResp.StatusCode
+  assertStatusCode(t, got, http.StatusBadRequest)
+
+  loginRequest, err := http.NewRequest(http.MethodPost, loginEndpoint, strings.NewReader(``))
+  if err != nil {
+    t.Fatal(err)
+  }
+  loginRequest.SetBasicAuth("user", "password")
+
+  loginResp, err := client.Do(loginRequest)
+  if err != nil {
+    t.Fatal(err)
+  }
+  defer loginResp.Body.Close()
+
+  assertStatusCode(t, loginResp.StatusCode, http.StatusOK)
+
+  cookies = loginResp.Cookies()
+  for _, c := range cookies {
+    if c.Name == "token" {
+      tokenCookie = c
+      break
+    }
+  }
+  if tokenCookie == nil {
+    t.Fatal("token cookie was not set")
+  }
+  t.Logf("%s : %s", tokenCookie.Name, tokenCookie.Value)
+
+  jwtValidateResp, err = client.Do(jwtValidateReq)
   if err != nil {
     return
   }
