@@ -28,7 +28,7 @@ export const userRegister = async (post) => {
 	await axios
 		.post(process.env.authRegEndPoint, post)
 		.then((response) => {
-			if (response.status == 200) userRegister = true;
+			if (response.status == 201) userRegister = true;
 		})
 		.catch((error) => console.error("Register error!", error));
 	return userRegister;
