@@ -15,17 +15,17 @@ func NewUserService(ur user.UserRepo) *UserService {
 	return &UserService{ur}
 }
 
-func (s *UserService) Create(name, password string) error {
+func (s *UserService) Create(name, password string) (uuid.UUID, error) {
 	if err := validateName(name); err != nil {
-		return err
+		return uuid.UUID{}, err
 	}
 	if err := validatePassword(password); err != nil {
-		return err
+		return uuid.UUID{}, err
 	}
 
 	hashed, err := hashPassword(password)
 	if err != nil {
-		return err
+		return uuid.UUID{}, err
 	}
 
 	return s.ur.Create(user.User{Name: name, Password: hashed})

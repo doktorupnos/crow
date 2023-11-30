@@ -12,7 +12,7 @@ type User struct {
 }
 
 type UserRepo interface {
-	Create(u User) error
+	Create(u User) (uuid.UUID, error)
 	GetAll() ([]User, error)
 	GetByName(name string) (User, error)
 	GetByID(id uuid.UUID) (User, error)

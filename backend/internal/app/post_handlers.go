@@ -32,7 +32,7 @@ func (app *App) CreatePost(w http.ResponseWriter, r *http.Request, u user.User) 
 func (app *App) GetAllPosts(w http.ResponseWriter, r *http.Request, u user.User) {
 	posts, err := app.postService.GetAll()
 	if err != nil {
-		respondWithError(w, http.StatusNotFound, err.Error())
+		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	respondWithJSON(w, http.StatusOK, posts)

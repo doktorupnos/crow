@@ -12,6 +12,9 @@ Request Body:
 }
 ```
 
+Returns:
+* Returns: a JWT as a cookie under the name "token". So that a new user can swiftly navigate to the main page.
+
 Conditions:
 * 0 < Name Length < 20
 * 0 < Password Length < 72
