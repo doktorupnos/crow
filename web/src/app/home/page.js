@@ -2,18 +2,18 @@
 
 import { redirect } from "next/navigation";
 import { useState, useEffect } from "react";
-import { jwtCheck, getPosts } from "../_modules/services.js";
+import { fetchPosts } from "../utils/fetchPosts.js";
 
 export default function HomePage() {
 	const [session, setSession] = useState(null);
 
 	useEffect(() => {
-		jwtCheck()
+		fetchPosts()
 			.then((response) => {
-				setSession(response);
+				setSession(response.auth);
 			})
 			.catch((error) => {
-				console.error("Token validation error!");
+				console.error("Session validation failed!");
 				setSession(false);
 			});
 	}, []);
@@ -33,11 +33,15 @@ export default function HomePage() {
 	}
 }
 
-function PostBlock(id, username, date, body) {
+function PostBlock() {
 	const [posts, setPosts] = useState(null);
-	getPosts().then((response) => {
-		setPosts(response);
-	});
+	fetchPosts()
+		.then((response) => {
+			setPosts(response.payload);
+		})
+		.catch((error) => {
+			console.error("Session validation failed!");
+		});
 
 	let postList = [];
 	for (let post of posts) {

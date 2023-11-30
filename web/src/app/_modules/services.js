@@ -14,18 +14,4 @@ module.exports = {
 			});
 		return valid;
 	},
-	async getPosts() {
-		let posts = null;
-		await axios
-			.get(process.env.postGetEndPoint, {}, { withCredentials: true })
-			.then((response) => {
-				if (response.status == 200) {
-					posts = response.body;
-				}
-			})
-			.catch((error) => {
-				console.log("Connection error!");
-			});
-		return posts;
-	},
 };
