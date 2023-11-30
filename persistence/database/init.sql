@@ -1,1 +1,0 @@
--- PostgreSql Initialization script
