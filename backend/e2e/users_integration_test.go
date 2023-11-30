@@ -6,24 +6,12 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	"github.com/doktorupnos/crow/backend/internal/app"
 )
 
 func TestUserWorkFlowIntegration(t *testing.T) {
   if testing.Short() {
     t.SkipNow()
   }
-
-  router := app.ConfiguredRouter(application)
-  server := httptest.NewServer(router)
-  client := server.Client()
-  defer server.Close()
-
-  usersEndpoint := server.URL + "/users"
-  loginEndpoint := server.URL + "/login"
-  logoutEndpoint := server.URL + "/logout"
-  validateJWTEndpoint := server.URL + "/admin/jwt"
 
   payload := strings.NewReader(`
   {

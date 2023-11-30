@@ -69,7 +69,7 @@ func PostRouter(app *App) http.Handler {
 func AdminRouter(app *App) http.Handler {
 	router := chi.NewRouter()
 
-	router.Post("/jwt", app.ValidateJWT)
+	router.Post("/jwt", app.JWT(app.ValidateJWT))
 
 	router.Post("/panic", func(w http.ResponseWriter, _ *http.Request) {
 		panic("The server automatically recovers from panics")

@@ -35,4 +35,5 @@ Basic password authentication was used in the `POST /login` and `DELETE /users` 
 
 Unit tests will be implemented where necessary.
 
-E2E test are a WIP (should be performed at the end of every sprint, or in a TDD fashion with each deployment).
+E2E test are a WIP:
+* Implemented for the User resource
