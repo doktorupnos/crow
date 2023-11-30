@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { useState, useEffect } from "react";
 import { fetchPosts } from "../utils/fetchPosts";
 
+import styles from "./page.module.css";
+
 export default function HomePage() {
 	const [session, setSession] = useState(null);
 
@@ -52,10 +54,15 @@ function PostBlock() {
 	if (!posts.length) {
 		return <h1>Posts unavailable!</h1>;
 	} else {
-		let postList = [];
 		for (let post of posts) {
-			postList.push(<li key={post.id}>{post.body}</li>);
+			postList.push(
+				<ul id={post.id} className={styles.postBlock}>
+					<li className={styles.postUser}>{post.user_name}</li>
+					<hr />
+					<li className={styles.postMessage}>{post.body}</li>
+				</ul>
+			);
 		}
-		return <ul className="flex flex-col">{postList}</ul>;
+		return <div className="flex flex-col mx-auto">{postList}</div>;
 	}
 }
