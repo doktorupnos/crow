@@ -22,12 +22,12 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := app.userService.Create(body.Name, body.Password); err != nil {
+	userID, err := app.userService.Create(body.Name, body.Password)
+	if err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-
-	w.WriteHeader(http.StatusCreated)
+	respondWithJWT(w, http.StatusCreated, app.Env.JwtSecret, userID.String(), app.Env.JwtLifetime)
 }
 
 func (app *App) GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +72,7 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request, u user.User) 
 	defer r.Body.Close()
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "unable to decode request body")
+		respondWithError(w, http.StatusBadRequest, "is this even running")
 		return
 	}
 
