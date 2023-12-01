@@ -32,15 +32,33 @@ func (app *App) CreatePost(w http.ResponseWriter, r *http.Request, u user.User) 
 }
 
 func (app *App) GetAllPosts(w http.ResponseWriter, r *http.Request, u user.User) {
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "failed to parse 'page' query parameter")
-		return
+	q := r.URL.Query()
+
+	var page int
+	var err error
+
+	pageString := q.Get("page")
+	if pageString == "" {
+		page = 1
+	} else {
+		page, err = strconv.Atoi(pageString)
+		if err != nil {
+			page = 1
+		}
 	}
 
-	posts, err := app.postService.Load(
-		post.PaginationParams{PageNumber: page, PageSize: app.Env.DefaultPageSize},
-	)
+	sort := q.Get("sort")
+	if sort == "" || sort != "asc" {
+		sort = "desc"
+	}
+
+	posts, err := app.postService.Load(post.LoadParams{
+		PaginationParams: post.PaginationParams{
+			PageNumber: page,
+			PageSize:   app.Env.DefaultPageSize,
+		},
+		Order: sort,
+	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return

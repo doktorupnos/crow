@@ -18,9 +18,11 @@ func (r *GormPostRepo) Create(p post.Post) error {
 	return r.db.Create(&p).Error
 }
 
-func (r *GormPostRepo) Load(params post.PaginationParams) ([]post.FeedPost, error) {
+func (r *GormPostRepo) Load(params post.LoadParams) ([]post.FeedPost, error) {
 	var posts []post.Post
-	err := r.db.Scopes(post.Paginate(params)).Find(&posts).Error
+	err := r.db.Scopes(post.Paginate(params.PaginationParams)).
+		Order("created_at " + params.Order).
+		Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}

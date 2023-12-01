@@ -23,7 +23,7 @@ func (s *PostService) Create(u user.User, body string) error {
 	return s.pr.Create(p)
 }
 
-func (s *PostService) Load(params post.PaginationParams) ([]post.FeedPost, error) {
+func (s *PostService) Load(params post.LoadParams) ([]post.FeedPost, error) {
 	return s.pr.Load(params)
 }
 

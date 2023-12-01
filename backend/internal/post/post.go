@@ -9,8 +9,8 @@ import (
 
 type Post struct {
 	model.Model
-	Body string `json:"body" gorm:"not null"`
 
+	Body   string    `json:"body"    gorm:"not null"`
 	UserID uuid.UUID `json:"user_id"`
 	User   user.User `json:"-"       gorm:"foreignKey:UserID; not null;constraint:onDelete:CASCADE"`
 }
@@ -20,9 +20,14 @@ type FeedPost struct {
 	UserName string `json:"user_name"`
 }
 
+type LoadParams struct {
+	Order string
+	PaginationParams
+}
+
 type PostRepo interface {
 	Create(p Post) error
-	Load(params PaginationParams) ([]FeedPost, error)
+	Load(params LoadParams) ([]FeedPost, error)
 	LoadByID(id uuid.UUID) (Post, error)
 	Update(p Post) error
 	Delete(p Post) error
