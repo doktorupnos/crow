@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -27,13 +28,17 @@ var (
 	loginEndpoint       string
 	logoutEndpoint      string
 	validateJWTEndpoint string
+	postsEndpoint       string
 )
+
+var noBody = strings.NewReader(``)
 
 func TestMain(m *testing.M) {
 	environment = &env.Env{
-		DSN:         `postgres://postgres:postgres@localhost:5432/crow`,
-		JwtSecret:   "+3xObWCCIAQf/N1ltJD27kZ5gfjmfbUBG4ViZ/6oHI3rpVFmhAo7yzwWg4mivB1Jea8UuwooegxTdZhZgLkZZA==",
-		JwtLifetime: 5 * time.Minute,
+		DSN:             `postgres://postgres:postgres@localhost:5432/crow`,
+		JwtSecret:       "+3xObWCCIAQf/N1ltJD27kZ5gfjmfbUBG4ViZ/6oHI3rpVFmhAo7yzwWg4mivB1Jea8UuwooegxTdZhZgLkZZA==",
+		JwtLifetime:     5 * time.Minute,
+		DefaultPageSize: 3,
 	}
 
 	var err error
@@ -52,6 +57,7 @@ func TestMain(m *testing.M) {
 	loginEndpoint = server.URL + "/login"
 	logoutEndpoint = server.URL + "/logout"
 	validateJWTEndpoint = server.URL + "/admin/jwt"
+	postsEndpoint = server.URL + "/posts"
 
 	defer server.Close()
 	m.Run()

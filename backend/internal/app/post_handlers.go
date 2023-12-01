@@ -30,7 +30,7 @@ func (app *App) CreatePost(w http.ResponseWriter, r *http.Request, u user.User) 
 }
 
 func (app *App) GetAllPosts(w http.ResponseWriter, r *http.Request, u user.User) {
-	posts, err := app.postService.GetAll()
+	posts, err := app.postService.Load(r, app.Env.DefaultPageSize)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return

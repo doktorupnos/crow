@@ -3,16 +3,18 @@ package env
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 )
 
 // Env groups all the environment variables the server depends on
 type Env struct {
-	ServerAddr  string
-	CorsOrigin  string
-	DSN         string
-	JwtSecret   string
-	JwtLifetime time.Duration
+	ServerAddr      string
+	CorsOrigin      string
+	DSN             string
+	JwtSecret       string
+	JwtLifetime     time.Duration
+	DefaultPageSize int
 }
 
 func Load() (*Env, error) {
@@ -45,12 +47,22 @@ func Load() (*Env, error) {
 		return nil, err
 	}
 
+	defaultPageSizeString, ok := os.LookupEnv("DEFAULT_PAGE_SIZE")
+	if !ok {
+		return nil, envNotSet("DEFAULT_PAGE_SIZE")
+	}
+	defaultPageSize, err := strconv.Atoi(defaultPageSizeString)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Env{
-		ServerAddr:  serverAddr,
-		CorsOrigin:  corsOrigin,
-		DSN:         dsn,
-		JwtSecret:   jwtSecret,
-		JwtLifetime: jwtLifetime,
+		ServerAddr:      serverAddr,
+		CorsOrigin:      corsOrigin,
+		DSN:             dsn,
+		JwtSecret:       jwtSecret,
+		JwtLifetime:     jwtLifetime,
+		DefaultPageSize: defaultPageSize,
 	}, nil
 }
 

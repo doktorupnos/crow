@@ -1,6 +1,11 @@
 package app
 
 import (
+	"net/http"
+	"strconv"
+	"strings"
+
+	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/post"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/google/uuid"
@@ -23,12 +28,39 @@ func (s *PostService) Create(u user.User, body string) error {
 	return s.pr.Create(p)
 }
 
-func (s *PostService) GetAll() ([]post.FeedPost, error) {
-	return s.pr.GetAll()
+func (s *PostService) Load(r *http.Request, pageSize int) ([]post.FeedPost, error) {
+	q := r.URL.Query()
+
+	var page int
+	var err error
+
+	pageString := q.Get("page")
+	if pageString == "" {
+		page = 1
+	} else {
+		page, err = strconv.Atoi(pageString)
+		if err != nil {
+			page = 1
+		}
+	}
+
+	order := "desc"
+	sort := q.Get("sort")
+	if strings.ToLower(sort) == "asc" {
+		order = "asc"
+	}
+
+	return s.pr.Load(post.LoadParams{
+		PaginationParams: pages.PaginationParams{
+			PageNumber: page,
+			PageSize:   pageSize,
+		},
+		Order: order,
+	})
 }
 
-func (s *PostService) GetByID(id uuid.UUID) (post.Post, error) {
-	return s.pr.GetByID(id)
+func (s *PostService) LoadByID(id uuid.UUID) (post.Post, error) {
+	return s.pr.LoadByID(id)
 }
 
 func (s *PostService) Update(postID, userID uuid.UUID, body string) error {
@@ -36,7 +68,7 @@ func (s *PostService) Update(postID, userID uuid.UUID, body string) error {
 		return err
 	}
 
-	p, err := s.GetByID(postID)
+	p, err := s.LoadByID(postID)
 	if err != nil {
 		return err
 	}
@@ -50,7 +82,7 @@ func (s *PostService) Update(postID, userID uuid.UUID, body string) error {
 }
 
 func (s *PostService) Delete(id, userID uuid.UUID) error {
-	p, err := s.GetByID(id)
+	p, err := s.LoadByID(id)
 	if err != nil {
 		return err
 	}

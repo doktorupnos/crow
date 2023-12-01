@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/post"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -18,9 +19,12 @@ func (r *GormPostRepo) Create(p post.Post) error {
 	return r.db.Create(&p).Error
 }
 
-func (r *GormPostRepo) GetAll() ([]post.FeedPost, error) {
+func (r *GormPostRepo) Load(params post.LoadParams) ([]post.FeedPost, error) {
 	var posts []post.Post
-	err := r.db.Find(&posts).Error
+	err := r.db.
+		Order("created_at " + params.Order).
+		Scopes(pages.Paginate(params.PaginationParams)).
+		Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +52,7 @@ func (r *GormPostRepo) GetAll() ([]post.FeedPost, error) {
 	return feedPosts, err
 }
 
-func (r *GormPostRepo) GetByID(id uuid.UUID) (post.Post, error) {
+func (r *GormPostRepo) LoadByID(id uuid.UUID) (post.Post, error) {
 	var p post.Post
 	err := r.db.First(&p, id).Error
 	return p, err
