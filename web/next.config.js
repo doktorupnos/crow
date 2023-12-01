@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
 	env: {
-		authRegEndPoint: "//localhost:8000/users",
-		authLoginEndPoint: "//localhost:8000/login",
+		authRegEndPoint: "//0.0.0.0:8000/users",
+		authLoginEndPoint: "//0.0.0.0:8000/login",
 	},
 };
