@@ -2,22 +2,24 @@
 
 import { redirect } from "next/navigation";
 import { useState, useEffect } from "react";
-import { fetchPosts } from "../utils/fetchPosts";
+import { fetchPosts } from "../utils/posts";
 
-import styles from "./page.module.css";
+import PostBlock from "../_components/PostBlock/PostBlock";
 
 export default function HomePage() {
 	const [session, setSession] = useState(null);
 
 	useEffect(() => {
-		fetchPosts()
-			.then((response) => {
+		const fetchPostData = async () => {
+			try {
+				let response = await fetchPosts();
 				setSession(response.auth);
-			})
-			.catch((error) => {
-				console.error("Session validation failed!");
+			} catch (error) {
+				console.error(error);
 				setSession(false);
-			});
+			}
+		};
+		fetchPostData();
 	}, []);
 
 	if (session === null) {
@@ -25,44 +27,12 @@ export default function HomePage() {
 	} else if (session) {
 		return (
 			<div>
+				<div className="mb-5"></div>
 				<PostBlock />
 			</div>
 		);
 	} else {
-		console.error("Invalid session!\nRedirecting...");
+		console.error("Invalid session!");
 		redirect("/auth");
-	}
-}
-
-function PostBlock() {
-	const [posts, setPosts] = useState([]);
-
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const response = await fetchPosts();
-				console.log(response.payload);
-				setPosts(response.payload);
-			} catch (error) {
-				console.error("Failed to fetch posts!");
-			}
-		};
-		fetchData();
-	}, []);
-
-	// Check received posts.
-	if (!posts.length) {
-		return <h1>Posts unavailable!</h1>;
-	} else {
-		for (let post of posts) {
-			postList.push(
-				<ul id={post.id} className={styles.postBlock}>
-					<li className={styles.postUser}>{post.user_name}</li>
-					<hr />
-					<li className={styles.postMessage}>{post.body}</li>
-				</ul>
-			);
-		}
-		return <div className="flex flex-col mx-auto">{postList}</div>;
 	}
 }
