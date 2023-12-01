@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-gateway
+  name: web
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-gateway
+      app: web
   template:
     metadata:
       labels:
-        app: api-gateway
+        app: web
     spec:
       containers:
       - name: api-gateway
-        image: temp:latest
+        image: ghcr.io/doktorupnos/crow/web:master
         ports:
-        - containerPort: 8080
+        - containerPort: 3000

@@ -4,7 +4,7 @@ metadata:
   name: api-gateway-ingress
 spec:
   rules:
-  - host: temp.domain.com
+  - host: crow.com
     http:
       paths:
       - path: /
