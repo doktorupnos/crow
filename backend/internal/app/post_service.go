@@ -1,6 +1,10 @@
 package app
 
 import (
+	"net/http"
+	"strconv"
+
+	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/post"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/google/uuid"
@@ -23,8 +27,31 @@ func (s *PostService) Create(u user.User, body string) error {
 	return s.pr.Create(p)
 }
 
-func (s *PostService) Load(params post.LoadParams) ([]post.FeedPost, error) {
-	return s.pr.Load(params)
+func (s *PostService) Load(r *http.Request, pageSize int) ([]post.FeedPost, error) {
+	q := r.URL.Query()
+
+	var page int
+	var err error
+
+	pageString := q.Get("page")
+	if pageString == "" {
+		page = 1
+	} else {
+		page, err = strconv.Atoi(pageString)
+		if err != nil {
+			page = 1
+		}
+	}
+
+	order := "desc"
+
+	return s.pr.Load(post.LoadParams{
+		PaginationParams: pages.PaginationParams{
+			PageNumber: page,
+			PageSize:   pageSize,
+		},
+		Order: order,
+	})
 }
 
 func (s *PostService) LoadByID(id uuid.UUID) (post.Post, error) {

@@ -3,9 +3,7 @@ package app
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
-	"github.com/doktorupnos/crow/backend/internal/post"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -32,33 +30,7 @@ func (app *App) CreatePost(w http.ResponseWriter, r *http.Request, u user.User) 
 }
 
 func (app *App) GetAllPosts(w http.ResponseWriter, r *http.Request, u user.User) {
-	q := r.URL.Query()
-
-	var page int
-	var err error
-
-	pageString := q.Get("page")
-	if pageString == "" {
-		page = 1
-	} else {
-		page, err = strconv.Atoi(pageString)
-		if err != nil {
-			page = 1
-		}
-	}
-
-	sort := q.Get("sort")
-	if sort == "" || sort != "asc" {
-		sort = "desc"
-	}
-
-	posts, err := app.postService.Load(post.LoadParams{
-		PaginationParams: post.PaginationParams{
-			PageNumber: page,
-			PageSize:   app.Env.DefaultPageSize,
-		},
-		Order: sort,
-	})
+	posts, err := app.postService.Load(r, app.Env.DefaultPageSize)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
