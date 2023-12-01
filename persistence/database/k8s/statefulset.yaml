@@ -34,6 +34,7 @@ spec:
           mountPath: /var/lib/postgresql/data
         - name: config-volume
           mountPath: /etc/postgresql
+          readOnly: true
 
       volumes:
       - name: config-volume
