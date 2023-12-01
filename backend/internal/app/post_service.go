@@ -3,6 +3,7 @@ package app
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/post"
@@ -44,6 +45,10 @@ func (s *PostService) Load(r *http.Request, pageSize int) ([]post.FeedPost, erro
 	}
 
 	order := "desc"
+	sort := q.Get("sort")
+	if strings.ToLower(sort) == "asc" {
+		order = "asc"
+	}
 
 	return s.pr.Load(post.LoadParams{
 		PaginationParams: pages.PaginationParams{
