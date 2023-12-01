@@ -23,12 +23,12 @@ func (s *PostService) Create(u user.User, body string) error {
 	return s.pr.Create(p)
 }
 
-func (s *PostService) GetAll() ([]post.FeedPost, error) {
-	return s.pr.GetAll()
+func (s *PostService) Load(params post.PaginationParams) ([]post.FeedPost, error) {
+	return s.pr.Load(params)
 }
 
-func (s *PostService) GetByID(id uuid.UUID) (post.Post, error) {
-	return s.pr.GetByID(id)
+func (s *PostService) LoadByID(id uuid.UUID) (post.Post, error) {
+	return s.pr.LoadByID(id)
 }
 
 func (s *PostService) Update(postID, userID uuid.UUID, body string) error {
@@ -36,7 +36,7 @@ func (s *PostService) Update(postID, userID uuid.UUID, body string) error {
 		return err
 	}
 
-	p, err := s.GetByID(postID)
+	p, err := s.LoadByID(postID)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (s *PostService) Update(postID, userID uuid.UUID, body string) error {
 }
 
 func (s *PostService) Delete(id, userID uuid.UUID) error {
-	p, err := s.GetByID(id)
+	p, err := s.LoadByID(id)
 	if err != nil {
 		return err
 	}

@@ -18,9 +18,9 @@ func (r *GormPostRepo) Create(p post.Post) error {
 	return r.db.Create(&p).Error
 }
 
-func (r *GormPostRepo) GetAll() ([]post.FeedPost, error) {
+func (r *GormPostRepo) Load(params post.PaginationParams) ([]post.FeedPost, error) {
 	var posts []post.Post
-	err := r.db.Find(&posts).Error
+	err := r.db.Scopes(post.Paginate(params)).Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (r *GormPostRepo) GetAll() ([]post.FeedPost, error) {
 	return feedPosts, err
 }
 
-func (r *GormPostRepo) GetByID(id uuid.UUID) (post.Post, error) {
+func (r *GormPostRepo) LoadByID(id uuid.UUID) (post.Post, error) {
 	var p post.Post
 	err := r.db.First(&p, id).Error
 	return p, err
