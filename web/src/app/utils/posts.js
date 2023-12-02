@@ -1,12 +1,14 @@
 import axios from "axios";
 
-export const fetchPosts = async () => {
+export const fetchPosts = async (page) => {
 	var fetchPosts = {
 		auth: false,
 		payload: [],
 	};
 	await axios
-		.get(process.env.postGetEndPoint, { withCredentials: true })
+		.get(`${process.env.postGetEndPoint} + '?page=${page}`, {
+			withCredentials: true,
+		})
 		.then((response) => {
 			if (response.status == 200) {
 				fetchPosts.auth = true;
@@ -16,7 +18,7 @@ export const fetchPosts = async () => {
 			}
 		})
 		.catch((error) => {
-			console.error("Could not fetch posts!");
+			console.error("Could not fetch posts!", error);
 		});
 	return fetchPosts;
 };
