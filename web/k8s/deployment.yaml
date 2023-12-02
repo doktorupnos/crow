@@ -15,5 +15,6 @@ spec:
       containers:
       - name: api-gateway
         image: ghcr.io/doktorupnos/crow/web:master
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
