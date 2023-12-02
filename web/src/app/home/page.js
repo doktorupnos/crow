@@ -12,7 +12,7 @@ export default function HomePage() {
 	useEffect(() => {
 		const fetchPostData = async () => {
 			try {
-				let response = await fetchPosts();
+				let response = await fetchPosts(1);
 				setSession(response.auth);
 			} catch (error) {
 				console.error(error);
