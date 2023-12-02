@@ -6,7 +6,7 @@ export const fetchPosts = async (page) => {
 		payload: [],
 	};
 	await axios
-		.get(`${process.env.postGetEndPoint} + '?page=${page}`, {
+		.get(`${process.env.postGetEndPoint}?page=${page}`, {
 			withCredentials: true,
 		})
 		.then((response) => {
@@ -18,7 +18,7 @@ export const fetchPosts = async (page) => {
 			}
 		})
 		.catch((error) => {
-			console.error("Could not fetch posts!", error);
+			console.error("Failed to fetch posts!", error);
 		});
 	return fetchPosts;
 };

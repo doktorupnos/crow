@@ -33,3 +33,21 @@ export const userRegister = async (post) => {
 		.catch((error) => console.error("Register error!", error));
 	return userRegister;
 };
+
+// Check if session token is valid.
+export const userValid = async () => {
+	var userValid = false;
+	await axios
+		.post(process.env.authValidEndpoint, {}, { withCredentials: true })
+		.then((response) => {
+			if (response.status == 200) {
+				userValid = true;
+			} else {
+				console.error("Invalid session!", error);
+			}
+		})
+		.catch((error) => {
+			console.error("Failed to validate session!", error);
+		});
+	return userValid;
+};

@@ -1,0 +1,46 @@
+$background_color: #414141;
+$foreground_color: #ffffff;
+
+$border_color: #dddddd;
+
+.post_none_box {
+	background-color: $background_color;
+	color: $foreground_color;
+
+	border: 0.1rem solid $background_color;
+	border-radius: 0.5rem;
+
+	min-width: 40%;
+	max-width: 40%;
+
+	padding: 1rem;
+
+	margin-right: auto;
+	margin-left: auto;
+
+	transition: border-color 0.2s linear; /* General */
+	-webkit-transition: border-color 0.2s linear; /* Safari & Chrome */
+	-moz-transition: border-color 0.2s linear; /* Firefox */
+	-o-transition: border-color 0.2s linear; /* Opera */
+
+	&:hover {
+		border-color: $border_color;
+	}
+}
+
+.post_none_image {
+	border-radius: 0.5rem;
+
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.post_none_text {
+	font-size: 1.1rem;
+	font-weight: 500;
+	text-align: center;
+
+	display: block;
+
+	margin-top: 1rem;
+}
