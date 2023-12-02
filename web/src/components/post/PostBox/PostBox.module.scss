@@ -1,5 +1,6 @@
 $background_color: #414141;
 $foreground_color: #ffffff;
+
 $border_color: #dddddd;
 
 $post_fade_duration: 0.8s;
@@ -7,13 +8,18 @@ $post_fade_method: ease-in-out;
 
 .post_block {
 	background-color: $background_color;
+	color: $foreground_color;
+
 	border: 0.1rem solid $background_color;
 	border-radius: 0.5rem;
-	color: $foreground_color;
+
 	word-break: break-all;
+
 	min-width: 40%;
 	max-width: 40%;
+
 	padding: 1rem;
+
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 1.25rem;
@@ -31,6 +37,7 @@ $post_fade_method: ease-in-out;
 .post_user {
 	font-size: 1.1rem;
 	font-weight: 700;
+
 	margin-bottom: 0.5rem;
 }
 

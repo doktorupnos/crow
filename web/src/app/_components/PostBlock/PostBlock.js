@@ -2,23 +2,29 @@ import { useState, useEffect } from "react";
 import { fetchPosts, getPostTime } from "@/app/utils/posts";
 
 import PostBox from "@/components/post/PostBox/PostBox";
+import PostNone from "@/components/post/PostNone/PostNone";
 
 export default function PostBlock() {
 	const [posts, setPosts] = useState([]);
 	const [postList, setPostList] = useState([]);
-	const [page, setPage] = useState([1]);
+	const [page, setPage] = useState(1);
+	const [morePosts, setMorePosts] = useState(true);
 
 	useEffect(() => {
 		const fetchData = async () => {
-			try {
-				const response = await fetchPosts(page);
-				setPosts((prevPosts) => [...prevPosts, ...response.payload]);
-			} catch (error) {
-				console.error("Failed to fetch posts!", error);
+			if (morePosts) {
+				try {
+					const response = await fetchPosts(page);
+					if (!response.payload.length) return setMorePosts(false);
+					setPosts((prevPosts) => [...prevPosts, ...response.payload]);
+				} catch (error) {
+					console.error("Failed to fetch posts!", error);
+					return setMorePosts(false);
+				}
 			}
 		};
 		fetchData();
-	}, [page]);
+	}, [page, morePosts]);
 
 	useEffect(() => {
 		const handleScrollBottom = () => {
@@ -57,9 +63,8 @@ export default function PostBlock() {
 		setPostList(postData);
 	}, [posts]);
 
-	if (!posts.length) {
-		return <h1>Posts unavailable!</h1>;
-	}
+	if (!posts.length) return <PostNone />;
+
 	return (
 		<>
 			<div className="flex flex-col mx-auto">{postList}</div>

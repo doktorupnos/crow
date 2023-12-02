@@ -2,7 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { useState, useEffect } from "react";
-import { fetchPosts } from "../utils/posts";
+
+import { userValid } from "@/app/utils/auth";
 
 import PostBlock from "../_components/PostBlock/PostBlock";
 
@@ -10,16 +11,16 @@ export default function HomePage() {
 	const [session, setSession] = useState(null);
 
 	useEffect(() => {
-		const fetchPostData = async () => {
+		const sessionValid = async () => {
 			try {
-				let response = await fetchPosts(1);
-				setSession(response.auth);
+				let response = await userValid();
+				setSession(response);
 			} catch (error) {
-				console.error(error);
+				console.error("Failed to validate session!", error);
 				setSession(false);
 			}
 		};
-		fetchPostData();
+		sessionValid();
 	}, []);
 
 	if (session === null) {
