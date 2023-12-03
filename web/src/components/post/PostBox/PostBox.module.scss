@@ -1,0 +1,71 @@
+$background_color: #414141;
+$foreground_color: #ffffff;
+
+$border_color: #dddddd;
+
+$post_fade_duration: 0.8s;
+$post_fade_method: ease-in-out;
+
+.post_block {
+	background-color: $background_color;
+	color: $foreground_color;
+
+	border: 0.1rem solid $background_color;
+	border-radius: 0.5rem;
+
+	word-break: break-all;
+
+	min-width: 40%;
+	max-width: 40%;
+
+	padding: 1rem;
+
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 1.25rem;
+
+	transition: border-color 0.2s linear; /* General */
+	-webkit-transition: border-color 0.2s linear; /* Safari & Chrome */
+	-moz-transition: border-color 0.2s linear; /* Firefox */
+	-o-transition: border-color 0.2s linear; /* Opera */
+
+	&:hover {
+		border-color: $border_color;
+	}
+}
+
+.post_user {
+	font-size: 1.1rem;
+	font-weight: 700;
+
+	margin-bottom: 0.5rem;
+}
+
+.post_message {
+	font-size: 1rem;
+	margin-top: 0.5rem;
+}
+
+.post_date {
+	font-size: 0.75rem;
+	text-align: right;
+	margin-top: 1rem;
+}
+
+// Post fade up animation.
+@mixin animate_post_fade {
+	@keyframes animate_post_fade {
+		from {
+			opacity: 0;
+			transform: translateY(12rem);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+}
+.post_fade {
+	animation: animate_post_fade $post_fade_duration $post_fade_method;
+	@include animate_post_fade;
+}

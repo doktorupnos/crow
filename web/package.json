@@ -13,7 +13,8 @@
     "core-js": "^3.33.3",
     "next": "^14.0.3",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "sass": "^1.69.5"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",

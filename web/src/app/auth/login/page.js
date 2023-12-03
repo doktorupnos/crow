@@ -1,5 +1,3 @@
-"use client";
-
 import AuthCrow from "../_components/AuthCrow/AuthCrow";
 import AuthTitle from "../_components/AuthTitle/AuthTitle";
 import AuthForm from "../_components/AuthForm/AuthForm";

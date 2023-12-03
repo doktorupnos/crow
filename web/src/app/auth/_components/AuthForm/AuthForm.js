@@ -1,12 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
+import { useRouter } from "next/navigation";
+
+import { userLogin, userRegister } from "../../../utils/auth";
 
 import AuthField from "../AuthField/AuthField";
 import AuthSubmit from "../AuthSubmit/AuthSubmit";
 
 export default function AuthForm({ method }) {
+	const router = useRouter();
+
 	let [post, setPost] = useState({
 		name: "",
 		password: "",
@@ -17,30 +21,22 @@ export default function AuthForm({ method }) {
 	}
 
 	async function handleSubmit(event) {
+		let auth;
 		event.preventDefault();
 		if (method) {
-			// Login method.
-			await axios
-				.post(
-					process.env.authLoginEndPoint,
-					{},
-					{
-						auth: {
-							username: `${post.name}`,
-							password: `${post.password}`,
-						},
-						withCredentials: true,
-					}
-				)
-				.then((response) => console.log(response))
-				.catch((err) => console.log(err));
+			try {
+				auth = await userLogin(post);
+			} catch (error) {
+				console.error("Could not log-in user!");
+			}
 		} else {
-			// Register method.
-			await axios
-				.post(process.env.authRegEndPoint, post)
-				.then((response) => console.log(response))
-				.catch((err) => console.log(err));
+			try {
+				auth = await userRegister(post);
+			} catch (error) {
+				console.error("Could not register user!", error);
+			}
 		}
+		if (auth) router.push("/home");
 	}
 
 	return (
