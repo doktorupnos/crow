@@ -38,7 +38,7 @@ export const userRegister = async (post) => {
 export const userValid = async () => {
 	var userValid = false;
 	await axios
-		.post(process.env.authValidEndpoint, {}, { withCredentials: true })
+		.post(process.env.authValidEndPoint, {}, { withCredentials: true })
 		.then((response) => {
 			if (response.status == 200) {
 				userValid = true;
