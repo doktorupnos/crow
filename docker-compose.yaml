@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:16.1-alpine3.18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: crow
+    volumes:
+      - ./persistence/postgres-config:/etc/postgresql
+    networks:
+      - crownet
+    ports:
+      - "5432:5432"
+
+  backend:
+    restart: on-failure
+    ports:
+      - "8000:8000"
+    networks:
+      - crownet
+    environment:
+      - ADDR=0.0.0.0:8000
+      - CORS_ORIGIN="http://*"
+      - DSN=postgres://postgres:postgres@postgres:5432/crow
+      - DEFAULT_PAGE_SIZE=5
+      - JWT_LIFETIME=20m
+    build: "./backend"
+    depends_on:
+      - postgres
+  web:
+     restart: on-failure
+     ports:
+       - "3000:3000"
+     networks:
+       - crownet
+     build: "./web"
+     depends_on:
+       - postgres
+       - backend
+
+networks:
+  crownet:

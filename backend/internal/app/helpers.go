@@ -3,9 +3,10 @@ package app
 import (
 	"encoding/json"
 	"net/http"
-)
+	"time"
 
-// json helpers
+	"github.com/doktorupnos/crow/backend/internal/jwt"
+)
 
 func respondWithJSON(w http.ResponseWriter, statusCode int, payload any) {
 	data, err := json.Marshal(payload)
@@ -24,4 +25,23 @@ func respondWithError(w http.ResponseWriter, statusCode int, message string) {
 		Error string `json:"error"`
 	}
 	respondWithJSON(w, statusCode, errorResponse{message})
+}
+
+func respondWithJWT(
+	w http.ResponseWriter,
+	statusCode int,
+	secret, subject string,
+	lifetime time.Duration,
+) {
+	signedToken, err := jwt.Create(secret, subject, lifetime)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:  "token",
+		Value: signedToken,
+	})
+	w.WriteHeader(statusCode)
 }

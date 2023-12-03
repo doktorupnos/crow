@@ -14,8 +14,9 @@ func NewGormUserRepo(db *gorm.DB) *GormUserRepo {
 	return &GormUserRepo{db}
 }
 
-func (r *GormUserRepo) Create(u user.User) error {
-	return r.db.Create(&u).Error
+func (r *GormUserRepo) Create(u user.User) (uuid.UUID, error) {
+	err := r.db.Create(&u).Error
+	return u.ID, err
 }
 
 func (r *GormUserRepo) GetAll() ([]user.User, error) {
