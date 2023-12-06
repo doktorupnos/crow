@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/doktorupnos/crow/backend/internal/like"
 	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/post"
 	"github.com/google/uuid"
@@ -43,9 +44,32 @@ func (r *GormPostRepo) Load(params post.LoadParams) ([]post.FeedPost, error) {
 			return nil, err
 		}
 
+		var likes int64
+		if err := r.db.Model(&like.PostLike{}).
+			Where("post_id = ?", p.ID).
+			Count(&likes).
+			Error; err != nil {
+			return nil, err
+		}
+
+		var c int64
+		if err := r.db.Model(&like.PostLike{}).
+			Where("post_id = ? AND user_id = ?", p.ID, params.UserID).
+			Count(&c).
+			Error; err != nil {
+			return nil, err
+		}
+
+		var likedByUser bool
+		if c == 1 {
+			likedByUser = true
+		}
+
 		feedPosts = append(feedPosts, post.FeedPost{
-			Post:     p,
-			UserName: username,
+			Post:        p,
+			UserName:    username,
+			Likes:       likes,
+			LikedByUser: likedByUser,
 		})
 	}
 

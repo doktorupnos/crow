@@ -19,11 +19,14 @@ type Post struct {
 
 type FeedPost struct {
 	Post
-	UserName string `json:"user_name"`
+	UserName    string `json:"user_name"`
+	Likes       int64  `json:"likes"`
+	LikedByUser bool   `json:"liked_by_user"`
 }
 
 type LoadParams struct {
-	Order string
+	UserID uuid.UUID
+	Order  string
 	pages.PaginationParams
 }
 

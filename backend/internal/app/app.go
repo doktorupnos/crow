@@ -11,18 +11,20 @@ import (
 
 // App groups all the state the server needs to run.
 type App struct {
-	Env         *env.Env
-	DB          *gorm.DB
-	userService *UserService
-	postService *PostService
+	Env             *env.Env
+	DB              *gorm.DB
+	userService     *UserService
+	postService     *PostService
+	postLikeService *PostLikeService
 }
 
 func New(env *env.Env, db *gorm.DB) *App {
 	return &App{
-		Env:         env,
-		DB:          db,
-		userService: NewUserService(database.NewGormUserRepo(db)),
-		postService: NewPostService(database.NewGormPostRepo(db)),
+		Env:             env,
+		DB:              db,
+		userService:     NewUserService(database.NewGormUserRepo(db)),
+		postService:     NewPostService(database.NewGormPostRepo(db)),
+		postLikeService: NewPostLikeService(database.NewGormPostLikeRepo(db)),
 	}
 }
 

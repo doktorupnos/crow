@@ -28,7 +28,11 @@ func (s *PostService) Create(u user.User, body string) error {
 	return s.pr.Create(p)
 }
 
-func (s *PostService) Load(r *http.Request, pageSize int) ([]post.FeedPost, error) {
+func (s *PostService) Load(
+	r *http.Request,
+	pageSize int,
+	userID uuid.UUID,
+) ([]post.FeedPost, error) {
 	q := r.URL.Query()
 
 	var page int
@@ -55,7 +59,8 @@ func (s *PostService) Load(r *http.Request, pageSize int) ([]post.FeedPost, erro
 			PageNumber: page,
 			PageSize:   pageSize,
 		},
-		Order: order,
+		Order:  order,
+		UserID: userID,
 	})
 }
 
