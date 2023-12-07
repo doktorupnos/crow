@@ -1,0 +1,22 @@
+nav {
+	background-color: #101011;
+    color: white;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav li {
+  margin: 0;
+  padding: 0;
+}
+
+nav li img {
+  border-radius: 50%;
+}
