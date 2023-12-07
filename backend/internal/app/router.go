@@ -33,6 +33,8 @@ func ConfiguredRouter(app *App) http.Handler {
 	router.Post("/logout", app.JWT(app.Logout))
 
 	router.Mount("/users", UserRouter(app))
+	router.Post("/follow", app.JWT(app.Follow))
+	router.Post("/unfollow", app.JWT(app.UnFollow))
 	router.Mount("/posts", PostRouter(app))
 	router.Mount("/post_likes", PostLikeRouter(app))
 

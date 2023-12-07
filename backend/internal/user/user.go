@@ -20,4 +20,7 @@ type UserRepo interface {
 	GetByID(id uuid.UUID) (User, error)
 	Update(u User) error
 	Delete(u User) error
+
+	Follow(u, o User) error
+	Unfollow(u, o User) error
 }

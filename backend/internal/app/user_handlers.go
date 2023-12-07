@@ -6,6 +6,7 @@ import (
 
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -86,4 +87,56 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request, u user.User) 
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 	}
 	respondWithJSON(w, http.StatusOK, u)
+}
+
+func (app *App) Follow(w http.ResponseWriter, r *http.Request, u user.User) {
+	type RequestBody struct {
+		Id string `json:"user_id"`
+	}
+	body := RequestBody{}
+
+	defer r.Body.Close()
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	id, err := uuid.Parse(body.Id)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := app.userService.Follow(u, id); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func (app *App) UnFollow(w http.ResponseWriter, r *http.Request, u user.User) {
+	type RequestBody struct {
+		Id string `json:"user_id"`
+	}
+	body := RequestBody{}
+
+	defer r.Body.Close()
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	id, err := uuid.Parse(body.Id)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := app.userService.Unfollow(u, id); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

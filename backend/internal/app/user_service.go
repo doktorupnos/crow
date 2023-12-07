@@ -65,6 +65,24 @@ func (s *UserService) Delete(u user.User) error {
 	return s.ur.Delete(u)
 }
 
+func (s *UserService) Follow(u user.User, id uuid.UUID) error {
+	o, err := s.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	return s.ur.Follow(u, o)
+}
+
+func (s *UserService) Unfollow(u user.User, id uuid.UUID) error {
+	o, err := s.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	return s.ur.Unfollow(u, o)
+}
+
 type ErrUser string
 
 func (e ErrUser) Error() string {

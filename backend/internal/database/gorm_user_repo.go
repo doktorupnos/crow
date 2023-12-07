@@ -50,3 +50,11 @@ func (r *GormUserRepo) Update(u user.User) error {
 func (r *GormUserRepo) Delete(u user.User) error {
 	return r.db.Delete(&u).Error
 }
+
+func (r *GormUserRepo) Follow(u, o user.User) error {
+	return r.db.Model(&u).Association("Follows").Append(&o)
+}
+
+func (r *GormUserRepo) Unfollow(u, o user.User) error {
+	return r.db.Model(&u).Association("Follows").Delete(&o)
+}
