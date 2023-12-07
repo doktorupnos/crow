@@ -2,6 +2,9 @@
 package database
 
 import (
+	"log"
+
+	"github.com/doktorupnos/crow/backend/internal/like"
 	"github.com/doktorupnos/crow/backend/internal/post"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"gorm.io/driver/postgres"
@@ -28,6 +31,11 @@ func automigrate(db *gorm.DB) error {
 	}
 
 	if err := db.AutoMigrate(&post.Post{}); err != nil {
+		return err
+	}
+
+	if err := db.SetupJoinTable(&post.Post{}, "Likes", &like.PostLike{}); err != nil {
+		log.Println("Failed to setup the Likes join table")
 		return err
 	}
 

@@ -13,91 +13,12 @@ func TestUserWorkFlowIntegration(t *testing.T) {
     t.SkipNow()
   }
 
-  payload := strings.NewReader(`
-  {
-    "name": "user",
-    "password": "password"
-  }`)
-  createResp, err := client.Post(usersEndpoint, "application/json", payload)
-  if err != nil {
-    t.Fatal(err)
-  }
-  defer createResp.Body.Close()
+  token := createTestUser(t, "user", "password", http.StatusCreated)
+  validateJwt(t, token)
 
-  got := createResp.StatusCode
-  assertStatusCode(t, got, http.StatusCreated)
+  createTestUser(t, "user", "password", http.StatusBadRequest)
 
-  var tokenCookie *http.Cookie
-  cookies := createResp.Cookies()
-  for _, c := range cookies {
-    if c.Name == "token" {
-      tokenCookie = c
-      break
-    }
-  }
-  if tokenCookie == nil {
-    t.Fatal("token cookie was not set")
-  }
-  t.Logf("%s : %s", tokenCookie.Name, tokenCookie.Value)
-
-  jwtValidateReq, err := http.NewRequest(http.MethodPost, validateJWTEndpoint, strings.NewReader(``))
-  if err != nil {
-    t.Fatal(err)
-  }
-  jwtValidateReq.AddCookie(tokenCookie)
-
-  jwtValidateResp, err := client.Do(jwtValidateReq)
-  if err != nil {
-    return
-  }
-  defer jwtValidateResp.Body.Close()
-
-  assertStatusCode(t, jwtValidateResp.StatusCode, http.StatusOK)
-
-
-  // Try to create the same user again
-  createResp, err = client.Post(usersEndpoint, "application/json", payload)
-  if err != nil {
-    t.Fatal(err)
-  }
-  defer createResp.Body.Close()
-
-  got = createResp.StatusCode
-  assertStatusCode(t, got, http.StatusBadRequest)
-
-  loginRequest, err := http.NewRequest(http.MethodPost, loginEndpoint, strings.NewReader(``))
-  if err != nil {
-    t.Fatal(err)
-  }
-  loginRequest.SetBasicAuth("user", "password")
-
-  loginResp, err := client.Do(loginRequest)
-  if err != nil {
-    t.Fatal(err)
-  }
-  defer loginResp.Body.Close()
-
-  assertStatusCode(t, loginResp.StatusCode, http.StatusOK)
-
-  cookies = loginResp.Cookies()
-  for _, c := range cookies {
-    if c.Name == "token" {
-      tokenCookie = c
-      break
-    }
-  }
-  if tokenCookie == nil {
-    t.Fatal("token cookie was not set")
-  }
-  t.Logf("%s : %s", tokenCookie.Name, tokenCookie.Value)
-
-  jwtValidateResp, err = client.Do(jwtValidateReq)
-  if err != nil {
-    return
-  }
-  defer jwtValidateResp.Body.Close()
-
-  assertStatusCode(t, jwtValidateResp.StatusCode, http.StatusOK)
+  login(t, "user", "password")
 
   updateReq, err := http.NewRequest(http.MethodPut, usersEndpoint, strings.NewReader(`
     {
@@ -108,63 +29,18 @@ func TestUserWorkFlowIntegration(t *testing.T) {
   if err != nil {
     t.Fatal(err)
   }
-  updateReq.AddCookie(tokenCookie)
+  updateReq.AddCookie(token)
 
   updateResp, err := client.Do(updateReq)
   if err != nil {
     t.Fatal(err)
   }
   defer updateResp.Body.Close()
-
   assertStatusCode(t, updateResp.StatusCode, http.StatusOK)
 
+  logout(t, token)
 
-  logoutReq, err := http.NewRequest(http.MethodPost, logoutEndpoint, strings.NewReader(``))
-  if err != nil {
-    t.Fatal(err)
-  }
-  logoutReq.AddCookie(tokenCookie)
-
-  logoutResp, err := client.Do(logoutReq)
-  if err != nil {
-    t.Fatal(err)
-  }
-  defer logoutResp.Body.Close()
-
-  assertStatusCode(t, logoutResp.StatusCode, http.StatusOK)
-
-  for _, c := range logoutResp.Cookies(){
-    if c.Name == "token" {
-      tokenCookie = c
-      break
-    }
-  }
-  if tokenCookie == nil {
-    t.Fatal("token cookie was not set")
-  }
-  jwtValidateReq.AddCookie(tokenCookie)
-  
-  jwtValidateResp, err = client.Do(jwtValidateReq)
-  if err != nil {
-    return
-  }
-  defer jwtValidateResp.Body.Close()
-
-  assertStatusCode(t, jwtValidateResp.StatusCode, http.StatusOK)
-
-  deleteReq, err := http.NewRequest(http.MethodDelete, usersEndpoint, strings.NewReader(``))
-  if err != nil {
-    t.Fatal(err)
-  }
-  deleteReq.SetBasicAuth("updated_user", "updated_password")
-
-  deleteResp, err := client.Do(deleteReq)
-  if err != nil {
-    return 
-  }
-  defer deleteResp.Body.Close()
-
-  assertStatusCode(t, deleteResp.StatusCode, http.StatusOK)
+  deleteTestUser(t, "updated_user", "updated_password")
 }
 
 func TestUserCreateIntegeration(t *testing.T) {
@@ -176,94 +52,133 @@ func TestUserCreateIntegeration(t *testing.T) {
   defer server.Close()
 
   t.Run("empty body", func(t *testing.T) {
-
-    payload := strings.NewReader(``)
-    resp, err := http.Post(server.URL, "application/json", payload)
-    if err != nil {
-      t.Fatal(err)
-    }
-    defer resp.Body.Close()
-
-    got := resp.StatusCode
-    assertStatusCode(t, got, http.StatusBadRequest)
+    createTestUser(t, "", "", http.StatusBadRequest)
   })
 
   t.Run("empty name", func(t *testing.T) {
-    payload := strings.NewReader(`
-    {
-      "password": "password"
-    }`)
-    resp, err := http.Post(server.URL, "application/json", payload)
-    if err != nil {
-      t.Fatal(err)
-    }
-    defer resp.Body.Close()
-
-    got := resp.StatusCode
-    assertStatusCode(t, got, http.StatusBadRequest)
+    createTestUser(t, "", "password", http.StatusBadRequest)
   })
 
   t.Run("empty password", func(t *testing.T) {
-    payload := strings.NewReader(`
-    {
-      "name": "name"
-    }`)
-    resp, err := http.Post(server.URL, "application/json", payload)
-    if err != nil {
-      t.Fatal(err)
-    }
-    defer resp.Body.Close()
-
-    got := resp.StatusCode
-    assertStatusCode(t, got, http.StatusBadRequest)
+    createTestUser(t, "name", "", http.StatusBadRequest)
   })
 
   t.Run("name too big", func(t *testing.T) {
-    payload := strings.NewReader(`
-    {
-      "name": "a_valid_name_over_twenty_characters",
-      "password": "password"
-    }`)
-    resp, err := http.Post(server.URL, "application/json", payload)
-    if err != nil {
-      t.Fatal(err)
-    }
-    defer resp.Body.Close()
-
-    got := resp.StatusCode
-    assertStatusCode(t, got, http.StatusBadRequest)
+    createTestUser(t, "a_valid_name_over_twenty_characters", "password", http.StatusBadRequest)
   })
 
   t.Run("password too big", func(t *testing.T) {
     password := strings.Repeat("a", 80)
-    payload := strings.NewReader(fmt.Sprintf(`
-    {
-      "name": "name",
-      "password": "%s"
-    }`, password))
-    resp, err := http.Post(server.URL, "application/json", payload)
-    if err != nil {
-      t.Fatal(err)
-    }
-    defer resp.Body.Close()
-
-    got := resp.StatusCode
-    assertStatusCode(t, got, http.StatusBadRequest)
+    createTestUser(t, "name", password, http.StatusBadRequest)
   })
 
   t.Run("name contains not supported characters", func(t *testing.T) {
-    payload := strings.NewReader(`
-    {
-      "name": "not- All*w$d",
-      "password": "password"
-    }`)
-    resp, err := http.Post(server.URL, "application/json", payload)
-    if err != nil {
-      t.Fatal(err)
-    }
-    defer resp.Body.Close()
-
-    got := resp.StatusCode
-    assertStatusCode(t, got, http.StatusBadRequest)
+    name := "not- All*w$d"
+    createTestUser(t, name, "password", http.StatusBadRequest)
   })
+}
+
+func createTestUser(t testing.TB, name, password string, expectedStatusCode int) *http.Cookie {
+  t.Helper()
+
+  payload := strings.NewReader(fmt.Sprintf(`{
+    "name": %q,
+    "password": %q
+  }`, name, password))
+  createResp, err := client.Post(usersEndpoint, "application/json", payload)
+  if err != nil {
+    t.Fatal(err)
+  }
+  defer createResp.Body.Close()
+
+  got := createResp.StatusCode
+  assertStatusCode(t, got, expectedStatusCode)
+  
+  if expectedStatusCode != http.StatusCreated {
+    return nil
+  }
+  return extractTokenCookie(t, createResp)
+}
+
+func extractTokenCookie(t testing.TB, resp *http.Response) *http.Cookie {
+  t.Helper()
+
+  for _, c := range resp.Cookies() {
+    if c.Name == "token" {
+      return c
+    }
+  }
+
+  t.Fatal("token cookie was not set")
+  return nil
+}
+
+func deleteTestUser(t testing.TB, name, password string) {
+  t.Helper()
+
+  deleteReq, err := http.NewRequest(http.MethodDelete, usersEndpoint, noBody)
+  if err != nil {
+    t.Fatal(err)
+  }
+  deleteReq.SetBasicAuth(name, password)
+
+  deleteResp, err := client.Do(deleteReq)
+  if err != nil {
+    return 
+  }
+  defer deleteResp.Body.Close()
+
+  assertStatusCode(t, deleteResp.StatusCode, http.StatusOK)
+}
+
+func validateJwt(t testing.TB, token *http.Cookie) {
+  t.Helper()
+
+  jwtValidateReq, err := http.NewRequest(http.MethodPost, validateJWTEndpoint, noBody)
+  if err != nil {
+    t.Fatal(err)
+  }
+  jwtValidateReq.AddCookie(token)
+
+  jwtValidateResp, err := client.Do(jwtValidateReq)
+  if err != nil {
+    return
+  }
+  defer jwtValidateResp.Body.Close()
+
+  assertStatusCode(t, jwtValidateResp.StatusCode, http.StatusOK)
+}
+
+func login(t testing.TB, username, passwrod string) *http.Cookie {
+  loginRequest, err := http.NewRequest(http.MethodPost, loginEndpoint, noBody)
+  if err != nil {
+    t.Fatal(err)
+  }
+  loginRequest.SetBasicAuth("user", "password")
+
+  loginResp, err := client.Do(loginRequest)
+  if err != nil {
+    t.Fatal(err)
+  }
+  defer loginResp.Body.Close()
+  assertStatusCode(t, loginResp.StatusCode, http.StatusOK)
+
+  token := extractTokenCookie(t, loginResp)
+  validateJwt(t, token)
+  return token
+}
+
+func logout(t testing.TB, token *http.Cookie) {
+  logoutReq, err := http.NewRequest(http.MethodPost, logoutEndpoint, noBody)
+  if err != nil {
+    t.Fatal(err)
+  }
+  logoutReq.AddCookie(token)
+
+  logoutResp, err := client.Do(logoutReq)
+  if err != nil {
+    t.Fatal(err)
+  }
+  defer logoutResp.Body.Close()
+  assertStatusCode(t, logoutResp.StatusCode, http.StatusOK)
 }

@@ -34,6 +34,7 @@ func ConfiguredRouter(app *App) http.Handler {
 
 	router.Mount("/users", UserRouter(app))
 	router.Mount("/posts", PostRouter(app))
+	router.Mount("/post_likes", PostLikeRouter(app))
 
 	router.Mount("/admin", AdminRouter(app))
 
@@ -61,6 +62,15 @@ func PostRouter(app *App) http.Handler {
 	router.Get("/", app.JWT(app.GetAllPosts))
 	router.Put("/{id}", app.JWT(app.UpdatePost))
 	router.Delete("/{id}", app.JWT(app.DeletePost))
+
+	return router
+}
+
+func PostLikeRouter(app *App) http.Handler {
+	router := chi.NewRouter()
+
+	router.Post("/", app.JWT(app.LikePost))
+	router.Delete("/", app.JWT(app.UnlikePost))
 
 	return router
 }
