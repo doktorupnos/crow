@@ -1,16 +1,16 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: api-gateway-ingress
+  name: web-ingress
 spec:
   rules:
-  - host: temp.domain.com
+  - host: crow.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: api-gateway-service
+            name: web-service
             port:
               number: 80

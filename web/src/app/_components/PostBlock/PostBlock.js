@@ -4,6 +4,9 @@ import { fetchPosts, getPostTime } from "@/app/utils/posts";
 import PostBox from "@/components/post/PostBox/PostBox";
 import PostNone from "@/components/post/PostNone/PostNone";
 
+
+import styles from "./PostBlock.module.css";
+
 export default function PostBlock() {
 	const [posts, setPosts] = useState([]);
 	const [postList, setPostList] = useState([]);
@@ -68,7 +71,10 @@ export default function PostBlock() {
 	return (
 		<>
 			<div className="flex flex-col mx-auto">{postList}</div>
-			<button onClick={loadMorePosts}>Load More</button>
+
+			<button className={styles.button_load} onClick={loadMorePosts}>
+				Load More
+			</button>
 		</>
 	);
 }
