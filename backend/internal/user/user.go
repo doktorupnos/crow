@@ -9,6 +9,8 @@ type User struct {
 	model.Model
 	Name     string `json:"name" gorm:"unique;not null"`
 	Password string `json:"-"    gorm:"not null"`
+
+	Follows []*User `gorm:"many2many:user_follows"`
 }
 
 type UserRepo interface {
