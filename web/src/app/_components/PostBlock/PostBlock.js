@@ -4,7 +4,6 @@ import { fetchPosts, getPostTime } from "@/app/utils/posts";
 import PostBox from "@/components/post/PostBox/PostBox";
 import PostNone from "@/components/post/PostNone/PostNone";
 
-
 import styles from "./PostBlock.module.css";
 
 export default function PostBlock() {
@@ -60,6 +59,8 @@ export default function PostBlock() {
 					author={post.user_name}
 					message={post.body}
 					date={date}
+					likes={post.likes}
+					status={post.liked_by_user}
 				/>
 			);
 		});
@@ -71,7 +72,6 @@ export default function PostBlock() {
 	return (
 		<>
 			<div className="flex flex-col mx-auto">{postList}</div>
-
 			<button className={styles.button_load} onClick={loadMorePosts}>
 				Load More
 			</button>

@@ -23,6 +23,39 @@ export const fetchPosts = async (page) => {
 	return fetchPosts;
 };
 
+export const likePost = async (id, likeStatus) => {
+	var likePosts = false;
+
+	if (!likeStatus) {
+		await axios
+			.post(
+				process.env.postLikeEndPoint,
+				{ post_id: id },
+				{ withCredentials: true }
+			)
+			.then((response) => {
+				if (response.status == 201) likePosts = true;
+			})
+			.catch((error) => {
+				console.error("Failed to like post!", error);
+			});
+	} else {
+		await axios
+			.delete(process.env.postLikeEndPoint, {
+				data: { post_id: id },
+				withCredentials: true,
+			})
+			.then((response) => {
+				console.log(response);
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	}
+
+	return likePosts;
+};
+
 export const getPostTime = (timestamp) => {
 	let getPostTime = "";
 
