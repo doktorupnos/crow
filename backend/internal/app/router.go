@@ -38,6 +38,8 @@ func ConfiguredRouter(app *App) http.Handler {
 	router.Post("/unfollow", app.JWT(app.UnFollow))
 	router.Get("/following", app.JWT(app.Following))
 	router.Get("/followers", app.JWT(app.Followers))
+	router.Get("/following_count", app.JWT(app.FollowingCount))
+	router.Get("/followers_count", app.JWT(app.FollowerCount))
 
 	router.Mount("/posts", PostRouter(app))
 	router.Mount("/post_likes", PostLikeRouter(app))

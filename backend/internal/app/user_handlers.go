@@ -142,7 +142,7 @@ func (app *App) UnFollow(w http.ResponseWriter, r *http.Request, u user.User) {
 }
 
 func (app *App) Following(w http.ResponseWriter, r *http.Request, u user.User) {
-	us, err := app.userService.Following(u)
+	us, err := app.userService.Following(r, app.Env.DefaultPageSize, u.ID)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -151,10 +151,28 @@ func (app *App) Following(w http.ResponseWriter, r *http.Request, u user.User) {
 }
 
 func (app *App) Followers(w http.ResponseWriter, r *http.Request, u user.User) {
-	us, err := app.userService.Followers(u)
+	us, err := app.userService.Followers(r, app.Env.DefaultPageSize, u.ID)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	respondWithJSON(w, http.StatusOK, us)
+}
+
+func (app *App) FollowingCount(w http.ResponseWriter, r *http.Request, u user.User) {
+	count, err := app.userService.FollowingCount(u)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, count)
+}
+
+func (app *App) FollowerCount(w http.ResponseWriter, r *http.Request, u user.User) {
+	count, err := app.userService.FollowerCount(u)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, count)
 }

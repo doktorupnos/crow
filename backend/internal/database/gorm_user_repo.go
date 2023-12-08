@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -59,12 +60,12 @@ func (r *GormUserRepo) Unfollow(u, o user.User) error {
 	return r.db.Model(&u).Association("Follows").Delete(&o)
 }
 
-func (r *GormUserRepo) Following(u user.User) ([]user.Follow, error) {
+func (r *GormUserRepo) Following(p user.LoadParams) ([]user.Follow, error) {
 	q := `SELECT uf.follow_id, u.name
 FROM user_follows uf JOIN users u ON uf.follow_id = u.id
 WHERE uf.user_id = ?`
 
-	rows, err := r.db.Raw(q, u.ID).Rows()
+	rows, err := r.db.Scopes(pages.Paginate(p.PaginationParams)).Raw(q, p.UserID).Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -82,12 +83,12 @@ WHERE uf.user_id = ?`
 	return following, nil
 }
 
-func (r *GormUserRepo) Followers(u user.User) ([]user.Follow, error) {
+func (r *GormUserRepo) Followers(p user.LoadParams) ([]user.Follow, error) {
 	q := `SELECT uf.user_id, u.name
 FROM user_follows uf JOIN users u ON uf.user_id = u.id
 WHERE uf.follow_id = ?`
 
-	rows, err := r.db.Raw(q, u.ID).Rows()
+	rows, err := r.db.Scopes(pages.Paginate(p.PaginationParams)).Raw(q, p.UserID).Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -102,5 +103,31 @@ WHERE uf.follow_id = ?`
 		followers = append(followers, follow)
 	}
 
+	return followers, nil
+}
+
+func (r *GormUserRepo) FollowingCount(u user.User) (int, error) {
+	q := `SELECT COUNT(*)
+FROM user_follows
+WHERE user_id = ?`
+
+	following := 0
+	err := r.db.Raw(q, u.ID).Scan(&following).Error
+	if err != nil {
+		return 0, err
+	}
+	return following, nil
+}
+
+func (r *GormUserRepo) FollowersCount(u user.User) (int, error) {
+	q := `SELECT COUNT(*)
+FROM user_follows
+WHERE follow_id = ?`
+
+	followers := 0
+	err := r.db.Raw(q, u.ID).Scan(&followers).Error
+	if err != nil {
+		return 0, err
+	}
 	return followers, nil
 }
