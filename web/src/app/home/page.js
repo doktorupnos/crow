@@ -2,9 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { useState, useEffect } from "react";
-
 import { userValid } from "@/app/utils/auth";
 
+import NavBar from "@/components/nav/NavBar/NavBar";
 import PostBlock from "../_components/PostBlock/PostBlock";
 
 export default function HomePage() {
@@ -27,13 +27,12 @@ export default function HomePage() {
 		return null;
 	} else if (session) {
 		return (
-			<div>
-				<div className="mb-5"></div>
+			<>
+				<NavBar />
 				<PostBlock />
-			</div>
+			</>
 		);
 	} else {
-		console.error("Invalid session!");
 		redirect("/auth");
 	}
 }
