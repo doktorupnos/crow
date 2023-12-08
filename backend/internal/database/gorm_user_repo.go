@@ -58,3 +58,49 @@ func (r *GormUserRepo) Follow(u, o user.User) error {
 func (r *GormUserRepo) Unfollow(u, o user.User) error {
 	return r.db.Model(&u).Association("Follows").Delete(&o)
 }
+
+func (r *GormUserRepo) Following(u user.User) ([]user.Follow, error) {
+	q := `SELECT uf.follow_id, u.name
+FROM user_follows uf JOIN users u ON uf.follow_id = u.id
+WHERE uf.user_id = ?`
+
+	rows, err := r.db.Raw(q, u.ID).Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	following := []user.Follow{}
+	follow := user.Follow{}
+	for rows.Next() {
+		err := rows.Scan(&follow.ID, &follow.Name)
+		if err != nil {
+			return nil, err
+		}
+		following = append(following, follow)
+	}
+
+	return following, nil
+}
+
+func (r *GormUserRepo) Followers(u user.User) ([]user.Follow, error) {
+	q := `SELECT uf.user_id, u.name
+FROM user_follows uf JOIN users u ON uf.user_id = u.id
+WHERE uf.follow_id = ?`
+
+	rows, err := r.db.Raw(q, u.ID).Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	followers := []user.Follow{}
+	follow := user.Follow{}
+	for rows.Next() {
+		err := rows.Scan(&follow.ID, &follow.Name)
+		if err != nil {
+			return nil, err
+		}
+		followers = append(followers, follow)
+	}
+
+	return followers, nil
+}

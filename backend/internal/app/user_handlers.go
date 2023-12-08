@@ -140,3 +140,21 @@ func (app *App) UnFollow(w http.ResponseWriter, r *http.Request, u user.User) {
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+func (app *App) Following(w http.ResponseWriter, r *http.Request, u user.User) {
+	us, err := app.userService.Following(u)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, us)
+}
+
+func (app *App) Followers(w http.ResponseWriter, r *http.Request, u user.User) {
+	us, err := app.userService.Followers(u)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, us)
+}

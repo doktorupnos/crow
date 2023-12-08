@@ -83,6 +83,14 @@ func (s *UserService) Unfollow(u user.User, id uuid.UUID) error {
 	return s.ur.Unfollow(u, o)
 }
 
+func (s *UserService) Following(u user.User) ([]user.Follow, error) {
+	return s.ur.Following(u)
+}
+
+func (s *UserService) Followers(u user.User) ([]user.Follow, error) {
+	return s.ur.Followers(u)
+}
+
 type ErrUser string
 
 func (e ErrUser) Error() string {

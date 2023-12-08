@@ -13,6 +13,11 @@ type User struct {
 	Follows []*User `gorm:"many2many:user_follows"`
 }
 
+type Follow struct {
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
 type UserRepo interface {
 	Create(u User) (uuid.UUID, error)
 	GetAll() ([]User, error)
@@ -23,4 +28,7 @@ type UserRepo interface {
 
 	Follow(u, o User) error
 	Unfollow(u, o User) error
+
+	Following(u User) ([]Follow, error)
+	Followers(u User) ([]Follow, error)
 }
