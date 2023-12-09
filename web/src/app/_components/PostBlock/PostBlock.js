@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { fetchPosts, getPostTime } from "@/app/utils/posts";
 
+import Image from "next/image";
+
 import PostBox from "@/components/post/PostBox/PostBox";
 import PostNone from "@/components/post/PostNone/PostNone";
 
@@ -32,12 +34,7 @@ export default function PostBlock() {
 		const handleScrollBottom = () => {
 			const isScrollAtBottom =
 				window.innerHeight + window.scrollY >= document.body.scrollHeight;
-			if (isScrollAtBottom) {
-				console.log("Bottom");
-				setPage((prevPage) => prevPage + 1);
-			} else {
-				console.log("Not Bottom");
-			}
+			if (isScrollAtBottom) setPage((page) => page + 1);
 		};
 		window.addEventListener("scroll", handleScrollBottom);
 		return () => {
@@ -73,7 +70,13 @@ export default function PostBlock() {
 		<>
 			<div className="flex flex-col mx-auto">{postList}</div>
 			<button className={styles.button_load} onClick={loadMorePosts}>
-				Load More
+				<Image
+					src="/images/bootstrap/load_posts.svg"
+					alt="load_more"
+					width={30}
+					height={30}
+					draggable="false"
+				/>
 			</button>
 		</>
 	);

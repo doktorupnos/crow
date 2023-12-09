@@ -1,19 +1,5 @@
 .button_load {
-	background-color: white;
-	color: black;
-
-	text-align: center;
-
 	display: block;
-
-	border-radius: 0.2rem;
-
 	margin-right: auto;
 	margin-left: auto;
-
-	min-width: 10%;
-	max-width: 10%;
-
-	min-height: 2rem;
-	max-height: 2rem;
 }
