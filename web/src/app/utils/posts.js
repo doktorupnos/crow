@@ -23,6 +23,25 @@ export const fetchPosts = async (page) => {
 	return fetchPosts;
 };
 
+// Create post.
+export const createPost = async (body) => {
+	try {
+		const response = await axios.post(
+			process.env.postGetEndPoint,
+			{ body: body },
+			{ withCredentials: true }
+		);
+		if (response.status == 201) {
+			return true;
+		} else if (response.status == 401) {
+			console.error("Session expired!");
+			return false;
+		}
+	} catch (error) {
+		throw error;
+	}
+};
+
 // Add like to post.
 export const addLike = async (id) => {
 	var addLike = false;
