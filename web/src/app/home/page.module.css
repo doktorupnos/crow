@@ -1,0 +1,42 @@
+.post_block {
+	display: block;
+
+	background-color: #414141;
+
+	text-align: center;
+
+	min-width: 40%;
+	max-width: 40%;
+
+	padding: 1rem;
+
+	border-radius: 0.5rem;
+
+	margin-bottom: 1.5rem;
+
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.post_text {
+	background-color: transparent;
+	color: white;
+
+	resize: none;
+	overflow: hidden;
+
+	padding: 0.5rem;
+
+	font-size: 1.1rem;
+
+	min-width: 100%;
+	max-width: 100%;
+
+	outline: none;
+}
+
+.post_button {
+	color: white;
+	display: block;
+	margin-left: auto;
+}
