@@ -14,13 +14,56 @@ export const fetchPosts = async (page) => {
 				fetchPosts.auth = true;
 				fetchPosts.payload = response.data;
 			} else if (response.status == 401) {
-				console.error("Invalid session!");
+				console.error("Session expired!");
 			}
 		})
 		.catch((error) => {
 			console.error("Failed to fetch posts!", error);
 		});
 	return fetchPosts;
+};
+
+// Add like to post.
+export const addLike = async (id) => {
+	var addLike = false;
+	await axios
+		.post(
+			process.env.postLikeEndPoint,
+			{ post_id: id },
+			{ withCredentials: true }
+		)
+		.then((response) => {
+			if (response.status == 201) {
+				addLike = true;
+			} else if (response.status == 401) {
+				console.error("Session expired!");
+			}
+		})
+		.catch((error) => {
+			console.error("Failed to like post!", error);
+		});
+	return addLike;
+};
+
+// Remove like from post.
+export const remLike = async (id) => {
+	var remLike = false;
+	await axios
+		.delete(process.env.postLikeEndPoint, {
+			data: { post_id: id },
+			withCredentials: true,
+		})
+		.then((response) => {
+			if (response.status == 200) {
+				remLike = true;
+			} else if (response.status == 401) {
+				console.error("Session expired!");
+			}
+		})
+		.catch((error) => {
+			console.error("Failed to remove like!", error);
+		});
+	return remLike;
 };
 
 export const getPostTime = (timestamp) => {
@@ -45,9 +88,8 @@ export const getPostTime = (timestamp) => {
 			day: ("0" + date.getDate()).slice(-2),
 			hours: ("0" + date.getHours()).slice(-2),
 			minutes: ("0" + date.getMinutes()).slice(-2),
-			seconds: ("0" + date.getSeconds()).slice(-2),
 		};
-		getPostTime = `${dateObj.year}-${dateObj.month}-${dateObj.day} ${dateObj.hours}:${dateObj.minutes}:${dateObj.seconds}`;
+		getPostTime = `${dateObj.year}-${dateObj.month}-${dateObj.day} ${dateObj.hours}:${dateObj.minutes}`;
 	}
 
 	return getPostTime;

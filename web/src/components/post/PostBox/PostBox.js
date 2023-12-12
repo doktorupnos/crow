@@ -1,12 +1,15 @@
+import PostBoxInfo from "./_components/PostBoxTop/PostBoxTop";
+import PostBoxBottom from "./_components/PostBoxBottom/PostBoxBottom";
+
 import styles from "./PostBox.module.scss";
 
-export default function PostBox({ id, author, message, date }) {
+export default function PostBox({ id, author, message, date, likes, status }) {
 	return (
-		<ul id={id} className={`${styles.post_block} ${styles.post_fade}`}>
-			<li className={styles.post_user}>@{author}</li>
+		<div id={id} className={`${styles.post_block} ${styles.post_fade}`}>
+			<PostBoxInfo author={author} date={date} />
 			<hr />
-			<li className={styles.post_message}>{message}</li>
-			<li className={styles.post_date}>{date}</li>
-		</ul>
+			<span className={styles.post_message}>{message}</span>
+			<PostBoxBottom id={id} likes={likes} status={status} />
+		</div>
 	);
 }
