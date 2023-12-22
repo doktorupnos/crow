@@ -6,9 +6,9 @@ import Image from "next/image";
 import PostBox from "@/components/post/PostBox/PostBox";
 import PostNone from "@/components/post/PostNone/PostNone";
 
-import styles from "./PostBlock.module.css";
+import styles from "./PostGrid.module.css";
 
-export default function PostBlock() {
+export default function PostGrid() {
 	const [posts, setPosts] = useState([]);
 	const [postList, setPostList] = useState([]);
 	const [page, setPage] = useState(1);
