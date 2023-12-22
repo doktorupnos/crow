@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// Fetch posts. (re-do)
 export const fetchPosts = async (page) => {
 	var fetchPosts = {
 		auth: false,
