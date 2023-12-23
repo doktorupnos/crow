@@ -1,13 +1,14 @@
 "use client";
 
-import { redirect } from "next/navigation";
 import { useState, useEffect } from "react";
 import { userValid } from "@/app/utils/auth";
+import { redirect } from "next/navigation";
 
 import NavBar from "@/components/nav/NavBar/NavBar";
-import PostBlock from "../_components/PostBlock/PostBlock";
+import PostGrid from "@/components/post/PostGrid/PostGrid";
+import PostCreate from "@/components/post/PostCreate/PostCreate";
 
-export default function HomePage() {
+const Home = () => {
 	const [session, setSession] = useState(null);
 
 	useEffect(() => {
@@ -29,10 +30,13 @@ export default function HomePage() {
 		return (
 			<>
 				<NavBar />
-				<PostBlock />
+				<PostCreate />
+				<PostGrid />
 			</>
 		);
 	} else {
 		redirect("/auth");
 	}
-}
+};
+
+export default Home;
