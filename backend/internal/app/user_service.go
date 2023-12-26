@@ -1,8 +1,11 @@
 package app
 
 import (
+	"net/http"
 	"regexp"
+	"strconv"
 
+	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/google/uuid"
 )
@@ -63,6 +66,90 @@ func (s *UserService) Update(u user.User, name, password string) error {
 
 func (s *UserService) Delete(u user.User) error {
 	return s.ur.Delete(u)
+}
+
+func (s *UserService) Follow(u user.User, id uuid.UUID) error {
+	o, err := s.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	return s.ur.Follow(u, o)
+}
+
+func (s *UserService) Unfollow(u user.User, id uuid.UUID) error {
+	o, err := s.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	return s.ur.Unfollow(u, o)
+}
+
+func (s *UserService) Following(
+	r *http.Request,
+	pageSize int,
+	userID uuid.UUID,
+) ([]user.Follow, error) {
+	q := r.URL.Query()
+
+	var page int
+	var err error
+
+	pageString := q.Get("page")
+	if pageString == "" {
+		page = 1
+	} else {
+		page, err = strconv.Atoi(pageString)
+		if err != nil {
+			page = 1
+		}
+	}
+
+	return s.ur.Following(user.LoadParams{
+		UserID: userID,
+		PaginationParams: pages.PaginationParams{
+			PageNumber: page,
+			PageSize:   pageSize,
+		},
+	})
+}
+
+func (s *UserService) Followers(
+	r *http.Request,
+	pageSize int,
+	userID uuid.UUID,
+) ([]user.Follow, error) {
+	q := r.URL.Query()
+
+	var page int
+	var err error
+
+	pageString := q.Get("page")
+	if pageString == "" {
+		page = 1
+	} else {
+		page, err = strconv.Atoi(pageString)
+		if err != nil {
+			page = 1
+		}
+	}
+
+	return s.ur.Followers(user.LoadParams{
+		UserID: userID,
+		PaginationParams: pages.PaginationParams{
+			PageNumber: page,
+			PageSize:   pageSize,
+		},
+	})
+}
+
+func (s *UserService) FollowingCount(u user.User) (int, error) {
+	return s.ur.FollowingCount(u)
+}
+
+func (s *UserService) FollowerCount(u user.User) (int, error) {
+	return s.ur.FollowersCount(u)
 }
 
 type ErrUser string
