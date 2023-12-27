@@ -5,7 +5,7 @@ export const getProfile = async (username) => {
 	try {
 		if (!username) {
 			const response = await axios.post(
-				process.env.postGetEndPoint,
+				process.env.profileEndPoint,
 				{},
 				{ withCredentials: true }
 			);
@@ -13,7 +13,7 @@ export const getProfile = async (username) => {
 			return response.payload;
 		} else {
 			const response = await axios.post(
-				`${process.env.postGetEndPoint}?u=${username}`,
+				`${process.env.profileEndPoint}?u=${username}`,
 				{},
 				{ withCredentials: true }
 			);
