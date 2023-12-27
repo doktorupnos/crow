@@ -4,13 +4,10 @@
 	justify-content: center;
 }
 
-.profile_grid_line {
-	display: block;
-	width: 40%;
-	margin-top: 2rem;
-	margin-bottom: 1rem;
-	margin-right: auto;
-	margin-left: auto;
+.profile_info {
+	display: flex;
+	flex-direction: column;
+	margin-left: 3rem;
 }
 
 .profile_name {
@@ -18,11 +15,6 @@
 	color: white;
 	font-size: 1.3rem;
 	font-weight: 600;
-}
-
-.profile_avatar {
-	display: block;
-	margin-right: 3rem;
 }
 
 .profile_follow_grid {
@@ -34,4 +26,13 @@
 	color: white;
 	font-size: 1.1rem;
 	margin-right: 1rem;
+}
+
+.profile_grid_line {
+	display: block;
+	width: 40%;
+	margin-top: 2rem;
+	margin-bottom: 1rem;
+	margin-right: auto;
+	margin-left: auto;
 }

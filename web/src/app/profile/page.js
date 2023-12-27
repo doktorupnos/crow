@@ -57,7 +57,7 @@ const Profile = () => {
 				const response = await getProfile(user);
 				setUserData(response);
 			} catch (error) {
-				console.error("Failed to fetch user data!", error.message);
+				console.error(`Failed to fetch user data! [${error.message}]`);
 			}
 		};
 		fetchUserData(user);
@@ -66,16 +66,18 @@ const Profile = () => {
 	return (
 		<>
 			<NavBar />
-			{Object.keys(userData).length > 0 ? (
-				<ProfileGrid userData={userData} />
-			) : null}
-			<div>
-				{posts.length > 0 ? (
-					posts.map((post) => <p key={post.id}>Hello</p>)
-				) : (
-					<PostNone />
-				)}
-			</div>
+			{!Object.keys(userData).length > 0 ? (
+				<>
+					<ProfileGrid userData={userData} />
+					{posts.length > 0 ? (
+						posts.map((post) => <p key={post.id}>Hello</p>)
+					) : (
+						<PostNone />
+					)}
+				</>
+			) : (
+				<p>User does not exist</p>
+			)}
 		</>
 	);
 };
