@@ -1,13 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import PostNone from "@/components/post/PostNone/PostNone";
 import NavBar from "@/components/nav/NavBar/NavBar";
 
 import ProfileGrid from "@/components/profile/ProfileGrid/ProfileGrid";
 
+import { getProfile } from "@/utils/profile";
+
 const Profile = () => {
+	const query = new URLSearchParams(window.location.search);
+	const user = query.get("u");
+
 	const [followers, setFollowers] = useState(0);
 	const [following, setFollowing] = useState(0);
 	const [posts, setPosts] = useState([]);
@@ -67,10 +71,24 @@ const Profile = () => {
 	};
 
 	useEffect(() => {
+		const fetchUserData = async (user) => {
+			try {
+				const response = await getProfile(user);
+				console.log(response);
+			} catch (error) {
+				console.error("Failed to fetch user data!", error.message);
+			}
+		};
+		fetchUserData(user);
+	}, [user]);
+
+	/*
+	useEffect(() => {
 		fetchFollowingCount();
 		fetchFollowersCount();
 		fetchUserPosts();
 	}, []);
+	*/
 
 	return (
 		<>
