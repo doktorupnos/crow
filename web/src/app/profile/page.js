@@ -12,8 +12,7 @@ const Profile = () => {
 	const query = new URLSearchParams(window.location.search);
 	const user = query.get("u");
 
-	const [followers, setFollowers] = useState(0);
-	const [following, setFollowing] = useState(0);
+	const [userData, setUserData] = useState({});
 	const [posts, setPosts] = useState([]);
 
 	const handleFollow = async () => {
@@ -34,32 +33,6 @@ const Profile = () => {
 		}
 	};
 
-	const fetchFollowersCount = async () => {
-		try {
-			const response = await axios.get(
-				process.env.fetchFollowersCountEndPoint,
-				{ withCredentials: true }
-			);
-			setFollowers(response.data);
-		} catch (error) {
-			setFollowers(0);
-			console.error("Error fetching followers count:", error);
-		}
-	};
-
-	const fetchFollowingCount = async () => {
-		try {
-			const response = await axios.get(
-				process.env.fetchFollowingCountEndPoint,
-				{ withCredentials: true }
-			);
-			setFollowing(response.data);
-		} catch (error) {
-			console.error("Error fetching following count:", error);
-			setFollowing(0);
-		}
-	};
-
 	const fetchUserPosts = async () => {
 		try {
 			// TODO: Add request to add user posts
@@ -70,18 +43,6 @@ const Profile = () => {
 		}
 	};
 
-	useEffect(() => {
-		const fetchUserData = async (user) => {
-			try {
-				const response = await getProfile(user);
-				console.log(response);
-			} catch (error) {
-				console.error("Failed to fetch user data!", error.message);
-			}
-		};
-		fetchUserData(user);
-	}, [user]);
-
 	/*
 	useEffect(() => {
 		fetchFollowingCount();
@@ -90,10 +51,24 @@ const Profile = () => {
 	}, []);
 	*/
 
+	useEffect(() => {
+		const fetchUserData = async (user) => {
+			try {
+				const response = await getProfile(user);
+				setUserData(response);
+			} catch (error) {
+				console.error("Failed to fetch user data!", error.message);
+			}
+		};
+		fetchUserData(user);
+	}, [user]);
+
 	return (
 		<>
 			<NavBar />
-			<ProfileGrid />
+			{Object.keys(userData).length > 0 ? (
+				<ProfileGrid userData={userData} />
+			) : null}
 			<div>
 				{posts.length > 0 ? (
 					posts.map((post) => <p key={post.id}>Hello</p>)

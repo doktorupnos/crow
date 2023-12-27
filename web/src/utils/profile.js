@@ -7,15 +7,13 @@ export const getProfile = async (username) => {
 			const response = await axios.get(process.env.profileEndPoint, {
 				withCredentials: true,
 			});
-			console.log(response);
-			return response.payload;
+			return response.data;
 		} else {
 			const response = await axios.get(
 				`${process.env.profileEndPoint}?u=${username}`,
 				{ withCredentials: true }
 			);
-			console.log(response.payload);
-			return response.payload;
+			return response.data;
 		}
 	} catch (error) {
 		throw error;
