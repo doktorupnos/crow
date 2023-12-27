@@ -13,32 +13,44 @@ type ProfileResponse struct {
 	FollowingCount int       `json:"following_count"`
 	UserID         uuid.UUID `json:"id"`
 	Self           bool      `json:"self"`
+	Following      bool      `json:"following"`
 }
 
 func (app *App) ViewProfile(w http.ResponseWriter, r *http.Request, u user.User) {
+	var err error
+	var self, following bool
+
 	target := u
-	var self bool
 
 	name := r.URL.Query().Get("u")
 	if name != "" {
-		var err error
 		target, err = app.userService.GetByName(name)
 		if err != nil {
 			respondWithError(w, http.StatusBadRequest, err.Error())
+			return
 		}
 	}
 
 	if target.Name == u.Name {
 		self = true
+	} else {
+		// set following if the user 'u' follows the target
+		following, err = app.userService.FollowsUser(u, target)
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, err.Error())
+			return
+		}
 	}
 
-	followingCount, err := app.userService.FollowingCount(u)
+	followingCount, err := app.userService.FollowingCount(target)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
 	}
-	followerCount, err := app.userService.FollowerCount(u)
+	followerCount, err := app.userService.FollowerCount(target)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	resp := &ProfileResponse{
@@ -47,6 +59,7 @@ func (app *App) ViewProfile(w http.ResponseWriter, r *http.Request, u user.User)
 		UserName:       target.Name,
 		FollowingCount: followingCount,
 		FollowerCount:  followerCount,
+		Following:      following,
 	}
 	respondWithJSON(w, http.StatusOK, resp)
 }

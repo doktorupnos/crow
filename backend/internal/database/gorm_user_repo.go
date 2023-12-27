@@ -111,7 +111,7 @@ func (r *GormUserRepo) FollowingCount(u user.User) (int, error) {
 FROM user_follows
 WHERE user_id = ?`
 
-	following := 0
+	var following int
 	err := r.db.Raw(q, u.ID).Scan(&following).Error
 	if err != nil {
 		return 0, err
@@ -124,10 +124,27 @@ func (r *GormUserRepo) FollowersCount(u user.User) (int, error) {
 FROM user_follows
 WHERE follow_id = ?`
 
-	followers := 0
+	var followers int
 	err := r.db.Raw(q, u.ID).Scan(&followers).Error
 	if err != nil {
 		return 0, err
 	}
 	return followers, nil
+}
+
+func (r *GormUserRepo) FollowsUser(u, t user.User) (bool, error) {
+	q := `SELECT COUNT(*)
+  FROM user_follows
+  WHERE user_id = ? AND follow_id = ?`
+
+	var count int
+	if err := r.db.Raw(q, u.ID, t.ID).Scan(&count).Error; err != nil {
+		return false, err
+	}
+
+	if count == 1 {
+		return true, nil
+	}
+
+	return false, nil
 }

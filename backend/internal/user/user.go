@@ -7,16 +7,15 @@ import (
 )
 
 type User struct {
+	Name     string  `json:"name" gorm:"unique;not null"`
+	Password string  `json:"-"    gorm:"not null"`
+	Follows  []*User `gorm:"many2many:user_follows"`
 	model.Model
-	Name     string `json:"name" gorm:"unique;not null"`
-	Password string `json:"-"    gorm:"not null"`
-
-	Follows []*User `gorm:"many2many:user_follows"`
 }
 
 type Follow struct {
-	ID   uuid.UUID `json:"id"`
 	Name string    `json:"name"`
+	ID   uuid.UUID `json:"id"`
 }
 
 type LoadParams struct {
@@ -39,4 +38,5 @@ type UserRepo interface {
 	Followers(p LoadParams) ([]Follow, error)
 	FollowingCount(u User) (int, error)
 	FollowersCount(u User) (int, error)
+	FollowsUser(u, t User) (bool, error)
 }

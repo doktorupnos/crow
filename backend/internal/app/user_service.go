@@ -152,6 +152,10 @@ func (s *UserService) FollowerCount(u user.User) (int, error) {
 	return s.ur.FollowersCount(u)
 }
 
+func (s *UserService) FollowsUser(u, t user.User) (bool, error) {
+	return s.ur.FollowsUser(u, t)
+}
+
 type ErrUser string
 
 func (e ErrUser) Error() string {
