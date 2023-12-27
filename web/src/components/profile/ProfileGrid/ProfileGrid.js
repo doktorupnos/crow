@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import styles from "./ProfileGrid.module.scss";
 
-export default function ProfilePic() {
+export default function ProfileGrid() {
 	return (
 		<>
 			<header className={styles.profile_grid}>
