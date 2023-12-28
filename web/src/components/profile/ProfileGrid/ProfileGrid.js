@@ -6,7 +6,11 @@ export default function ProfileGrid({ userData }) {
 	return (
 		<>
 			<header className={styles.profile_grid}>
-				<ProfileAvatar userid={userData.id} following={userData.following} />
+				<ProfileAvatar
+					userid={userData.id}
+					self={userData.self}
+					following={userData.following}
+				/>
 				<div className={styles.profile_info}>
 					<span className={styles.profile_name}>@{userData.name}</span>
 					<div className={styles.profile_follow_grid}>

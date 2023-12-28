@@ -2,10 +2,25 @@ import { useState, useEffect } from "react";
 
 import Image from "next/image";
 
+import { followUser } from "@/utils/profile";
+
 import styles from "./ProfileAvatar.module.scss";
 
-export default function ProfileAvatar({ userid, following }) {
+export default function ProfileAvatar({ uuid, self, following }) {
 	const [followStatus, setFollowStatus] = useState(following);
+
+	const handleFollow = async () => {
+		try {
+			let response = await followUser(uuid);
+			if (response) {
+				setFollowStatus(!followStatus);
+			} else {
+				console.error("Failed to follow user!");
+			}
+		} catch (error) {
+			console.error(`Failed to follow user! [${error.message}]`);
+		}
+	};
 
 	return (
 		<div className={styles.profile_grid}>
@@ -17,8 +32,8 @@ export default function ProfileAvatar({ userid, following }) {
 				draggable="false"
 				className={styles.profile_avatar}
 			/>
-			{!followStatus ? (
-				<button className={styles.profile_follow}>
+			{!followStatus || !self ? (
+				<button onClick={handleFollow} className={styles.profile_follow}>
 					<Image
 						src="images/bootstrap/user_follow.svg"
 						alt="follow user"
