@@ -9,8 +9,8 @@ module.exports = {
 		profileEndPoint: "//localhost:8000/profile",
 		followEndPoint: "//localhost:8000/follow",
 		unfollowEndPoint: "//localhost:8000/unfollow",
-		followingEndPoint: "//localhost:8000/following",
 		followersEndPoint: "//localhost:8000/followers",
+		followingEndPoint: "//localhost:8000/following",
 	},
 	reactStrictMode: false,
 };

@@ -55,3 +55,20 @@ export const unfollowUser = async (uuid) => {
 		throw error;
 	}
 };
+
+// Fetch user followers.
+export const fetchFollowers = async (name) => {
+	try {
+		let response = await axios.get(
+			`${process.env.followersEndPoint}?u=${name}`,
+			{ withCredentials: true }
+		);
+		if (response.status == 200) {
+			return response.data;
+		} else {
+			return false;
+		}
+	} catch (error) {
+		throw error;
+	}
+};

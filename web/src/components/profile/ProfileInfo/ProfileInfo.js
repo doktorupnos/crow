@@ -22,7 +22,7 @@ export default function ProfileInfo({ name, followers, following }) {
 					<button>{following} following</button>
 				</span>
 			</div>
-			{listShow ? <ProfileList close={showFollowers} /> : null}
+			{listShow ? <ProfileList name={name} close={showFollowers} /> : null}
 		</div>
 	);
 }
