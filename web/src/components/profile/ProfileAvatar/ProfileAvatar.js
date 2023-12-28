@@ -1,24 +1,37 @@
+import Image from "next/image";
 import { useState, useEffect } from "react";
 
-import Image from "next/image";
-
-import { followUser } from "@/utils/profile";
+import { followUser, unfollowUser } from "@/utils/profile";
 
 import styles from "./ProfileAvatar.module.scss";
 
-export default function ProfileAvatar({ uuid, self, following }) {
+const ProfileAvatar = ({ uuid, self, following }) => {
 	const [followStatus, setFollowStatus] = useState(following);
+	const [followIcon, setFollowIcon] = useState();
+
+	useEffect(() => {
+		{
+			followStatus
+				? setFollowIcon("/images/bootstrap/user_followed.svg")
+				: setFollowIcon("/images/bootstrap/user_follow.svg");
+		}
+	}, [followStatus]);
 
 	const handleFollow = async () => {
 		try {
-			let response = await followUser(uuid);
+			let response = false;
+			if (!followStatus) {
+				response = await followUser(uuid);
+			} else {
+				response = await unfollowUser(uuid);
+			}
 			if (response) {
 				setFollowStatus(!followStatus);
 			} else {
-				console.error("Failed to follow user!");
+				console.error("Failed to change follow status!");
 			}
 		} catch (error) {
-			console.error(`Failed to follow user! [${error.message}]`);
+			console.error(`Failed to change follow status! [${error.message}]`);
 		}
 	};
 
@@ -32,17 +45,19 @@ export default function ProfileAvatar({ uuid, self, following }) {
 				draggable="false"
 				className={styles.profile_avatar}
 			/>
-			{!followStatus || !self ? (
+			{!self ? (
 				<button onClick={handleFollow} className={styles.profile_follow}>
 					<Image
-						src="images/bootstrap/user_follow.svg"
+						src={followIcon}
 						alt="follow user"
-						height={28}
-						width={28}
+						height={26}
+						width={26}
 						draggable="false"
 					/>
 				</button>
 			) : null}
 		</div>
 	);
-}
+};
+
+export default ProfileAvatar;

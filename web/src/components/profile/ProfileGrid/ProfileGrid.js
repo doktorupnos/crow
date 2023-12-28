@@ -7,7 +7,7 @@ export default function ProfileGrid({ userData }) {
 		<>
 			<header className={styles.profile_grid}>
 				<ProfileAvatar
-					userid={userData.id}
+					uuid={userData.id}
 					self={userData.self}
 					following={userData.following}
 				/>

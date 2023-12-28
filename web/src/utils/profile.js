@@ -23,11 +23,27 @@ export const getProfile = async (username) => {
 // Follow user.
 export const followUser = async (uuid) => {
 	try {
-		const response = await axios.post(
-			process.env.profileEndPoint,
-			{
-				user_id: uuid,
-			},
+		let response = await axios.post(
+			process.env.followEndPoint,
+			{ user_id: uuid },
+			{ withCredentials: true }
+		);
+		if (response.status == 200) {
+			return true;
+		} else {
+			return false;
+		}
+	} catch (error) {
+		throw error;
+	}
+};
+
+// Unfollow user.
+export const unfollowUser = async (uuid) => {
+	try {
+		let response = await axios.post(
+			process.env.unfollowEndPoint,
+			{ user_id: uuid },
 			{ withCredentials: true }
 		);
 		if (response.status == 200) {
