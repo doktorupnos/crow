@@ -141,8 +141,26 @@ func (app *App) UnFollow(w http.ResponseWriter, r *http.Request, u user.User) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func (app *App) extractTargetUser(r *http.Request, u user.User) (user.User, error) {
+	target := u
+	if uq := r.URL.Query().Get("u"); uq != "" {
+		var err error
+		target, err = app.userService.GetByName(uq)
+		if err != nil {
+			return user.User{}, err
+		}
+	}
+	return target, nil
+}
+
 func (app *App) Following(w http.ResponseWriter, r *http.Request, u user.User) {
-	us, err := app.userService.Following(r, app.Env.DefaultPageSize, u.ID)
+	target, err := app.extractTargetUser(r, u)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	us, err := app.userService.Following(r, app.Env.DefaultPageSize, target.ID)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -151,7 +169,13 @@ func (app *App) Following(w http.ResponseWriter, r *http.Request, u user.User) {
 }
 
 func (app *App) Followers(w http.ResponseWriter, r *http.Request, u user.User) {
-	us, err := app.userService.Followers(r, app.Env.DefaultPageSize, u.ID)
+	target, err := app.extractTargetUser(r, u)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	us, err := app.userService.Followers(r, app.Env.DefaultPageSize, target.ID)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -160,7 +184,13 @@ func (app *App) Followers(w http.ResponseWriter, r *http.Request, u user.User) {
 }
 
 func (app *App) FollowingCount(w http.ResponseWriter, r *http.Request, u user.User) {
-	count, err := app.userService.FollowingCount(u)
+	target, err := app.extractTargetUser(r, u)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	count, err := app.userService.FollowingCount(target)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -169,7 +199,13 @@ func (app *App) FollowingCount(w http.ResponseWriter, r *http.Request, u user.Us
 }
 
 func (app *App) FollowerCount(w http.ResponseWriter, r *http.Request, u user.User) {
-	count, err := app.userService.FollowerCount(u)
+	target, err := app.extractTargetUser(r, u)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	count, err := app.userService.FollowerCount(target)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
