@@ -1,4 +1,4 @@
-import Image from "next/image";
+import ProfileAvatar from "@/components/profile/ProfileAvatar/ProfileAvatar";
 
 import styles from "./ProfileGrid.module.scss";
 
@@ -6,14 +6,7 @@ export default function ProfileGrid({ userData }) {
 	return (
 		<>
 			<header className={styles.profile_grid}>
-				<Image
-					src="images/crow_circle.svg"
-					alt="avatar"
-					height={120}
-					width={120}
-					className={styles.profile_avatar}
-					draggable="false"
-				/>
+				<ProfileAvatar userid={userData.id} following={userData.following} />
 				<div className={styles.profile_info}>
 					<span className={styles.profile_name}>@{userData.name}</span>
 					<div className={styles.profile_follow_grid}>
