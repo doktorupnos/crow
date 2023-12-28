@@ -15,24 +15,7 @@ const Profile = () => {
 	const [userData, setUserData] = useState({});
 	const [posts, setPosts] = useState([]);
 
-	const handleFollow = async () => {
-		try {
-			await axios.post(process.env.followEndpoint, { withCredentials: true });
-			await fetchFollowers();
-		} catch (error) {
-			console.error("Error following user:", error);
-		}
-	};
-
-	const handleUnfollow = async () => {
-		try {
-			await axios.post(process.env.unfollowEndpoint, { withCredentials: true });
-			await fetchFollowers();
-		} catch (error) {
-			console.error("Error unfollowing user:", error);
-		}
-	};
-
+	/*
 	const fetchUserPosts = async () => {
 		try {
 			// TODO: Add request to add user posts
@@ -42,11 +25,10 @@ const Profile = () => {
 			setPosts([]);
 		}
 	};
+	*/
 
 	/*
 	useEffect(() => {
-		fetchFollowingCount();
-		fetchFollowersCount();
 		fetchUserPosts();
 	}, []);
 	*/
@@ -66,7 +48,7 @@ const Profile = () => {
 	return (
 		<>
 			<NavBar />
-			{!Object.keys(userData).length > 0 ? (
+			{Object.keys(userData).length > 0 ? (
 				<>
 					<ProfileGrid userData={userData} />
 					{posts.length > 0 ? (
