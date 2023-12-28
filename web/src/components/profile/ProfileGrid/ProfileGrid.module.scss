@@ -4,30 +4,6 @@
 	justify-content: center;
 }
 
-.profile_info {
-	display: flex;
-	flex-direction: column;
-	margin-left: 3rem;
-}
-
-.profile_name {
-	display: block;
-	color: white;
-	font-size: 1.3rem;
-	font-weight: 600;
-}
-
-.profile_follow_grid {
-	display: flex;
-}
-
-.profile_follow_text {
-	display: block;
-	color: white;
-	font-size: 1.1rem;
-	margin-right: 1rem;
-}
-
 .profile_grid_line {
 	display: block;
 	width: 40%;

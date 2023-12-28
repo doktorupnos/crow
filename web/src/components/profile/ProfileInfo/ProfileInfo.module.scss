@@ -1,0 +1,20 @@
+.profile_grid {
+	display: flex;
+	flex-direction: column;
+	margin-left: 3rem;
+}
+
+.profile_name {
+	display: block;
+	color: white;
+	font-size: 1.3rem;
+	font-weight: 600;
+}
+
+.profile_follow {
+	display: flex;
+	color: white;
+	font-size: 1.1rem;
+	word-spacing: 0.2rem;
+	column-gap: 1rem;
+}

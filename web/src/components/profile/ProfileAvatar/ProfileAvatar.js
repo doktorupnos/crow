@@ -49,7 +49,7 @@ const ProfileAvatar = ({ uuid, self, following }) => {
 				<button onClick={handleFollow} className={styles.profile_follow}>
 					<Image
 						src={followIcon}
-						alt="follow user"
+						alt="follow status"
 						height={26}
 						width={26}
 						draggable="false"

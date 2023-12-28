@@ -1,4 +1,5 @@
 import ProfileAvatar from "@/components/profile/ProfileAvatar/ProfileAvatar";
+import ProfileInfo from "@/components/profile/ProfileInfo/ProfileInfo";
 
 import styles from "./ProfileGrid.module.scss";
 
@@ -11,17 +12,11 @@ export default function ProfileGrid({ userData }) {
 					self={userData.self}
 					following={userData.following}
 				/>
-				<div className={styles.profile_info}>
-					<span className={styles.profile_name}>@{userData.name}</span>
-					<div className={styles.profile_follow_grid}>
-						<span className={styles.profile_follow_text}>
-							{userData.follower_count} followers
-						</span>
-						<span className={styles.profile_follow_text}>
-							{userData.following_count} following
-						</span>
-					</div>
-				</div>
+				<ProfileInfo
+					name={userData.name}
+					followers={userData.follower_count}
+					following={userData.following_count}
+				/>
 			</header>
 			<hr className={styles.profile_grid_line} />
 		</>
