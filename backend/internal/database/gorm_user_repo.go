@@ -1,7 +1,6 @@
 package database
 
 import (
-	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -62,15 +61,19 @@ func (r *GormUserRepo) Unfollow(u, o user.User) error {
 
 func (r *GormUserRepo) Following(p user.LoadParams) ([]user.Follow, error) {
 	q := `SELECT uf.follow_id, u.name
-FROM user_follows uf JOIN users u ON uf.follow_id = u.id
-WHERE uf.user_id = ?`
+  FROM users u JOIN user_follows uf ON u.id = uf.follow_id
+  WHERE uf.user_id = ?
+  LIMIT ? OFFSET ?`
 
-	rows, err := r.db.Scopes(pages.Paginate(p.PaginationParams)).Raw(q, p.UserID).Rows()
+	limit := p.PageSize
+	offset := limit * p.PageNumber
+
+	rows, err := r.db.Raw(q, p.UserID, limit, offset).Rows()
 	if err != nil {
 		return nil, err
 	}
-
 	following := []user.Follow{}
+
 	follow := user.Follow{}
 	for rows.Next() {
 		err := rows.Scan(&follow.ID, &follow.Name)
@@ -85,10 +88,14 @@ WHERE uf.user_id = ?`
 
 func (r *GormUserRepo) Followers(p user.LoadParams) ([]user.Follow, error) {
 	q := `SELECT uf.user_id, u.name
-FROM user_follows uf JOIN users u ON uf.user_id = u.id
-WHERE uf.follow_id = ?`
+				FROM user_follows uf JOIN users u ON uf.user_id = u.id
+				WHERE uf.follow_id = ?
+		    LIMIT ? OFFSET ?`
 
-	rows, err := r.db.Scopes(pages.Paginate(p.PaginationParams)).Raw(q, p.UserID).Rows()
+	limit := p.PageSize
+	offset := limit * p.PageNumber
+
+	rows, err := r.db.Raw(q, p.UserID, limit, offset).Rows()
 	if err != nil {
 		return nil, err
 	}

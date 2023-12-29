@@ -3,7 +3,6 @@ package app
 import (
 	"net/http"
 	"regexp"
-	"strconv"
 
 	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/user"
@@ -88,58 +87,40 @@ func (s *UserService) Unfollow(u user.User, id uuid.UUID) error {
 
 func (s *UserService) Following(
 	r *http.Request,
-	pageSize int,
+	defaultPageSize int,
 	userID uuid.UUID,
 ) ([]user.Follow, error) {
-	q := r.URL.Query()
-
-	var page int
-	var err error
-
-	pageString := q.Get("page")
-	if pageString == "" {
-		page = 1
-	} else {
-		page, err = strconv.Atoi(pageString)
-		if err != nil {
-			page = 1
-		}
+	page := pages.ExtractPage(r)
+	limit := pages.ExtractLimit(r)
+	if limit == 0 {
+		limit = defaultPageSize
 	}
 
 	return s.ur.Following(user.LoadParams{
 		UserID: userID,
 		PaginationParams: pages.PaginationParams{
 			PageNumber: page,
-			PageSize:   pageSize,
+			PageSize:   limit,
 		},
 	})
 }
 
 func (s *UserService) Followers(
 	r *http.Request,
-	pageSize int,
+	defaultPageSize int,
 	userID uuid.UUID,
 ) ([]user.Follow, error) {
-	q := r.URL.Query()
-
-	var page int
-	var err error
-
-	pageString := q.Get("page")
-	if pageString == "" {
-		page = 1
-	} else {
-		page, err = strconv.Atoi(pageString)
-		if err != nil {
-			page = 1
-		}
+	page := pages.ExtractPage(r)
+	limit := pages.ExtractLimit(r)
+	if limit == 0 {
+		limit = defaultPageSize
 	}
 
 	return s.ur.Followers(user.LoadParams{
 		UserID: userID,
 		PaginationParams: pages.PaginationParams{
 			PageNumber: page,
-			PageSize:   pageSize,
+			PageSize:   limit,
 		},
 	})
 }

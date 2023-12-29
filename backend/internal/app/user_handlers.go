@@ -160,7 +160,7 @@ func (app *App) Following(w http.ResponseWriter, r *http.Request, u user.User) {
 		return
 	}
 
-	us, err := app.userService.Following(r, app.Env.DefaultPageSize, target.ID)
+	us, err := app.userService.Following(r, app.Env.DefaultFollowPageSize, target.ID)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -175,7 +175,7 @@ func (app *App) Followers(w http.ResponseWriter, r *http.Request, u user.User) {
 		return
 	}
 
-	us, err := app.userService.Followers(r, app.Env.DefaultPageSize, target.ID)
+	us, err := app.userService.Followers(r, app.Env.DefaultFollowPageSize, target.ID)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return

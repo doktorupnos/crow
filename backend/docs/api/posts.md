@@ -9,27 +9,37 @@ Requires: JWT.
 A post is associated (belongs) to the user that creates it (inferred from the JWT).
 
 Request Body:
+
 ```json
 {
-    "body": "First post!"
+  "body": "First post!"
 }
 ```
 
 Status Code:
-* 201 - Created successfully
-* 400 - Bad Request - Failed to decode request body or Body is not valid
-* 401 - Unauthorized - JWT has expired
+
+- 201 - Created successfully
+- 400 - Bad Request - Failed to decode request body or Body is not valid
+- 401 - Unauthorized - JWT has expired
 
 Checks:
-* 0 < Body Length <= 128
+
+- 0 < Body Length <= 128
 
 ## GET /posts
 
-Description: Get all Posts.
-Requires: JWT.
+- Description: Get all Posts.
+- Requires: JWT.
+- Pagination:
+- Query Parameters:
+  - page: Paginated list. The first page has index 0
+  - limit: Limit the entries for a page. If not set a sane default is provided.
+    Example: GET /posts?page=2&limit=10
+    Get the third page of 10 at most posts.
 
 Example Response Body:
-```json
+
+````json
 [
     {
         "id": "0b72bd22-c3a1-40ed-a48d-9ea745ced037",
@@ -66,14 +76,16 @@ Request Body:
 {
     "body": "First post!"
 }
-```
+````
 
 Status Code:
-* 200 - Updated successfully
-* 400 - Failed to parse Post's ID or request's body is not valid.
+
+- 200 - Updated successfully
+- 400 - Failed to parse Post's ID or request's body is not valid.
 
 Checks:
-* 0 < Body Length <= 128
+
+- 0 < Body Length <= 128
 
 ## DELETE /posts/{id}
 
@@ -84,7 +96,7 @@ Input: Post's ID via URL parameter.
 Example Request: `DELETE http://localhost:8000/posts/2ab14a7f-ecb0-40fd-96ba-99fddddc53cb`
 
 Status Code:
-* 200 - Delete successfully
-* 400 - Failed to parse Post's ID or Post doesn't belong to User.
-* 401 - Unauthorized
 
+- 200 - Delete successfully
+- 400 - Failed to parse Post's ID or Post doesn't belong to User.
+- 401 - Unauthorized

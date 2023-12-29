@@ -8,26 +8,24 @@ import (
 )
 
 type Post struct {
-	model.Model
-
-	Body   string    `json:"body"    gorm:"not null"`
-	UserID uuid.UUID `json:"user_id"`
-	User   user.User `json:"-"       gorm:"foreignKey:UserID; not null;constraint:onDelete:CASCADE"`
-
+	Body  string      `json:"body"    gorm:"not null"`
 	Likes []user.User `json:"-" gorm:"many2many:post_likes;"`
+	User  user.User   `json:"-"       gorm:"foreignKey:UserID; not null;constraint:onDelete:CASCADE"`
+	model.Model
+	UserID uuid.UUID `json:"user_id"`
 }
 
 type FeedPost struct {
+	UserName string `json:"user_name"`
 	Post
-	UserName    string `json:"user_name"`
-	Likes       int64  `json:"likes"`
-	LikedByUser bool   `json:"liked_by_user"`
+	Likes       int64 `json:"likes"`
+	LikedByUser bool  `json:"liked_by_user"`
 }
 
 type LoadParams struct {
-	UserID uuid.UUID
-	Order  string
+	Order string
 	pages.PaginationParams
+	UserID uuid.UUID
 }
 
 type PostRepo interface {

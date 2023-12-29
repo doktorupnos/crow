@@ -40,19 +40,28 @@ The user_id is the id the user wants to follow.
 
 - Description: Get a paginated list of following users.
 - Requires: JWT.
-- Optional Query Parameter:
+- Query Parameters:
   - u : a user's name
     `GET /following?u=zoumas`
     If the u query parameter is not set, the jwt owner's following list is returned.
+  - page: a page is a paginated list of results.
+    GET /following?page=2
+    If the page query parameter is not set, it is inferred as page=0. 0 is the index for the first page of results.
+  - limit: page size.
+    GET /following?page=0&limit=10
+    Limit the page to 10 entries.
+    If the limit query parameter is not set, a sane default is provided.
 
 ## GET /followers
 
 - Description: Get a paginated list of follower users.
 - Requires: JWT.
-- Optional Query Parameter:
+- Query Parameters:
   - u : a user's name
     `GET /followers?u=zoumas`
     If the u query parameter is not set, the jwt owner's followers list is returned.
+  - page: similar to /following.
+  - limit: similar to /following.
 
 ## GET /following_count
 
@@ -71,5 +80,5 @@ The user_id is the id the user wants to follow.
 - Optional Query Parameter:
   - u : a user's name
     `GET /followers_count?u=zoumas`
-    If the u query parameter is not set, the jwt owner's follower count is returned.
 - Returns: An integer.
+  If the u query parameter is not set, the jwt owner's follower count is returned.
