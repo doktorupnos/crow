@@ -1,18 +1,23 @@
-.follow_list_back {
+$back_focus: rgba(0, 0, 0, 0.5);
+$back_shadow: 0 0 10px $back_focus;
+$back_color: #404040;
+$accent_color: #ffffff;
+
+.list_back {
 	display: flex;
 	position: fixed;
 	justify-content: center;
 	align-items: center;
-	background-color: rgba(0, 0, 0, 0.5);
+	background-color: $back_focus;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
 }
 
-.follow_list_inner {
-	background-color: #404040;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+.list_inner {
+	background-color: $back_color;
+	box-shadow: $back_shadow;
 	border-radius: 1.5rem;
 	min-width: 25%;
 	max-width: 25%;
@@ -37,9 +42,17 @@
 	margin-left: auto;
 }
 
-.follow_list_ul {
+.list_ul {
 	display: block;
-	color: white;
+	color: $accent_color;
 	padding: 1rem;
 	font-size: 1.1rem;
+}
+
+.list_load {
+	display: block;
+	color: $accent_color;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: 1rem;
 }

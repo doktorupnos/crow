@@ -5,10 +5,15 @@ import styles from "./ProfileInfo.module.scss";
 import ProfileList from "@/components/profile/ProfileList/ProfileList";
 
 export default function ProfileInfo({ name, followers, following }) {
-	const [listShow, setListShow] = useState(false);
+	const [followersList, setFollowersList] = useState(false);
+	const [followingList, setFollowingList] = useState(false);
 
 	const showFollowers = async () => {
-		setListShow(!listShow);
+		setFollowersList(!followersList);
+	};
+
+	const showFollowing = async () => {
+		setFollowingList(!followingList);
 	};
 
 	return (
@@ -19,10 +24,15 @@ export default function ProfileInfo({ name, followers, following }) {
 					<button onClick={showFollowers}>{followers} followers</button>
 				</span>
 				<span>
-					<button>{following} following</button>
+					<button onClick={showFollowing}>{following} following</button>
 				</span>
 			</div>
-			{listShow ? <ProfileList name={name} close={showFollowers} /> : null}
+			{followersList ? (
+				<ProfileList name={name} close={showFollowers} type={1} />
+			) : null}
+			{followingList ? (
+				<ProfileList name={name} close={showFollowing} type={0} />
+			) : null}
 		</div>
 	);
 }

@@ -56,17 +56,19 @@ export const unfollowUser = async (uuid) => {
 	}
 };
 
-// Fetch user followers.
-export const fetchFollowers = async (name) => {
+// Fetch user follow list.
+export const fetchFollow = async (name, page, type) => {
 	try {
 		let response = await axios.get(
-			`${process.env.followersEndPoint}?u=${name}`,
+			type
+				? `${process.env.followersEndPoint}?u=${name}&page=${page}`
+				: `${process.env.followingEndPoint}?u=${name}&page=${page}`,
 			{ withCredentials: true }
 		);
 		if (response.status == 200) {
 			return response.data;
 		} else {
-			return false;
+			return null;
 		}
 	} catch (error) {
 		throw error;
