@@ -48,6 +48,28 @@ func (s *PostService) Load(
 	})
 }
 
+func (s *PostService) LoadAllByID(
+	r *http.Request,
+	defaultPageSize int,
+	userID uuid.UUID,
+) ([]post.FeedPost, error) {
+	page := pages.ExtractPage(r)
+	limit := pages.ExtractLimit(r)
+	if limit == 0 {
+		limit = defaultPageSize
+	}
+	order := "desc"
+
+	return s.pr.LoadAllByID(post.LoadParams{
+		PaginationParams: pages.PaginationParams{
+			PageNumber: page,
+			PageSize:   limit,
+		},
+		Order:  order,
+		UserID: userID,
+	})
+}
+
 func (s *PostService) LoadByID(id uuid.UUID) (post.Post, error) {
 	return s.pr.LoadByID(id)
 }
