@@ -1,83 +1,103 @@
 import { useState, useEffect } from "react";
-import { fetchPosts, getPostTime } from "@/app/utils/posts";
-
-import Image from "next/image";
+import { getPostTime } from "@/app/utils/posts";
+import { fetchPosts } from "@/utils/posts";
 
 import PostBox from "@/components/post/PostBox/PostBox";
 import PostNone from "@/components/post/PostNone/PostNone";
 
+import IconLoad from "./_components/IconLoad/IconLoad";
+
 import styles from "./PostGrid.module.css";
 
 export default function PostGrid() {
-	const [posts, setPosts] = useState([]);
-	const [postList, setPostList] = useState([]);
-	const [page, setPage] = useState(1);
-	const [morePosts, setMorePosts] = useState(true);
+	const [postList, setPostList] = useState([null]);
+	const [morePosts, setMorePosts] = useState(null);
+	const [page, setPage] = useState(0);
 
 	useEffect(() => {
-		const fetchData = async () => {
-			if (morePosts) {
-				try {
-					const response = await fetchPosts(page);
-					if (!response.payload.length) return setMorePosts(false);
-					setPosts((prevPosts) => [...prevPosts, ...response.payload]);
-				} catch (error) {
-					console.error("Failed to fetch posts!", error);
-					return setMorePosts(false);
-				}
+		const getPosts = async (page) => {
+			try {
+				let response = await fetchPosts(null, page);
+				if (!response.length > 0) return setMorePosts(false);
+				let newList = response.map((post) => {
+					let date = getPostTime(post.created_at);
+					return {
+						id: post.id,
+						timestamp: post.created_at,
+						content: (
+							<PostBox
+								key={post.id}
+								id={post.id}
+								author={post.user_name}
+								message={post.body}
+								date={date}
+								likes={post.likes}
+								status={post.liked_by_user}
+							/>
+						),
+					};
+				});
+				setPostList((prevList) => {
+					let sorted = [...prevList];
+					newList.forEach((newItem) => {
+						let low = 0;
+						let high = sorted.length - 1;
+						while (low <= high) {
+							let mid = Math.floor((low + high) / 2);
+							if (sorted[mid] && sorted[mid].timestamp === newItem.timestamp) {
+								sorted.splice(mid + 1, 0, newItem);
+								break;
+							} else if (
+								sorted[mid] &&
+								sorted[mid].timestamp < newItem.timestamp
+							) {
+								high = mid - 1;
+							} else {
+								low = mid + 1;
+							}
+							if (low > high) {
+								sorted.splice(low, 0, newItem);
+							}
+						}
+					});
+					return sorted;
+				});
+				setMorePosts(true);
+			} catch (error) {
+				console.error(`Failed to retrieve posts! [${error.message}]`);
 			}
 		};
-		fetchData();
-	}, [page, morePosts]);
+		getPosts(page);
+	}, [page]);
 
 	useEffect(() => {
 		const handleScrollBottom = () => {
 			const isScrollAtBottom =
 				window.innerHeight + window.scrollY >= document.body.scrollHeight;
-			if (isScrollAtBottom) setPage((page) => page + 1);
+			if (isScrollAtBottom && morePosts) setPage((page) => page + 1);
 		};
 		window.addEventListener("scroll", handleScrollBottom);
 		return () => {
 			window.removeEventListener("scroll", handleScrollBottom);
 		};
-	}, []);
+	}, [morePosts]);
 
-	const loadMorePosts = () => {
+	const loadMore = () => {
 		setPage((page) => page + 1);
 	};
 
-	useEffect(() => {
-		const postData = posts.map((post) => {
-			const date = getPostTime(post.created_at);
-			return (
-				<PostBox
-					key={post.id}
-					id={post.id}
-					author={post.user_name}
-					message={post.body}
-					date={date}
-					likes={post.likes}
-					status={post.liked_by_user}
-				/>
-			);
-		});
-		setPostList(postData);
-	}, [posts]);
-
-	if (!posts.length) return <PostNone />;
-
 	return (
 		<>
-			<div className="flex flex-col mx-auto">{postList}</div>
-			<button className={styles.button_load} onClick={loadMorePosts}>
-				<Image
-					src="/images/bootstrap/load_posts.svg"
-					alt="load_more"
-					width={30}
-					height={30}
-					draggable="false"
-				/>
-			</button>
+			<div className={styles.post_grid}>
+				{postList.map(
+					(post) => post && <div key={post.id}>{post.content}</div>
+				)}
+			</div>
+			{morePosts && (
+				<button className={styles.post_load} onClick={loadMore}>
+					<IconLoad />
+				</button>
+			)}
 		</>
 	);
 }
