@@ -6,7 +6,7 @@ import { fetchFollow } from "@/utils/profile";
 
 import styles from "./ProfileList.module.scss";
 
-export default function ProfileList({ name, close, type }) {
+const ProfileList = ({ name, close, type }) => {
 	const [followList, setFollowList] = useState([null]);
 	const [moreList, setMoreList] = useState(null);
 	const [page, setPage] = useState(0);
@@ -17,7 +17,11 @@ export default function ProfileList({ name, close, type }) {
 				let response = await fetchFollow(name, page, type);
 				if (!response.length > 0) return setMoreList(false);
 				let newList = response.map((user) => (
-					<li key={user.id}>@{user.name}</li>
+					<li key={user.id}>
+						<a href={`/profile?u=${user.name}`} className={styles.list_user}>
+							@{user.name}
+						</a>
+					</li>
 				));
 				setFollowList((prevList) => [...prevList, ...newList]);
 				setMoreList(true);
@@ -45,12 +49,14 @@ export default function ProfileList({ name, close, type }) {
 				</header>
 				<hr />
 				<ul className={styles.list_ul}>{followList}</ul>
-				{moreList ? (
+				{moreList && (
 					<button onClick={loadMore} className={styles.list_load}>
 						<IconLoad />
 					</button>
-				) : null}
+				)}
 			</div>
 		</div>
 	);
-}
+};
+
+export default ProfileList;

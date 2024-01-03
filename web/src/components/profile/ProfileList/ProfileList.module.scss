@@ -49,6 +49,30 @@ $accent_color: #ffffff;
 	font-size: 1.1rem;
 }
 
+.list_user {
+	position: relative;
+	color: $accent_color;
+	text-decoration: none;
+	&:hover {
+		color: $accent_color;
+		&::before {
+			transform: scaleX(1);
+		}
+	}
+	&::before {
+		position: absolute;
+		background-color: $accent_color;
+		content: "";
+		width: 100%;
+		height: 0.1rem;
+		left: 0;
+		bottom: -0.3rem;
+		transform: scaleX(0);
+		transform-origin: top left;
+		transition: transform 0.3s ease;
+	}
+}
+
 .list_load {
 	display: block;
 	color: $accent_color;
