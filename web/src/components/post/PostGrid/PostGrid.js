@@ -1,103 +1,90 @@
-import { useState, useEffect } from "react";
-import { getPostTime } from "@/app/utils/posts";
-import { fetchPosts } from "@/utils/posts";
-
-import PostBox from "@/components/post/PostBox/PostBox";
-import PostNone from "@/components/post/PostNone/PostNone";
-
 import IconLoad from "./_components/IconLoad/IconLoad";
+import PostBox from "@/components/post/PostBox/PostBox";
+import ErrorPost from "@/components/error/ErrorPost/ErrorPost";
 
-import styles from "./PostGrid.module.css";
+import { useState, useEffect } from "react";
 
-export default function PostGrid() {
-	const [postList, setPostList] = useState([null]);
+import { fetchPosts, postTime } from "@/utils/posts";
+
+import styles from "./PostGrid.module.scss";
+
+const PostGrid = ({ user }) => {
+	const [postList, setPostList] = useState([]);
+	const [postLoad, setPostLoad] = useState(false);
 	const [morePosts, setMorePosts] = useState(null);
 	const [page, setPage] = useState(0);
 
 	useEffect(() => {
 		const getPosts = async (page) => {
 			try {
-				let response = await fetchPosts(null, page);
+				let response;
+				if (user) {
+					response = await fetchPosts(user, page);
+				} else {
+					response = await fetchPosts(null, page);
+				}
 				if (!response.length > 0) return setMorePosts(false);
 				let newList = response.map((post) => {
-					let date = getPostTime(post.created_at);
-					return {
-						id: post.id,
-						timestamp: post.created_at,
-						content: (
-							<PostBox
-								key={post.id}
-								id={post.id}
-								author={post.user_name}
-								message={post.body}
-								date={date}
-								likes={post.likes}
-								status={post.liked_by_user}
-							/>
-						),
-					};
+					let date = postTime(post.created_at);
+					return (
+						<PostBox
+							key={post.id}
+							id={post.id}
+							author={post.user_name}
+							message={post.body}
+							date={date}
+							likes={post.likes}
+							status={post.liked_by_user}
+						/>
+					);
 				});
-				setPostList((prevList) => {
-					let sorted = [...prevList];
-					newList.forEach((newItem) => {
-						let low = 0;
-						let high = sorted.length - 1;
-						while (low <= high) {
-							let mid = Math.floor((low + high) / 2);
-							if (sorted[mid] && sorted[mid].timestamp === newItem.timestamp) {
-								sorted.splice(mid + 1, 0, newItem);
-								break;
-							} else if (
-								sorted[mid] &&
-								sorted[mid].timestamp < newItem.timestamp
-							) {
-								high = mid - 1;
-							} else {
-								low = mid + 1;
-							}
-							if (low > high) {
-								sorted.splice(low, 0, newItem);
-							}
-						}
-					});
-					return sorted;
-				});
+				setPostList((prevList) => [...prevList, newList]);
 				setMorePosts(true);
+				setPostLoad(false);
 			} catch (error) {
 				console.error(`Failed to retrieve posts! [${error.message}]`);
 			}
 		};
 		getPosts(page);
-	}, [page]);
+	}, [page, user]);
 
 	useEffect(() => {
 		const handleScrollBottom = () => {
 			const isScrollAtBottom =
 				window.innerHeight + window.scrollY >= document.body.scrollHeight;
-			if (isScrollAtBottom && morePosts) setPage((page) => page + 1);
+			if (isScrollAtBottom && !postLoad) {
+				setPage((page) => page + 1);
+				setPostLoad(true);
+			}
 		};
 		window.addEventListener("scroll", handleScrollBottom);
 		return () => {
 			window.removeEventListener("scroll", handleScrollBottom);
 		};
-	}, [morePosts]);
+	}, [postLoad]);
 
-	const loadMore = () => {
-		setPage((page) => page + 1);
+	const handleLoad = () => {
+		if (!postLoad) {
+			setPage((page) => page + 1);
+			setPostLoad(true);
+		}
 	};
 
 	return (
 		<>
-			<div className={styles.post_grid}>
-				{postList.map(
-					(post) => post && <div key={post.id}>{post.content}</div>
-				)}
-			</div>
-			{morePosts && (
-				<button className={styles.post_load} onClick={loadMore}>
-					<IconLoad />
-				</button>
+			{postList.length > 0 && (
+				<>
+					<div className={styles.post_grid}>{postList}</div>
+					{morePosts && (
+						<button className={styles.post_load} onClick={handleLoad}>
+							<IconLoad />
+						</button>
+					)}
+				</>
 			)}
+			{morePosts == false && postList.length == 0 && <ErrorPost />}
 		</>
 	);
-}
+};
+
+export default PostGrid;

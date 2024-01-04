@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
 import NavBar from "@/components/nav/NavBar/NavBar";
 import ProfileGrid from "@/components/profile/ProfileGrid/ProfileGrid";
+import PostGrid from "@/components/post/PostGrid/PostGrid";
 import ErrorUser from "@/components/error/ErrorUser/ErrorUser";
+
+import { useState, useEffect } from "react";
 
 import { validSession } from "@/utils/auth";
 import { fetchProfile } from "@/utils/profile";
@@ -42,6 +43,8 @@ const Profile = () => {
 				if (Object.keys(response).length > 0) {
 					setUserData(response);
 					setUserDataLoad(true);
+				} else {
+					setUserDataLoad(false);
 				}
 			} catch (error) {
 				console.error(`Failed to fetch user data! [${error.message}]`);
@@ -54,13 +57,13 @@ const Profile = () => {
 		session && (
 			<>
 				<NavBar />
-				{!userDataLoad ? (
-					<ErrorUser />
-				) : (
+				{userDataLoad && (
 					<>
 						<ProfileGrid userData={userData} />
+						<PostGrid user={userData.name} />
 					</>
 				)}
+				{userDataLoad === false && <ErrorUser />}
 			</>
 		)
 	);
