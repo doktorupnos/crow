@@ -1,0 +1,36 @@
+$back_color: #414141;
+$accent_color: #ffffff;
+$border_color: #dddddd;
+
+.error_box {
+	background-color: $back_color;
+	color: $accent_color;
+	border: 0.1rem solid $back_color;
+	border-radius: 0.5rem;
+	min-width: 40%;
+	max-width: 40%;
+	padding: 1rem;
+	margin-right: auto;
+	margin-left: auto;
+	transition: border-color 0.2s linear; /* General */
+	-webkit-transition: border-color 0.2s linear; /* Safari & Chrome */
+	-moz-transition: border-color 0.2s linear; /* Firefox */
+	-o-transition: border-color 0.2s linear; /* Opera */
+	&:hover {
+		border-color: $border_color;
+	}
+}
+
+.error_image {
+	border-radius: 0.5rem;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.error_text {
+	display: block;
+	font-size: 1.1rem;
+	font-weight: 500;
+	text-align: center;
+	margin-top: 1rem;
+}

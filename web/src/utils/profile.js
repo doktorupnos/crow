@@ -1,16 +1,16 @@
 import axios from "axios";
 
 // Fetch profile data.
-export const getProfile = async (username) => {
+export const fetchProfile = async (user) => {
 	try {
-		if (!username) {
+		if (!user) {
 			const response = await axios.get(process.env.profileEndPoint, {
 				withCredentials: true,
 			});
 			return response.data;
 		} else {
 			const response = await axios.get(
-				`${process.env.profileEndPoint}?u=${username}`,
+				`${process.env.profileEndPoint}?u=${user}`,
 				{ withCredentials: true }
 			);
 			return response.data;
