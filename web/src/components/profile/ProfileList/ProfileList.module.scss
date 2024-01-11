@@ -1,0 +1,82 @@
+$back_focus: rgba(0, 0, 0, 0.5);
+$back_shadow: 0 0 10px $back_focus;
+$back_color: #404040;
+$accent_color: #ffffff;
+
+.list_back {
+	display: flex;
+	position: fixed;
+	justify-content: center;
+	align-items: center;
+	background-color: $back_focus;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.list_inner {
+	background-color: $back_color;
+	box-shadow: $back_shadow;
+	border-radius: 1.5rem;
+	min-width: 25%;
+	max-width: 25%;
+}
+
+.list_header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 1.2rem;
+}
+
+.list_title {
+	display: block;
+	color: white;
+	font-size: 1.2rem;
+	font-weight: 600;
+}
+
+.list_close {
+	display: block;
+	margin-left: auto;
+}
+
+.list_ul {
+	display: block;
+	color: $accent_color;
+	padding: 1rem;
+	font-size: 1.1rem;
+}
+
+.list_user {
+	position: relative;
+	color: $accent_color;
+	text-decoration: none;
+	&:hover {
+		color: $accent_color;
+		&::before {
+			transform: scaleX(1);
+		}
+	}
+	&::before {
+		position: absolute;
+		background-color: $accent_color;
+		content: "";
+		width: 100%;
+		height: 0.1rem;
+		left: 0;
+		bottom: -0.3rem;
+		transform: scaleX(0);
+		transform-origin: top left;
+		transition: transform 0.3s ease;
+	}
+}
+
+.list_load {
+	display: block;
+	color: $accent_color;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: 1rem;
+}

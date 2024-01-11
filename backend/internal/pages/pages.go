@@ -1,15 +1,30 @@
 package pages
 
-import "gorm.io/gorm"
+import (
+	"net/http"
+	"strconv"
+
+	"gorm.io/gorm"
+)
 
 type PaginationParams struct {
 	PageNumber int
 	PageSize   int
 }
 
-func Paginate(params PaginationParams) func(db *gorm.DB) *gorm.DB {
+func Paginate(p PaginationParams) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		offset := (params.PageNumber - 1) * params.PageSize
-		return db.Offset(offset).Limit(params.PageSize)
+		offset := p.PageNumber * p.PageSize
+		return db.Offset(offset).Limit(p.PageSize)
 	}
+}
+
+func ExtractPage(r *http.Request) int {
+	p, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	return p
+}
+
+func ExtractLimit(r *http.Request) int {
+	l, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	return l
 }

@@ -14,21 +14,6 @@ spec:
     spec:
       containers:
       - name: api-gateway
-        env:
-          - name: ADDR
-            value: 0.0.0.0:8000
-          - name: CORS_ORIGIN
-            value: "http://*"
-          - name: DEFAULT_PAGE_SIZE
-            value: "5"
-          - name: DSN 
-            valueFrom:
-              secretKeyRef:
-                name: crow-secrets
-                key: DATABASE_URL
-          - name: JWT_LIFETIME 
-            value: 20m
-        image: ghcr.io/doktorupnos/crow/backend:master
-        imagePullPolicy: Always
+        image: temp:latest
         ports:
-        - containerPort: 8000
+        - containerPort: 8080

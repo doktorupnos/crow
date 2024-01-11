@@ -9,48 +9,95 @@ Requires: JWT.
 A post is associated (belongs) to the user that creates it (inferred from the JWT).
 
 Request Body:
+
 ```json
 {
-    "body": "First post!"
+  "body": "First post!"
 }
 ```
 
 Status Code:
-* 201 - Created successfully
-* 400 - Bad Request - Failed to decode request body or Body is not valid
-* 401 - Unauthorized - JWT has expired
+
+- 201 - Created successfully
+- 400 - Bad Request - Failed to decode request body or Body is not valid
+- 401 - Unauthorized - JWT has expired
 
 Checks:
-* 0 < Body Length <= 128
+
+- 0 < Body Length <= 128
 
 ## GET /posts
 
-Description: Get all Posts.
-Requires: JWT.
+- Description: Get all Posts.
+- Requires: JWT.
+- Pagination:
+- Query Parameters:
+  - page: Paginated list. The first page has index 0
+  - limit: Limit the entries for a page. If not set a sane default is provided.
+  - u: The user name for the owner of the post.
+    Example: GET /posts?u=zoumas&page=2&limit=10
+    Get the third page of 10 at most posts by user zoumas.
 
-Example Response Body:
-```json
+Example Response Body: `http://localhost:8000/posts?u=zoumas&page=0`
+
+````json
 [
     {
-        "id": "0b72bd22-c3a1-40ed-a48d-9ea745ced037",
-        "created_at": 1701867268,
-        "updated_at": 1701867268,
-        "body": "7",
-        "user_id": "8b42f8bd-d4b9-44c0-ae44-3c77346d2137",
-        "user_name": "test",
+        "user_name": "zoumas",
+        "body": "What?",
+        "id": "4646178c-5f70-4cc5-9394-77fecb6f3319",
+        "created_at": 1703803617,
+        "updated_at": 1703803617,
+        "user_id": "d65c089f-d1cf-41e2-8523-78322143a1fe",
         "likes": 0,
-        "liked_by_user": false
+        "liked_by_user": false,
+        "self": true
     },
     {
-        "id": "2a4e7619-725d-4c8c-94ac-8dea7c202d04",
-        "created_at": 1701867265,
-        "updated_at": 1701867265,
-        "body": "6",
-        "user_id": "8b42f8bd-d4b9-44c0-ae44-3c77346d2137",
-        "user_name": "test",
+        "user_name": "zoumas",
+        "body": "Comments?\n\n\n",
+        "id": "770351cd-3f62-4456-a3d0-365c6be087d5",
+        "created_at": 1703773627,
+        "updated_at": 1703773627,
+        "user_id": "d65c089f-d1cf-41e2-8523-78322143a1fe",
         "likes": 1,
-        "liked_by_user": true
+        "liked_by_user": true,
+        "self": true
+    },
+    {
+        "user_name": "zoumas",
+        "body": "No?\n",
+        "id": "3716db8a-8d47-4e7f-9a5f-1f65ac17b7f9",
+        "created_at": 1703773606,
+        "updated_at": 1703773606,
+        "user_id": "d65c089f-d1cf-41e2-8523-78322143a1fe",
+        "likes": 1,
+        "liked_by_user": true,
+        "self": true
+    },
+    {
+        "user_name": "zoumas",
+        "body": "10",
+        "id": "e3815421-9e48-4395-9cae-81e8fa00bd9e",
+        "created_at": 1703588260,
+        "updated_at": 1703588260,
+        "user_id": "d65c089f-d1cf-41e2-8523-78322143a1fe",
+        "likes": 1,
+        "liked_by_user": true,
+        "self": true
+    },
+    {
+        "user_name": "zoumas",
+        "body": "9",
+        "id": "9605c291-3943-4ca0-8ed4-029a832a0e9f",
+        "created_at": 1703588257,
+        "updated_at": 1703588257,
+        "user_id": "d65c089f-d1cf-41e2-8523-78322143a1fe",
+        "likes": 1,
+        "liked_by_user": true,
+        "self": true
     }
+]
 ]```
 
 Status Code:
@@ -66,14 +113,16 @@ Request Body:
 {
     "body": "First post!"
 }
-```
+````
 
 Status Code:
-* 200 - Updated successfully
-* 400 - Failed to parse Post's ID or request's body is not valid.
+
+- 200 - Updated successfully
+- 400 - Failed to parse Post's ID or request's body is not valid.
 
 Checks:
-* 0 < Body Length <= 128
+
+- 0 < Body Length <= 128
 
 ## DELETE /posts/{id}
 
@@ -84,7 +133,7 @@ Input: Post's ID via URL parameter.
 Example Request: `DELETE http://localhost:8000/posts/2ab14a7f-ecb0-40fd-96ba-99fddddc53cb`
 
 Status Code:
-* 200 - Delete successfully
-* 400 - Failed to parse Post's ID or Post doesn't belong to User.
-* 401 - Unauthorized
 
+- 200 - Delete successfully
+- 400 - Failed to parse Post's ID or Post doesn't belong to User.
+- 401 - Unauthorized

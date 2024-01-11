@@ -50,3 +50,108 @@ func (r *GormUserRepo) Update(u user.User) error {
 func (r *GormUserRepo) Delete(u user.User) error {
 	return r.db.Delete(&u).Error
 }
+
+func (r *GormUserRepo) Follow(u, o user.User) error {
+	return r.db.Model(&u).Association("Follows").Append(&o)
+}
+
+func (r *GormUserRepo) Unfollow(u, o user.User) error {
+	return r.db.Model(&u).Association("Follows").Delete(&o)
+}
+
+func (r *GormUserRepo) Following(p user.LoadParams) ([]user.Follow, error) {
+	q := `SELECT uf.follow_id, u.name
+  FROM users u JOIN user_follows uf ON u.id = uf.follow_id
+  WHERE uf.user_id = ?
+  LIMIT ? OFFSET ?`
+
+	limit := p.PageSize
+	offset := limit * p.PageNumber
+
+	rows, err := r.db.Raw(q, p.UserID, limit, offset).Rows()
+	if err != nil {
+		return nil, err
+	}
+	following := []user.Follow{}
+
+	follow := user.Follow{}
+	for rows.Next() {
+		err := rows.Scan(&follow.ID, &follow.Name)
+		if err != nil {
+			return nil, err
+		}
+		following = append(following, follow)
+	}
+
+	return following, nil
+}
+
+func (r *GormUserRepo) Followers(p user.LoadParams) ([]user.Follow, error) {
+	q := `SELECT uf.user_id, u.name
+				FROM user_follows uf JOIN users u ON uf.user_id = u.id
+				WHERE uf.follow_id = ?
+		    LIMIT ? OFFSET ?`
+
+	limit := p.PageSize
+	offset := limit * p.PageNumber
+
+	rows, err := r.db.Raw(q, p.UserID, limit, offset).Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	followers := []user.Follow{}
+	follow := user.Follow{}
+	for rows.Next() {
+		err := rows.Scan(&follow.ID, &follow.Name)
+		if err != nil {
+			return nil, err
+		}
+		followers = append(followers, follow)
+	}
+
+	return followers, nil
+}
+
+func (r *GormUserRepo) FollowingCount(u user.User) (int, error) {
+	q := `SELECT COUNT(*)
+FROM user_follows
+WHERE user_id = ?`
+
+	var following int
+	err := r.db.Raw(q, u.ID).Scan(&following).Error
+	if err != nil {
+		return 0, err
+	}
+	return following, nil
+}
+
+func (r *GormUserRepo) FollowersCount(u user.User) (int, error) {
+	q := `SELECT COUNT(*)
+FROM user_follows
+WHERE follow_id = ?`
+
+	var followers int
+	err := r.db.Raw(q, u.ID).Scan(&followers).Error
+	if err != nil {
+		return 0, err
+	}
+	return followers, nil
+}
+
+func (r *GormUserRepo) FollowsUser(u, t user.User) (bool, error) {
+	q := `SELECT COUNT(*)
+  FROM user_follows
+  WHERE user_id = ? AND follow_id = ?`
+
+	var count int
+	if err := r.db.Raw(q, u.ID, t.ID).Scan(&count).Error; err != nil {
+		return false, err
+	}
+
+	if count == 1 {
+		return true, nil
+	}
+
+	return false, nil
+}

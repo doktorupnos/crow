@@ -9,12 +9,13 @@ import (
 
 // Env groups all the environment variables the server depends on
 type Env struct {
-	ServerAddr      string
-	CorsOrigin      string
-	DSN             string
-	JwtSecret       string
-	JwtLifetime     time.Duration
-	DefaultPageSize int
+	ServerAddr            string
+	CorsOrigin            string
+	DSN                   string
+	JwtSecret             string
+	JwtLifetime           time.Duration
+	DefaultPostsPageSize  int
+	DefaultFollowPageSize int
 }
 
 func Load() (*Env, error) {
@@ -47,22 +48,32 @@ func Load() (*Env, error) {
 		return nil, err
 	}
 
-	defaultPageSizeString, ok := os.LookupEnv("DEFAULT_PAGE_SIZE")
+	defaultPostsPageSizeString, ok := os.LookupEnv("DEFAULT_POSTS_PAGE_SIZE")
 	if !ok {
-		return nil, envNotSet("DEFAULT_PAGE_SIZE")
+		return nil, envNotSet("DEFAULT_POSTS_PAGE_SIZE")
 	}
-	defaultPageSize, err := strconv.Atoi(defaultPageSizeString)
+	defaultPostsPageSize, err := strconv.Atoi(defaultPostsPageSizeString)
+	if err != nil {
+		return nil, err
+	}
+
+	defaultFollowsPageSizeString, ok := os.LookupEnv("DEFAULT_FOLLOWS_PAGE_SIZE")
+	if !ok {
+		return nil, envNotSet("DEFAULT_FOLLOWS_PAGE_SIZE")
+	}
+	defaultFollowsPageSize, err := strconv.Atoi(defaultFollowsPageSizeString)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Env{
-		ServerAddr:      serverAddr,
-		CorsOrigin:      corsOrigin,
-		DSN:             dsn,
-		JwtSecret:       jwtSecret,
-		JwtLifetime:     jwtLifetime,
-		DefaultPageSize: defaultPageSize,
+		ServerAddr:            serverAddr,
+		CorsOrigin:            corsOrigin,
+		DSN:                   dsn,
+		JwtSecret:             jwtSecret,
+		JwtLifetime:           jwtLifetime,
+		DefaultPostsPageSize:  defaultPostsPageSize,
+		DefaultFollowPageSize: defaultFollowsPageSize,
 	}, nil
 }
 

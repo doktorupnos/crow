@@ -76,6 +76,63 @@ func (r *GormPostRepo) Load(params post.LoadParams) ([]post.FeedPost, error) {
 	return feedPosts, err
 }
 
+func (r *GormPostRepo) LoadAllByID(params post.LoadParams) ([]post.FeedPost, error) {
+	var posts []post.Post
+	err := r.db.
+		Order("created_at DESC").
+		Scopes(pages.Paginate(params.PaginationParams)).
+		Where("user_id = ?", params.UserID).
+		Find(&posts).Error
+	if err != nil {
+		return nil, err
+	}
+
+	feedPosts := make([]post.FeedPost, 0, len(posts))
+	for _, p := range posts {
+		var username string
+
+		err := r.db.
+			Table("users").
+			Select("name").
+			Where("id = ?", p.UserID).
+			Scan(&username).
+			Error
+		if err != nil {
+			return nil, err
+		}
+
+		var likes int64
+		if err := r.db.Model(&like.PostLike{}).
+			Where("post_id = ?", p.ID).
+			Count(&likes).
+			Error; err != nil {
+			return nil, err
+		}
+
+		var c int64
+		if err := r.db.Model(&like.PostLike{}).
+			Where("post_id = ? AND user_id = ?", p.ID, params.UserID).
+			Count(&c).
+			Error; err != nil {
+			return nil, err
+		}
+
+		var likedByUser bool
+		if c == 1 {
+			likedByUser = true
+		}
+
+		feedPosts = append(feedPosts, post.FeedPost{
+			Post:        p,
+			UserName:    username,
+			Likes:       likes,
+			LikedByUser: likedByUser,
+		})
+	}
+
+	return feedPosts, err
+}
+
 func (r *GormPostRepo) LoadByID(id uuid.UUID) (post.Post, error) {
 	var p post.Post
 	err := r.db.First(&p, id).Error

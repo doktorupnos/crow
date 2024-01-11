@@ -2,8 +2,6 @@ package app
 
 import (
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/post"
@@ -30,34 +28,42 @@ func (s *PostService) Create(u user.User, body string) error {
 
 func (s *PostService) Load(
 	r *http.Request,
-	pageSize int,
+	defaultPageSize int,
 	userID uuid.UUID,
 ) ([]post.FeedPost, error) {
-	q := r.URL.Query()
-
-	var page int
-	var err error
-
-	pageString := q.Get("page")
-	if pageString == "" {
-		page = 1
-	} else {
-		page, err = strconv.Atoi(pageString)
-		if err != nil {
-			page = 1
-		}
+	page := pages.ExtractPage(r)
+	limit := pages.ExtractLimit(r)
+	if limit == 0 {
+		limit = defaultPageSize
 	}
-
 	order := "desc"
-	sort := q.Get("sort")
-	if strings.ToLower(sort) == "asc" {
-		order = "asc"
-	}
 
 	return s.pr.Load(post.LoadParams{
 		PaginationParams: pages.PaginationParams{
 			PageNumber: page,
-			PageSize:   pageSize,
+			PageSize:   limit,
+		},
+		Order:  order,
+		UserID: userID,
+	})
+}
+
+func (s *PostService) LoadAllByID(
+	r *http.Request,
+	defaultPageSize int,
+	userID uuid.UUID,
+) ([]post.FeedPost, error) {
+	page := pages.ExtractPage(r)
+	limit := pages.ExtractLimit(r)
+	if limit == 0 {
+		limit = defaultPageSize
+	}
+	order := "desc"
+
+	return s.pr.LoadAllByID(post.LoadParams{
+		PaginationParams: pages.PaginationParams{
+			PageNumber: page,
+			PageSize:   limit,
 		},
 		Order:  order,
 		UserID: userID,

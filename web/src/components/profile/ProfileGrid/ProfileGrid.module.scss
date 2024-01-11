@@ -1,0 +1,14 @@
+.profile_grid {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.profile_grid_line {
+	display: block;
+	width: 40%;
+	margin-top: 2rem;
+	margin-bottom: 1rem;
+	margin-right: auto;
+	margin-left: auto;
+}

@@ -1,83 +1,90 @@
-import { useState, useEffect } from "react";
-import { fetchPosts, getPostTime } from "@/app/utils/posts";
-
-import Image from "next/image";
-
+import IconLoad from "./_components/IconLoad/IconLoad";
 import PostBox from "@/components/post/PostBox/PostBox";
-import PostNone from "@/components/post/PostNone/PostNone";
+import ErrorPost from "@/components/error/ErrorPost/ErrorPost";
 
-import styles from "./PostGrid.module.css";
+import { useState, useEffect } from "react";
 
-export default function PostGrid() {
-	const [posts, setPosts] = useState([]);
+import { fetchPosts, postTime } from "@/utils/posts";
+
+import styles from "./PostGrid.module.scss";
+
+const PostGrid = ({ user }) => {
 	const [postList, setPostList] = useState([]);
-	const [page, setPage] = useState(1);
-	const [morePosts, setMorePosts] = useState(true);
+	const [postLoad, setPostLoad] = useState(false);
+	const [morePosts, setMorePosts] = useState(null);
+	const [page, setPage] = useState(0);
 
 	useEffect(() => {
-		const fetchData = async () => {
-			if (morePosts) {
-				try {
-					const response = await fetchPosts(page);
-					if (!response.payload.length) return setMorePosts(false);
-					setPosts((prevPosts) => [...prevPosts, ...response.payload]);
-				} catch (error) {
-					console.error("Failed to fetch posts!", error);
-					return setMorePosts(false);
+		const getPosts = async (page) => {
+			try {
+				let response;
+				if (user) {
+					response = await fetchPosts(user, page);
+				} else {
+					response = await fetchPosts(null, page);
 				}
+				if (!response.length > 0) return setMorePosts(false);
+				let newList = response.map((post) => {
+					let date = postTime(post.created_at);
+					return (
+						<PostBox
+							key={post.id}
+							id={post.id}
+							author={post.user_name}
+							message={post.body}
+							date={date}
+							likes={post.likes}
+							status={post.liked_by_user}
+						/>
+					);
+				});
+				setPostList((prevList) => [...prevList, newList]);
+				setMorePosts(true);
+				setPostLoad(false);
+			} catch (error) {
+				console.error(`Failed to retrieve posts! [${error.message}]`);
 			}
 		};
-		fetchData();
-	}, [page, morePosts]);
+		getPosts(page);
+	}, [page, user]);
 
 	useEffect(() => {
 		const handleScrollBottom = () => {
 			const isScrollAtBottom =
 				window.innerHeight + window.scrollY >= document.body.scrollHeight;
-			if (isScrollAtBottom) setPage((page) => page + 1);
+			if (isScrollAtBottom && !postLoad) {
+				setPage((page) => page + 1);
+				setPostLoad(true);
+			}
 		};
 		window.addEventListener("scroll", handleScrollBottom);
 		return () => {
 			window.removeEventListener("scroll", handleScrollBottom);
 		};
-	}, []);
+	}, [postLoad]);
 
-	const loadMorePosts = () => {
-		setPage((page) => page + 1);
+	const handleLoad = () => {
+		if (!postLoad) {
+			setPage((page) => page + 1);
+			setPostLoad(true);
+		}
 	};
-
-	useEffect(() => {
-		const postData = posts.map((post) => {
-			const date = getPostTime(post.created_at);
-			return (
-				<PostBox
-					key={post.id}
-					id={post.id}
-					author={post.user_name}
-					message={post.body}
-					date={date}
-					likes={post.likes}
-					status={post.liked_by_user}
-				/>
-			);
-		});
-		setPostList(postData);
-	}, [posts]);
-
-	if (!posts.length) return <PostNone />;
 
 	return (
 		<>
-			<div className="flex flex-col mx-auto">{postList}</div>
-			<button className={styles.button_load} onClick={loadMorePosts}>
-				<Image
-					src="/images/bootstrap/load_posts.svg"
-					alt="load_more"
-					width={30}
-					height={30}
-					draggable="false"
-				/>
-			</button>
+			{postList.length > 0 && (
+				<>
+					<div className={styles.post_grid}>{postList}</div>
+					{morePosts && (
+						<button className={styles.post_load} onClick={handleLoad}>
+							<IconLoad />
+						</button>
+					)}
+				</>
+			)}
+			{morePosts == false && postList.length == 0 && <ErrorPost />}
 		</>
 	);
-}
+};
+
+export default PostGrid;

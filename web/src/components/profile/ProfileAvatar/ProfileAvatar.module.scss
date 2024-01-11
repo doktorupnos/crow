@@ -1,0 +1,19 @@
+.profile_grid {
+	display: flex;
+	flex-direction: row;
+	position: relative;
+}
+
+.profile_avatar {
+	display: block;
+	position: inherit;
+}
+
+.profile_follow {
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+	background: white;
+	border-radius: 100%;
+	padding: 0.5rem;
+}
