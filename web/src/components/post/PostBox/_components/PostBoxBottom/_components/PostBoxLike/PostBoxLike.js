@@ -6,9 +6,9 @@ import { addLike, remLike } from "@/app/utils/posts";
 
 import styles from "./PostBoxLike.module.scss";
 
-export default function PostBoxLike({ id, likes, status }) {
+export default function PostBoxLike({ id, likes, liked }) {
 	const [postLikes, setPostLikes] = useState(likes);
-	const [likeStatus, setLikeStatus] = useState(status);
+	const [likeStatus, setLikeStatus] = useState(liked);
 
 	const actionLike = async () => {
 		if (!likeStatus) {

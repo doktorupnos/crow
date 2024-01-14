@@ -25,18 +25,7 @@ const PostGrid = ({ user }) => {
 				}
 				if (!response.length > 0) return setMorePosts(false);
 				let newList = response.map((post) => {
-					let date = postTime(post.created_at);
-					return (
-						<PostBox
-							key={post.id}
-							id={post.id}
-							author={post.user_name}
-							message={post.body}
-							date={date}
-							likes={post.likes}
-							status={post.liked_by_user}
-						/>
-					);
+					return <PostBox key={post.id} post={post} />;
 				});
 				setPostList((prevList) => [...prevList, newList]);
 				setMorePosts(true);

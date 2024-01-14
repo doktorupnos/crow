@@ -1,6 +1,11 @@
-.post_bottom {
+.post_footer {
 	display: flex;
 	direction: row;
-	justify-content: left;
+	justify-content: space-between;
 	align-items: center;
+}
+
+.post_footer_field {
+	display: flex;
+	justify-content: center;
 }
