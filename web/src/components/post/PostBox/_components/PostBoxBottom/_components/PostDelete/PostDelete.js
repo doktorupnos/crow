@@ -1,10 +1,8 @@
-import IconDelete from "./_components/IconDelete/IconLoad";
+import IconDelete from "./_components/IconDelete/IconDelete";
 
-import { postDel } from "@/utils/posts";
+import { postDelete } from "@/utils/posts";
 
-import styles from "./PostBoxDelete.module.scss";
-
-export default function PostBoxDelete({ id }) {
+const PostDelete = ({ id }) => {
 	const handleDelete = async () => {
 		try {
 			let response = await postDelete(id);
@@ -21,4 +19,6 @@ export default function PostBoxDelete({ id }) {
 			<IconDelete />
 		</button>
 	);
-}
+};
+
+export default PostDelete;

@@ -1,6 +1,7 @@
 import PostBoxLike from "./_components/PostBoxLike/PostBoxLike";
 import PostBoxCom from "./_components/PostBoxCom/PostBoxCom";
-import PostDelete from "./_components/PostBoxDelete/PostBoxDelete";
+
+import PostDelete from "./_components/PostDelete/PostDelete";
 
 import styles from "./PostBoxBottom.module.scss";
 

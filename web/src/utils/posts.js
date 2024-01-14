@@ -26,6 +26,22 @@ export const fetchPosts = async (user, page) => {
 	}
 };
 
+// Delete user post.
+export const postDelete = async (id) => {
+	try {
+		let response = await axios.delete(`${process.env.postGetEndPoint}/${id}`, {
+			withCredentials: true,
+		});
+		if (response.status == 200) {
+			return response.data;
+		} else {
+			return null;
+		}
+	} catch (error) {
+		throw error;
+	}
+};
+
 // Format post timestamp.
 export const postTime = (timestamp) => {
 	let timeDiff = Math.floor(Date.now() / 1000) - timestamp;
