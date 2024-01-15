@@ -4,11 +4,12 @@ package database
 import (
 	"log"
 
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+
 	"github.com/doktorupnos/crow/backend/internal/like"
 	"github.com/doktorupnos/crow/backend/internal/post"
 	"github.com/doktorupnos/crow/backend/internal/user"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 // Connect creates a new connection with a Postgres database through GORM.

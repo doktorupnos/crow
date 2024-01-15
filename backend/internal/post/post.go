@@ -1,15 +1,16 @@
 package post
 
 import (
+	"github.com/google/uuid"
+
 	"github.com/doktorupnos/crow/backend/internal/model"
 	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/user"
-	"github.com/google/uuid"
 )
 
 type Post struct {
 	Body  string      `json:"body"    gorm:"not null"`
-	Likes []user.User `json:"-" gorm:"many2many:post_likes;"`
+	Likes []user.User `json:"-" gorm:"many2many:post_likes;constraint:onDelete:CASCADE"`
 	User  user.User   `json:"-"       gorm:"foreignKey:UserID; not null;constraint:onDelete:CASCADE"`
 	model.Model
 	UserID uuid.UUID `json:"user_id"`
