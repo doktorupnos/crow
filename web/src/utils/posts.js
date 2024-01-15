@@ -26,6 +26,41 @@ export const fetchPosts = async (user, page) => {
 	}
 };
 
+// Like user post.
+export const postLike = async (id) => {
+	try {
+		let response = await axios.post(
+			process.env.postLikeEndPoint,
+			{ post_id: id },
+			{ withCredentials: true }
+		);
+		if (response.status == 201) {
+			return true;
+		} else {
+			return null;
+		}
+	} catch (error) {
+		throw error;
+	}
+};
+
+// Remove like from user post.
+export const postUnlike = async (id) => {
+	try {
+		let response = await axios.delete(process.env.postLikeEndPoint, {
+			data: { post_id: id },
+			withCredentials: true,
+		});
+		if (response.status == 200) {
+			return true;
+		} else {
+			return null;
+		}
+	} catch (error) {
+		throw error;
+	}
+};
+
 // Delete user post.
 export const postDelete = async (id) => {
 	try {
@@ -33,7 +68,7 @@ export const postDelete = async (id) => {
 			withCredentials: true,
 		});
 		if (response.status == 200) {
-			return response.data;
+			return true;
 		} else {
 			return null;
 		}

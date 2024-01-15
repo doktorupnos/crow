@@ -15,7 +15,7 @@ export default function PostBox({ post }) {
 			<PostBoxBottom
 				id={post.id}
 				likes={post.likes}
-				status={post.liked_by_user}
+				liked={post.liked_by_user}
 				self={post.self}
 			/>
 		</div>
