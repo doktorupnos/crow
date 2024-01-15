@@ -7,7 +7,7 @@ const PostDelete = ({ id }) => {
 		try {
 			let response = await postDelete(id);
 			if (response) {
-				return (window.location.href = "/home");
+				return location.reload();
 			}
 		} catch (error) {
 			return console.error(`Failed to delete post! [${error.message}]`);

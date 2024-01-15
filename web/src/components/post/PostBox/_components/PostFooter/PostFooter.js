@@ -2,11 +2,11 @@ import PostLike from "./_components/PostLike/PostLike";
 import PostComment from "./_components/PostComment/PostComment";
 import PostDelete from "./_components/PostDelete/PostDelete";
 
-import styles from "./PostBoxBottom.module.scss";
+import styles from "./PostFooter.module.scss";
 
-const PostBoxBottom = ({ id, likes, liked, self }) => {
+const PostFooter = ({ id, likes, liked, self }) => {
 	return (
-		<div className={styles.post_footer}>
+		<footer className={styles.post_footer}>
 			<div className={styles.post_footer_field}>
 				<PostLike id={id} likes={likes} liked={liked} />
 				<PostComment />
@@ -16,8 +16,8 @@ const PostBoxBottom = ({ id, likes, liked, self }) => {
 					<PostDelete id={id} />
 				</div>
 			)}
-		</div>
+		</footer>
 	);
 };
 
-export default PostBoxBottom;
+export default PostFooter;
