@@ -1,15 +1,25 @@
-import PostBoxInfo from "./_components/PostBoxTop/PostBoxTop";
-import PostBoxBottom from "./_components/PostBoxBottom/PostBoxBottom";
+import PostHeader from "./_components/PostHeader/PostHeader";
+import PostFooter from "./_components/PostFooter/PostFooter";
+
+import { postTime } from "@/utils/posts";
 
 import styles from "./PostBox.module.scss";
 
-export default function PostBox({ id, author, message, date, likes, status }) {
+const PostBox = ({ post }) => {
+	let date = postTime(post.created_at);
 	return (
-		<div id={id} className={`${styles.post_block} ${styles.post_fade}`}>
-			<PostBoxInfo author={author} date={date} />
+		<article className={styles.post_box}>
+			<PostHeader author={post.user_name} date={date} />
 			<hr />
-			<span className={styles.post_message}>{message}</span>
-			<PostBoxBottom id={id} likes={likes} status={status} />
-		</div>
+			<p className={styles.post_message}>{post.body}</p>
+			<PostFooter
+				id={post.id}
+				likes={post.likes}
+				liked={post.liked_by_user}
+				self={post.self}
+			/>
+		</article>
 	);
-}
+};
+
+export default PostBox;

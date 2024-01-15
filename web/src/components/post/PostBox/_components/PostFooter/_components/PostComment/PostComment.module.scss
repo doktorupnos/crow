@@ -1,6 +1,9 @@
-.post_bottom {
+.post_com {
 	display: flex;
 	direction: row;
-	justify-content: left;
 	align-items: center;
+}
+
+.post_com_count {
+	margin-left: 0.3rem;
 }

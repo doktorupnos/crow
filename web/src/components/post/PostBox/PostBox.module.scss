@@ -1,16 +1,29 @@
-$background_color: #414141;
-$foreground_color: #ffffff;
-
+$back_color: #414141;
+$accent_color: #ffffff;
 $border_color: #dddddd;
 
 $post_fade_duration: 0.8s;
 $post_fade_method: ease-in-out;
 
-.post_block {
-	background-color: $background_color;
-	color: $foreground_color;
+// Post fade animation.
+@mixin animate_post_fade {
+	@keyframes animate_post_fade {
+		from {
+			opacity: 0;
+			transform: translateY(12rem);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+}
 
-	border: 0.1rem solid $background_color;
+.post_box {
+	background-color: $back_color;
+	color: $accent_color;
+
+	border: 0.1rem solid $back_color;
 	border-radius: 0.5rem;
 
 	word-break: break-all;
@@ -29,6 +42,9 @@ $post_fade_method: ease-in-out;
 	-moz-transition: border-color 0.2s linear; /* Firefox */
 	-o-transition: border-color 0.2s linear; /* Opera */
 
+	@include animate_post_fade;
+	animation: animate_post_fade $post_fade_duration $post_fade_method;
+
 	&:hover {
 		border-color: $border_color;
 	}
@@ -39,40 +55,4 @@ $post_fade_method: ease-in-out;
 	font-size: 1rem;
 	margin-top: 0.5rem;
 	margin-bottom: 1rem;
-}
-
-.post_bottom {
-	display: flex;
-	direction: row;
-	justify-content: left;
-	align-items: center;
-}
-
-.post_likes {
-	display: flex;
-	direction: row;
-	align-items: center;
-}
-
-.post_likes_text {
-	margin-left: 0.3rem;
-	margin-right: 1rem;
-}
-
-// Post fade up animation.
-@mixin animate_post_fade {
-	@keyframes animate_post_fade {
-		from {
-			opacity: 0;
-			transform: translateY(12rem);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-}
-.post_fade {
-	animation: animate_post_fade $post_fade_duration $post_fade_method;
-	@include animate_post_fade;
 }

@@ -5,14 +5,20 @@ import (
 	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Post struct {
 	Body  string      `json:"body"    gorm:"not null"`
-	Likes []user.User `json:"-" gorm:"many2many:post_likes;"`
+	Likes []user.User `json:"-" gorm:"many2many:post_likes"`
 	User  user.User   `json:"-"       gorm:"foreignKey:UserID; not null;constraint:onDelete:CASCADE"`
 	model.Model
 	UserID uuid.UUID `json:"user_id"`
+}
+
+func (p Post) BeforeDelete(db *gorm.DB) error {
+	q := `DELETE FROM post_likes WHERE post_id = ?`
+	return db.Exec(q, p.ID).Error
 }
 
 type FeedPost struct {
