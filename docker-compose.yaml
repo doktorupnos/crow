@@ -21,11 +21,14 @@ services:
     networks:
       - crownet
     environment:
-      - ADDR=0.0.0.0:8000
+      - ADDR="localhost:8000"
       - CORS_ORIGIN="http://*"
-      - DSN=postgres://postgres:postgres@postgres:5432/crow
-      - DEFAULT_PAGE_SIZE=5
-      - JWT_LIFETIME=20m
+      - DSN="postgres://postgres:postgres@localhost:5432/crow"
+      - JWT_SECRET="+3xObWCCIAQf/N1ltJD27kZ5gfjmfbUBG4ViZ/6oHI3rpVFmhAo7yzwWg4mivB1Jea8UuwooegxTdZhZgLkZZA=="
+      - JWT_LIFETIME="1h"
+      - DEFAULT_POSTS_PAGE_SIZE="5"
+      - DEFAULT_FOLLOWS_PAGE_SIZE="10"
+
     build: "./backend"
     depends_on:
       - postgres
