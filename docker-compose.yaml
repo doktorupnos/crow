@@ -21,27 +21,27 @@ services:
     networks:
       - crownet
     environment:
-      - ADDR="localhost:8000"
-      - CORS_ORIGIN="http://*"
-      - DSN="postgres://postgres:postgres@localhost:5432/crow"
-      - JWT_SECRET="+3xObWCCIAQf/N1ltJD27kZ5gfjmfbUBG4ViZ/6oHI3rpVFmhAo7yzwWg4mivB1Jea8UuwooegxTdZhZgLkZZA=="
-      - JWT_LIFETIME="1h"
-      - DEFAULT_POSTS_PAGE_SIZE="5"
-      - DEFAULT_FOLLOWS_PAGE_SIZE="10"
+      - ADDR=backend:8000
+      - CORS_ORIGIN=http://*
+      - JWT_SECRET=+3xObWCCIAQf/N1ltJD27kZ5gfjmfbUBG4ViZ/6oHI3rpVFmhAo7yzwWg4mivB1Jea8UuwooegxTdZhZgLkZZA==
+      - JWT_LIFETIME=1h
+      - DSN=postgres://postgres:postgres@postgres:5432/crow
+      - DEFAULT_POSTS_PAGE_SIZE=5
+      - DEFAULT_FOLLOWS_PAGE_SIZE=10
 
     build: "./backend"
     depends_on:
       - postgres
-  web:
-     restart: on-failure
-     ports:
-       - "3000:3000"
-     networks:
-       - crownet
-     build: "./web"
-     depends_on:
-       - postgres
-       - backend
+  # web:
+  #    restart: on-failure
+  #    ports:
+  #      - "3000:3000"
+  #    networks:
+  #      - crownet
+  #    build: "./web"
+  #    depends_on:
+  #      - postgres
+  #      - backend
 
 networks:
   crownet:

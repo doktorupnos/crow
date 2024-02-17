@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+
 module.exports = {
 	env: {
 		authValidEndPoint: "//localhost:8000/admin/jwt",
