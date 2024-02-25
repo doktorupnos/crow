@@ -144,12 +144,12 @@ func (e ErrUser) Error() string {
 }
 
 const (
-	ErrUserNameEmpty         = ErrUser("name is empty")
-	ErrUserNameTooBig        = ErrUser("name is too big")
-	ErrUserNameMalformed     = ErrUser("malformed name")
-	ErrUserPasswordEmpty     = ErrUser("password is empty")
+	ErrUserNameEmpty         = ErrUser("name empty")
+	ErrUserNameTooBig        = ErrUser("name too big")
+	ErrUserNameMalformed     = ErrUser("name malformed")
+	ErrUserPasswordEmpty     = ErrUser("password empty")
 	ErrUserPasswordTooBig    = ErrUser("password too big")
-	ErrUserPasswordMalformed = ErrUser("malformed password")
+	ErrUserPasswordMalformed = ErrUser("password malformed")
 )
 
 const pattern = "^[a-zA-Z0-9_]+$"
