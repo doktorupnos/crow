@@ -59,6 +59,13 @@ Both name and password can contain one or more latin alphabetic characters both 
 }
 ```
 
+* Name is already used by another user
+```json
+{
+  "error": "name taken"
+}
+```
+
 * Password is empty
 ```json
 {
@@ -78,8 +85,7 @@ Both name and password can contain one or more latin alphabetic characters both 
 {
   "error": "password malformed"
 }
-
-
+```
 
 ## GET /users
 

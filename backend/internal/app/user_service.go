@@ -147,6 +147,7 @@ const (
 	ErrUserNameEmpty         = ErrUser("name empty")
 	ErrUserNameTooBig        = ErrUser("name too big")
 	ErrUserNameMalformed     = ErrUser("name malformed")
+	ErrUserNameTaken         = ErrUser("name taken")
 	ErrUserPasswordEmpty     = ErrUser("password empty")
 	ErrUserPasswordTooBig    = ErrUser("password too big")
 	ErrUserPasswordMalformed = ErrUser("password malformed")
