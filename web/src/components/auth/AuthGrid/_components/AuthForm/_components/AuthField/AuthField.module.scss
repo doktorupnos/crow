@@ -1,0 +1,27 @@
+$accent_color: #e7e7e7;
+$focus_color: #d22b2b;
+
+.field_input {
+  background: transparent;
+  color: #e7e7e7;
+
+  border: 1px solid #e7e7e7;
+  border-radius: 0.5rem;
+  border-width: 0.15rem;
+
+  outline: none;
+
+  min-width: 20rem;
+  max-width: 20rem;
+
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+
+  margin-bottom: 0.5rem;
+
+  &:focus {
+    border-color: $focus_color;
+  }
+}

@@ -1,17 +1,12 @@
-"use client";
-
-import styles from "./AuthForm.module.scss";
+import AuthField from "./_components/AuthField/AuthField";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { userRegister, userLogin } from "@/utils/auth";
 
-import AuthField from "../AuthField/AuthField";
+import styles from "./AuthForm.module.scss";
 
-export default function AuthForm({ method }) {
-  const router = useRouter();
-
+const AuthForm = ({ method }) => {
   let [post, setPost] = useState({
     name: "",
     password: "",
@@ -41,7 +36,7 @@ export default function AuthForm({ method }) {
   return (
     <form className={styles.auth_form} onSubmit={handleSubmit}>
       <AuthField type={1} handler={handleInput} />
-      <AuthField type={2} handler={handleInput} />
+      <AuthField type={0} handler={handleInput} />
       <input
         className={styles.auth_submit}
         type="submit"
@@ -49,4 +44,6 @@ export default function AuthForm({ method }) {
       />
     </form>
   );
-}
+};
+
+export default AuthForm;
