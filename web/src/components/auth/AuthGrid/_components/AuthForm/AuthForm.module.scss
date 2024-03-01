@@ -26,8 +26,17 @@ $focus_color: #d22b2b;
   padding-top: 0.3rem;
   padding-bottom: 0.3rem;
 
+  transition: background-color 0.3s ease;
+
   &:hover {
-    background-color: $focus_color;
+    background-color: #b7b7b7;
     cursor: pointer;
   }
+}
+
+.auth_error {
+  color: #ffcccc;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
 }

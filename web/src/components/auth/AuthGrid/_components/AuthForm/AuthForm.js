@@ -12,6 +12,8 @@ const AuthForm = ({ method }) => {
     password: "",
   });
 
+  let [errorMessage, setErrorMessage] = useState("");
+
   function handleInput(event) {
     setPost({ ...post, [event.target.id]: event.target.value });
   }
@@ -29,6 +31,9 @@ const AuthForm = ({ method }) => {
         return (location.href = "/home");
       }
     } catch (error) {
+      if (error.response.data.error) {
+        setErrorMessage(`${error.response.data.error}!`);
+      }
       return console.error(`Failed to auth user! [${error.message}]`);
     }
   }
@@ -37,6 +42,7 @@ const AuthForm = ({ method }) => {
     <form className={styles.auth_form} onSubmit={handleSubmit}>
       <AuthField type={1} handler={handleInput} />
       <AuthField type={0} handler={handleInput} />
+      <span className={styles.auth_error}>{errorMessage}</span>
       <input
         className={styles.auth_submit}
         type="submit"

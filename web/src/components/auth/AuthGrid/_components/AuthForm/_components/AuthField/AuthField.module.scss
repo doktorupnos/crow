@@ -1,9 +1,12 @@
 $accent_color: #e7e7e7;
-$focus_color: #d22b2b;
+//$focus_color: #d22b2b;
+$focus_color: #3297fd;
 
 .field_input {
   background: transparent;
   color: #e7e7e7;
+
+  font-size: 1.1rem;
 
   border: 1px solid #e7e7e7;
   border-radius: 0.5rem;
@@ -14,12 +17,11 @@ $focus_color: #d22b2b;
   min-width: 20rem;
   max-width: 20rem;
 
-  padding-top: 0.8rem;
-  padding-bottom: 0.8rem;
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
+  padding: 0.75rem;
 
   margin-bottom: 0.5rem;
+
+  transition: border-color 0.3s ease;
 
   &:focus {
     border-color: $focus_color;
