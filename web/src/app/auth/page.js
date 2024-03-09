@@ -1,14 +1,37 @@
-import AppTitle from "../_components/AppTitle/AppTitle";
-import AuthButton from "../_components/AuthButton/AuthButton";
+"use client";
 
-export default function Home() {
-	return (
-		<div className="container mx-auto">
-			<div className="flex flex-col h-screen justify-center">
-				<AppTitle />
-				<AuthButton name="Register" link="/auth/register" />
-				<AuthButton name="Login" link="/auth/login" />
-			</div>
-		</div>
-	);
-}
+import AuthMenu from "@/components/auth/AuthMenu/AuthMenu";
+
+import { useState, useEffect } from "react";
+
+import { validSession } from "@/utils/auth";
+
+const AuthPortal = () => {
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        let response = await validSession();
+        console.log(response);
+        if (response) {
+          return (location.href = "/home");
+        }
+        setSession(true);
+      } catch (error) {
+        setSession(true);
+      }
+    };
+    checkSession();
+  }, []);
+
+  return (
+    session && (
+      <>
+        <AuthMenu />
+      </>
+    )
+  );
+};
+
+export default AuthPortal;

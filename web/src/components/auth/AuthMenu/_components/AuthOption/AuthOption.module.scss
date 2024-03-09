@@ -1,0 +1,25 @@
+$accent_color: #e7e7e7;
+$focus_color: #ed3e3e;
+
+.auth_option {
+  background-color: $accent_color;
+  color: black;
+
+  text-align: center;
+  font-weight: 600;
+
+  min-width: 15rem;
+  max-width: 15rem;
+
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 1rem;
+
+  padding: 0.3rem;
+
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: $focus_color;
+  }
+}
