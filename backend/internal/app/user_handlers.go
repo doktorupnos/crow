@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/go-chi/chi/v5"
@@ -25,6 +26,9 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := app.userService.Create(body.Name, body.Password)
 	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key") {
+			err = ErrUserNameTaken
+		}
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}

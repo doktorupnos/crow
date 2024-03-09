@@ -1,42 +1,40 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { userValid } from "@/app/utils/auth";
-import { redirect } from "next/navigation";
-
 import NavBar from "@/components/nav/NavBar/NavBar";
 import PostGrid from "@/components/post/PostGrid/PostGrid";
-import PostCreate from "@/components/post/PostCreate/PostCreate";
+
+import { useState, useEffect } from "react";
+
+import { validSession } from "@/utils/auth";
 
 const Home = () => {
-	const [session, setSession] = useState(null);
+  const [session, setSession] = useState(null);
 
-	useEffect(() => {
-		const sessionValid = async () => {
-			try {
-				let response = await userValid();
-				setSession(response);
-			} catch (error) {
-				console.error("Failed to validate session!", error);
-				setSession(false);
-			}
-		};
-		sessionValid();
-	}, []);
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        let response = await validSession();
+        if (!response) {
+          console.error(`Invalid session!`);
+          return (location.href = "/auth");
+        }
+        setSession(true);
+      } catch (error) {
+        console.error(`Invalid session! [${error.message}]`);
+        return (location.href = "/auth");
+      }
+    };
+    checkSession();
+  }, []);
 
-	if (session === null) {
-		return null;
-	} else if (session) {
-		return (
-			<>
-				<NavBar />
-				<PostCreate />
-				<PostGrid />
-			</>
-		);
-	} else {
-		redirect("/auth");
-	}
+  return (
+    session && (
+      <>
+        <NavBar />
+        <PostGrid />
+      </>
+    )
+  );
 };
 
 export default Home;

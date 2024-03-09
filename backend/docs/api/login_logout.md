@@ -5,6 +5,30 @@
 * Requires: Authorization Basic.
 * Returns: a JWT as a cookie under the name "token".
 
+### Errors
+
+* Missing Authorization Basic header
+```json
+{
+  "error": "missing Authorization Basic header"
+}
+```
+
+* User does not exist
+
+```json
+{
+  "error": "record not found"
+}
+```
+
+* Passwords don't match
+```json
+{
+  "error": "wrong password"
+}
+```
+
 ## POST /logout
 
 Requires: JWT.

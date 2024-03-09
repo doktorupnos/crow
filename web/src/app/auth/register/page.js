@@ -1,15 +1,36 @@
-import AuthCrow from "../_components/AuthCrow/AuthCrow";
-import AuthTitle from "../_components/AuthTitle/AuthTitle";
-import AuthForm from "../_components/AuthForm/AuthForm";
+"use client";
 
-export default function RegisterPage() {
-	return (
-		<div className="container mx-auto">
-			<div className="flex flex-col h-screen justify-center">
-				<AuthCrow />
-				<AuthTitle title="Become A Crow." />
-				<AuthForm method={0} />
-			</div>
-		</div>
-	);
-}
+import AuthGrid from "@/components/auth/AuthGrid/AuthGrid";
+
+import { validSession } from "@/utils/auth";
+
+import { useState, useEffect } from "react";
+
+const RegisterPortal = () => {
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        let response = await validSession();
+        if (response) {
+          return (location.href = "/home");
+        }
+        setSession(true);
+      } catch (error) {
+        setSession(true);
+      }
+    };
+    checkSession();
+  }, []);
+
+  return (
+    session && (
+      <>
+        <AuthGrid method={0} />
+      </>
+    )
+  );
+};
+
+export default RegisterPortal;

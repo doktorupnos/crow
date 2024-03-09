@@ -24,6 +24,69 @@ Conditions:
 * 201 - User created successfully 
 * 400 - Anything else
 
+### Regex pattern
+
+`^[a-zA-Z0-9_]+$`
+
+Both name and password can contain one or more latin alphabetic characters both upper and lower case, the decimal digits and the underscore.
+
+### Errors
+
+* Unable to decode json request body
+```json
+{
+  "error": "unable to decode request body"
+}
+```
+* Name is empty
+```json
+{
+  "error": "name empty"
+}
+```
+
+* Name is too big (over 20 characters)
+```json
+{
+  "error": "name too big"
+}
+```
+
+* Name doesn't match regex rule pattern
+```json
+{
+  "error": "name malformed"
+}
+```
+
+* Name is already used by another user
+```json
+{
+  "error": "name taken"
+}
+```
+
+* Password is empty
+```json
+{
+  "error": "password empty"
+}
+```
+
+* Password is too big (over 72 characters)
+```json
+{
+  "error": "password too big"
+}
+```
+
+* Password doesn't match regex rule pattern
+```json
+{
+  "error": "password malformed"
+}
+```
+
 ## GET /users
 
 Description: Retrieve all Users.

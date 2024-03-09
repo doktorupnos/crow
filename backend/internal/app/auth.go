@@ -14,7 +14,7 @@ func (app *App) BasicAuth(handler authedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		username, password, ok := r.BasicAuth()
 		if !ok {
-			respondWithError(w, http.StatusUnauthorized, "malformed Authorization header")
+			respondWithError(w, http.StatusUnauthorized, "missing Authorization Basic header")
 			return
 		}
 

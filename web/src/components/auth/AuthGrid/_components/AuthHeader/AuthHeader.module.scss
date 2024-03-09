@@ -1,0 +1,13 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header_text {
+  color: white;
+  text-align: center;
+  font-size: 1.4rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
