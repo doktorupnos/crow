@@ -22,6 +22,9 @@ export const fetchPosts = async (user, page, limit) => {
       return null;
     }
   } catch (error) {
+    if (error.response.status == 401) {
+      location.href = "/auth";
+    }
     throw error;
   }
 };
@@ -40,6 +43,9 @@ export const postLike = async (id) => {
       return null;
     }
   } catch (error) {
+    if (error.response.status == 401) {
+      location.href = "/auth";
+    }
     throw error;
   }
 };
@@ -57,6 +63,9 @@ export const postUnlike = async (id) => {
       return null;
     }
   } catch (error) {
+    if (error.response.status == 401) {
+      location.href = "/auth";
+    }
     throw error;
   }
 };
@@ -75,6 +84,9 @@ export const postCreate = async (body) => {
       return null;
     }
   } catch (error) {
+    if (error.response.status == 401) {
+      location.href = "/auth";
+    }
     throw error;
   }
 };
@@ -91,6 +103,9 @@ export const postDelete = async (id) => {
       return null;
     }
   } catch (error) {
+    if (error.response.status == 401) {
+      location.href = "/auth";
+    }
     throw error;
   }
 };

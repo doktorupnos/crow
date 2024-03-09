@@ -39,7 +39,7 @@ const PostCreate = ({ appendNewPost }) => {
         appendNewPost();
       }
     } catch (error) {
-      return console.error("Failed to create post!", error);
+      return console.error(`Failed to create post! [${error.message}] `);
     }
   };
 
