@@ -13,7 +13,22 @@ spec:
         app: api-gateway
     spec:
       containers:
-      - name: api-gateway
-        image: temp:latest
-        ports:
-        - containerPort: 8080
+        - name: api-gateway
+          image: ghcr.io/doktorupnos/crow/backend:master
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ADDR
+              value: "localhost:8000"
+            - name: CORS_ORIGIN
+              value: "http://*"
+            - name: JWT_SECRET
+              value: "+3xObWCCIAQf/N1ltJD27kZ5gfjmfbUBG4ViZ/6oHI3rpVFmhAo7yzwWg4mivB1Jea8UuwooegxTdZhZgLkZZA=="
+            - name: JWT_LIFETIME
+              value: "1h"
+            - name: DSN
+              value: "postgres://postgres:kolaratoustefanou@postgres:5432/crow"
+            - name: DEFAULT_POSTS_PAGE_SIZE
+              value: "5"
+            - name: DEFAULT_FOLLOWS_PAGE_SIZE
+              value: "10"
