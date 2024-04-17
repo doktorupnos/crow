@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 module.exports = {
-  output: "standalone",
+  // output: "standalone",
   env: {
     authValidEndPoint: "//localhost:8000/admin/jwt",
     authRegEndPoint: "//localhost:8000/users",
