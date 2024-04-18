@@ -4,13 +4,13 @@ metadata:
   name: api-gateway-ingress
 spec:
   rules:
-  - host: temp.domain.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: api-gateway-service
-            port:
-              number: 80
+    - host: crow.zapto.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway-service
+                port:
+                  number: 80
