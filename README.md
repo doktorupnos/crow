@@ -7,7 +7,7 @@ Its emphasis is simplicity, and privacy.
 University Task from our professor in "Software Engineering Special Topics" course
 
 # License
-The License of the project is signed under GPLv3.
+The license of the project is still in negotiation, but it will remain open source!
 
 # Development Methodology
 During the development of this project, we will be using a private access [Kanban](https://en.wikipedia.org/wiki/Kanban) 
