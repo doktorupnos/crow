@@ -1,22 +1,18 @@
-.nav_bar {
-  background-color: #010101;
-  color: white;
-
-  margin-bottom: 1.5rem;
-}
-
 .nav_grid {
-  list-style: none;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  background-color: #010101;
+  color: white;
 
   min-height: 3rem;
   max-height: 3rem;
 
   padding-right: 1.5rem;
   padding-left: 1.5rem;
+
+  margin-bottom: 1.5rem;
 }
 
 .nav_grid_profile {
