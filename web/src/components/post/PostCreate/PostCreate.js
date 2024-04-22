@@ -1,4 +1,4 @@
-import Image from "next/image";
+import IconCreate from "./_components/IconCreate";
 
 import { useState, useEffect, useRef } from "react";
 
@@ -55,14 +55,7 @@ const PostCreate = ({ appendNewPost }) => {
         required
       />
       <button className={styles.post_button} type="submit">
-        <Image
-          className={styles.post_button_image}
-          src="/images/bootstrap/post_create.svg"
-          alt="create post"
-          width={25}
-          height={25}
-          draggable="false"
-        />
+        <IconCreate />
       </button>
     </form>
   );

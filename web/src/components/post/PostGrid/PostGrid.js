@@ -1,4 +1,5 @@
 import IconLoad from "./_components/IconLoad/IconLoad";
+import IconSpin from "./_components/IconSpin/IconSpin";
 import PostCreate from "../PostCreate/PostCreate";
 import PostBox from "@/components/post/PostBox/PostBox";
 import ErrorPost from "@/components/error/ErrorPost/ErrorPost";
@@ -24,7 +25,10 @@ const PostGrid = ({ user }) => {
         } else {
           response = await fetchPosts(null, page, null);
         }
-        if (!response.length > 0) return setMorePosts(false);
+        if (!response.length > 0) {
+          setPostLoad(false);
+          return setMorePosts(false);
+        }
         let newList = response.map((post) => {
           return <PostBox key={post.id} post={post} />;
         });
@@ -42,7 +46,7 @@ const PostGrid = ({ user }) => {
     const handleScrollBottom = () => {
       const isScrollAtBottom =
         window.innerHeight + window.scrollY >= document.body.scrollHeight;
-      if (isScrollAtBottom && !postLoad) {
+      if (isScrollAtBottom && !postLoad && morePosts) {
         setPage((page) => page + 1);
         setPostLoad(true);
       }
@@ -51,10 +55,10 @@ const PostGrid = ({ user }) => {
     return () => {
       window.removeEventListener("scroll", handleScrollBottom);
     };
-  }, [postLoad]);
+  }, [postLoad, morePosts]);
 
   const handleLoad = () => {
-    if (!postLoad) {
+    if (!postLoad && morePosts) {
       setPage((page) => page + 1);
       setPostLoad(true);
     }
@@ -80,11 +84,12 @@ const PostGrid = ({ user }) => {
       {postList.length > 0 && (
         <>
           <div className={styles.post_grid}>{postList}</div>
-          {morePosts && (
+          {morePosts && !postLoad && (
             <button className={styles.post_load} onClick={handleLoad}>
               <IconLoad />
             </button>
           )}
+          {postLoad && <IconSpin />}
         </>
       )}
       {morePosts == false && postList.length == 0 && <ErrorPost />}

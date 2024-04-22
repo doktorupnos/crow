@@ -1,0 +1,26 @@
+$size_area: 30px;
+$size_border: 5px;
+
+.icon_spin {
+  border: $size_border solid #f3f3f3;
+  border-radius: 50%;
+  border-top-color: #3498db;
+
+  width: $size_area;
+  height: $size_area;
+
+  margin-right: auto;
+  margin-left: auto;
+  margin-bottom: 1.2rem;
+
+  animation: spin 2s linear infinite;
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
