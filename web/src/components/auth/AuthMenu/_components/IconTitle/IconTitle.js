@@ -3,7 +3,7 @@ import Image from "next/image";
 const IconTitle = () => {
   return (
     <Image
-      src="/images/crow/crow_title.svg"
+      src="/images/crow/title.svg"
       alt="app title"
       height={130}
       width={260}
