@@ -76,9 +76,9 @@ const PostGrid = ({ user }) => {
 
   return (
     <>
+      <PostCreate appendNewPost={appendNewPost} />
       {postList.length > 0 && (
         <>
-          <PostCreate appendNewPost={appendNewPost} />
           <div className={styles.post_grid}>{postList}</div>
           {morePosts && (
             <button className={styles.post_load} onClick={handleLoad}>
