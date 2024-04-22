@@ -7,7 +7,7 @@ const IconHome = () => {
   return (
     <Link href="/home" className={styles.icon_home}>
       <Image
-        src="/images/nav/home.svg"
+        src="/images/crow/logo.svg"
         alt="home"
         width={30}
         height={30}
