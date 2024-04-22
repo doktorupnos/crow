@@ -1,17 +1,21 @@
-.nav_bar {
-	background-color: #010101;
-	color: white;
+.nav_grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-	margin-bottom: 1.5rem;
+  background-color: #010101;
+  color: white;
+
+  min-height: 3rem;
+  max-height: 3rem;
+
+  padding-right: 1.5rem;
+  padding-left: 1.5rem;
+
+  margin-bottom: 1.5rem;
 }
 
-.nav_grid {
-	list-style: none;
-
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-
-	min-height: 3rem;
-	max-height: 3rem;
+.nav_grid_profile {
+  display: flex;
+  flex-direction: row;
 }
