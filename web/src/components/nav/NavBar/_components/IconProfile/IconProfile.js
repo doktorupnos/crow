@@ -1,11 +1,14 @@
 import Image from "next/image";
-import Link from "next/link";
 
 import styles from "./IconProfile.module.scss";
 
+const handleLink = async () => {
+  return (location.href = "/profile");
+};
+
 const IconProfile = () => {
   return (
-    <Link href="/profile">
+    <button onClick={handleLink}>
       <Image
         src="/images/nav/profile.svg"
         alt="profile"
@@ -14,7 +17,7 @@ const IconProfile = () => {
         draggable="false"
         className={styles.icon_profile}
       />
-    </Link>
+    </button>
   );
 };
 

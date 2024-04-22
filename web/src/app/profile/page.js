@@ -22,12 +22,12 @@ const Profile = () => {
         let response = await validSession();
         if (!response) {
           console.error(`Invalid session!`);
-          return (window.location.href = "/auth");
+          return (location.href = "/auth");
         }
         setSession(true);
       } catch (error) {
         console.error(`Invalid session! [${error.message}]`);
-        return (window.location.href = "/auth");
+        return (location.href = "/auth");
       }
     };
     if (typeof window !== "undefined") {
@@ -49,6 +49,7 @@ const Profile = () => {
         }
       } catch (error) {
         console.error(`Failed to fetch user data! [${error.message}]`);
+        setUserDataLoad(false);
       }
     };
     if (typeof window !== "undefined") {
@@ -60,13 +61,16 @@ const Profile = () => {
     session && (
       <>
         <NavBar />
-        {userDataLoad && (
+        {userDataLoad ? (
           <>
             <ProfileGrid userData={userData} />
             <PostGrid user={userData.name} />
           </>
-        )}
-        {userDataLoad === false && <ErrorUser />}
+        ) : userDataLoad === false ? (
+          <>
+            <ErrorUser />
+          </>
+        ) : null}
       </>
     )
   );

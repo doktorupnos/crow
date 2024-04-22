@@ -1,19 +1,26 @@
 .post_header {
-	display: flex;
-	direction: row;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 0.5rem;
+  display: flex;
+  direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
-.post_user {
-	display: block;
-	font-size: 1.1rem;
-	font-weight: 700;
+.post_author {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #b7b7b7;
+    cursor: pointer;
+  }
 }
 
 .post_date {
-	display: block;
-	font-size: 0.75rem;
-	user-select: none;
+  display: block;
+  font-size: 0.75rem;
+  user-select: none;
 }
