@@ -33,7 +33,7 @@ export const fetchPosts = async (user, page, limit) => {
 export const postLike = async (id) => {
   try {
     let response = await axios.post(
-      process.env.postLikeEndPoint,
+      "http://api:8000/post_likes",
       { post_id: id },
       { withCredentials: true },
     );
@@ -53,7 +53,7 @@ export const postLike = async (id) => {
 // Remove like from user post.
 export const postUnlike = async (id) => {
   try {
-    let response = await axios.delete(process.env.postLikeEndPoint, {
+    let response = await axios.delete("http://api:8000/post_likes", {
       data: { post_id: id },
       withCredentials: true,
     });
@@ -72,9 +72,10 @@ export const postUnlike = async (id) => {
 
 // Create user post.
 export const postCreate = async (body) => {
+  const endpoint = "http://api:8000/posts";
   try {
     let response = await axios.post(
-      process.env.postGetEndPoint,
+      endpoint,
       { body: body },
       { withCredentials: true },
     );
@@ -93,8 +94,9 @@ export const postCreate = async (body) => {
 
 // Delete user post.
 export const postDelete = async (id) => {
+  const endpoint = "http://api:8000/posts";
   try {
-    let response = await axios.delete(`${process.env.postGetEndPoint}/${id}`, {
+    let response = await axios.delete(`${endpoint}/${id}`, {
       withCredentials: true,
     });
     if (response.status == 200) {

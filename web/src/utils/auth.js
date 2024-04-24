@@ -4,7 +4,7 @@ import axios from "axios";
 export const validSession = async () => {
   try {
     let response = await axios.post(
-      process.env.authValidEndPoint,
+      "http://api:8000/admin/jwt",
       {},
       { withCredentials: true },
     );
@@ -21,7 +21,7 @@ export const validSession = async () => {
 // Register user.
 export const userRegister = async (fields) => {
   try {
-    let response = await axios.post(process.env.authRegEndPoint, fields, {
+    let response = await axios.post("http://api:8000/users", fields, {
       withCredentials: true,
     });
     if (response.status == 201) {
@@ -38,7 +38,7 @@ export const userRegister = async (fields) => {
 export const userLogin = async (creds) => {
   try {
     let response = await axios.post(
-      process.env.authLoginEndPoint,
+      "http://api:8000/login",
       {},
       {
         auth: {
