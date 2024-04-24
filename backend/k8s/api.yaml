@@ -7,7 +7,7 @@ spec:
     app: api
   ports:
     - protocol: TCP
-      port: 8000
+      port: 443
       targetPort: 8000
 ---
 apiVersion: apps/v1
