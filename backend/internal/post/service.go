@@ -1,36 +1,35 @@
-package app
+package post
 
 import (
 	"net/http"
 
 	"github.com/doktorupnos/crow/backend/internal/pages"
-	"github.com/doktorupnos/crow/backend/internal/post"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/google/uuid"
 )
 
-type PostService struct {
-	pr post.PostRepo
+type Service struct {
+	r Repo
 }
 
-func NewPostService(pr post.PostRepo) *PostService {
-	return &PostService{pr}
+func NewService(r Repo) *Service {
+	return &Service{r}
 }
 
-func (s *PostService) Create(u user.User, body string, limit int) error {
+func (s *Service) Create(u user.User, body string, limit int) error {
 	if err := validateBody(body, limit); err != nil {
 		return err
 	}
 
-	p := post.Post{Body: body, UserID: u.ID, User: u}
-	return s.pr.Create(p)
+	p := Post{Body: body, UserID: u.ID, User: u}
+	return s.r.Create(p)
 }
 
-func (s *PostService) Load(
+func (s *Service) Load(
 	r *http.Request,
 	defaultPageSize int,
 	userID uuid.UUID,
-) ([]post.FeedPost, error) {
+) ([]FeedPost, error) {
 	page := pages.ExtractPage(r)
 	limit := pages.ExtractLimit(r)
 	if limit == 0 {
@@ -38,7 +37,7 @@ func (s *PostService) Load(
 	}
 	order := "desc"
 
-	return s.pr.Load(post.LoadParams{
+	return s.r.Load(LoadParams{
 		PaginationParams: pages.PaginationParams{
 			PageNumber: page,
 			PageSize:   limit,
@@ -48,11 +47,11 @@ func (s *PostService) Load(
 	})
 }
 
-func (s *PostService) LoadAllByID(
+func (s *Service) LoadAllByID(
 	r *http.Request,
 	defaultPageSize int,
 	userID uuid.UUID,
-) ([]post.FeedPost, error) {
+) ([]FeedPost, error) {
 	page := pages.ExtractPage(r)
 	limit := pages.ExtractLimit(r)
 	if limit == 0 {
@@ -60,7 +59,7 @@ func (s *PostService) LoadAllByID(
 	}
 	order := "desc"
 
-	return s.pr.LoadAllByID(post.LoadParams{
+	return s.r.LoadAllByID(LoadParams{
 		PaginationParams: pages.PaginationParams{
 			PageNumber: page,
 			PageSize:   limit,
@@ -70,11 +69,11 @@ func (s *PostService) LoadAllByID(
 	})
 }
 
-func (s *PostService) LoadByID(id uuid.UUID) (post.Post, error) {
-	return s.pr.LoadByID(id)
+func (s *Service) LoadByID(id uuid.UUID) (Post, error) {
+	return s.r.LoadByID(id)
 }
 
-func (s *PostService) Update(postID, userID uuid.UUID, body string, limit int) error {
+func (s *Service) Update(postID, userID uuid.UUID, body string, limit int) error {
 	if err := validateBody(body, limit); err != nil {
 		return err
 	}
@@ -89,10 +88,10 @@ func (s *PostService) Update(postID, userID uuid.UUID, body string, limit int) e
 	}
 
 	p.Body = body
-	return s.pr.Update(p)
+	return s.r.Update(p)
 }
 
-func (s *PostService) Delete(id, userID uuid.UUID) error {
+func (s *Service) Delete(id, userID uuid.UUID) error {
 	p, err := s.LoadByID(id)
 	if err != nil {
 		return err
@@ -102,7 +101,7 @@ func (s *PostService) Delete(id, userID uuid.UUID) error {
 		return ErrNotPostOwner
 	}
 
-	return s.pr.Delete(p)
+	return s.r.Delete(p)
 }
 
 type PostErr string

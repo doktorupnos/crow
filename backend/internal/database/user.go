@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/doktorupnos/crow/backend/internal/follow"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -59,7 +60,7 @@ func (r *GormUserRepo) Unfollow(u, o user.User) error {
 	return r.db.Model(&u).Association("Follows").Delete(&o)
 }
 
-func (r *GormUserRepo) Following(p user.LoadParams) ([]user.Follow, error) {
+func (r *GormUserRepo) Following(p user.LoadParams) ([]follow.Follow, error) {
 	q := `SELECT uf.follow_id, u.name
   FROM users u JOIN user_follows uf ON u.id = uf.follow_id
   WHERE uf.user_id = ?
@@ -72,9 +73,9 @@ func (r *GormUserRepo) Following(p user.LoadParams) ([]user.Follow, error) {
 	if err != nil {
 		return nil, err
 	}
-	following := []user.Follow{}
+	following := []follow.Follow{}
 
-	follow := user.Follow{}
+	follow := follow.Follow{}
 	for rows.Next() {
 		err := rows.Scan(&follow.ID, &follow.Name)
 		if err != nil {
@@ -86,7 +87,7 @@ func (r *GormUserRepo) Following(p user.LoadParams) ([]user.Follow, error) {
 	return following, nil
 }
 
-func (r *GormUserRepo) Followers(p user.LoadParams) ([]user.Follow, error) {
+func (r *GormUserRepo) Followers(p user.LoadParams) ([]follow.Follow, error) {
 	q := `SELECT uf.user_id, u.name
 				FROM user_follows uf JOIN users u ON uf.user_id = u.id
 				WHERE uf.follow_id = ?
@@ -100,8 +101,8 @@ func (r *GormUserRepo) Followers(p user.LoadParams) ([]user.Follow, error) {
 		return nil, err
 	}
 
-	followers := []user.Follow{}
-	follow := user.Follow{}
+	followers := []follow.Follow{}
+	follow := follow.Follow{}
 	for rows.Next() {
 		err := rows.Scan(&follow.ID, &follow.Name)
 		if err != nil {
