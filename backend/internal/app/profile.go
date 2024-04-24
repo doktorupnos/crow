@@ -3,6 +3,7 @@ package app
 import (
 	"net/http"
 
+	"github.com/doktorupnos/crow/backend/internal/respond"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/google/uuid"
 )
@@ -26,7 +27,7 @@ func (app *App) ViewProfile(w http.ResponseWriter, r *http.Request, u user.User)
 	if name != "" {
 		target, err = app.userService.GetByName(name)
 		if err != nil {
-			respondWithError(w, http.StatusBadRequest, err.Error())
+			respond.Error(w, http.StatusBadRequest, err)
 			return
 		}
 	}
@@ -37,19 +38,19 @@ func (app *App) ViewProfile(w http.ResponseWriter, r *http.Request, u user.User)
 		// set following if the user 'u' follows the target
 		following, err = app.userService.FollowsUser(u, target)
 		if err != nil {
-			respondWithError(w, http.StatusBadRequest, err.Error())
+			respond.Error(w, http.StatusBadRequest, err)
 			return
 		}
 	}
 
 	followingCount, err := app.userService.FollowingCount(target)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 	followerCount, err := app.userService.FollowerCount(target)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -61,5 +62,5 @@ func (app *App) ViewProfile(w http.ResponseWriter, r *http.Request, u user.User)
 		FollowerCount:  followerCount,
 		Following:      following,
 	}
-	respondWithJSON(w, http.StatusOK, resp)
+	respond.JSON(w, http.StatusOK, resp)
 }

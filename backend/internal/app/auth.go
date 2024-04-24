@@ -4,8 +4,20 @@ import (
 	"net/http"
 
 	"github.com/doktorupnos/crow/backend/internal/jwt"
+	"github.com/doktorupnos/crow/backend/internal/respond"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/google/uuid"
+)
+
+type AuthError string
+
+func (e AuthError) Error() string {
+	return string(e)
+}
+
+const (
+	ErrMissingAuthBasicHeader = AuthError("missing Authorization Basic header")
+	ErrWrongPassword          = AuthError("wrong password")
 )
 
 type authedHandler func(w http.ResponseWriter, r *http.Request, u user.User)
@@ -14,18 +26,18 @@ func (app *App) BasicAuth(handler authedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		username, password, ok := r.BasicAuth()
 		if !ok {
-			respondWithError(w, http.StatusUnauthorized, "missing Authorization Basic header")
+			respond.Error(w, http.StatusUnauthorized, ErrMissingAuthBasicHeader)
 			return
 		}
 
 		u, err := app.userService.GetByName(username)
 		if err != nil {
-			respondWithError(w, http.StatusUnauthorized, err.Error())
+			respond.Error(w, http.StatusUnauthorized, err)
 			return
 		}
 
 		if !passwordsMatch(u.Password, password) {
-			respondWithError(w, http.StatusUnauthorized, "wrong password")
+			respond.Error(w, http.StatusUnauthorized, ErrWrongPassword)
 			return
 		}
 
@@ -37,7 +49,7 @@ func (app *App) JWT(handler authedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c, err := r.Cookie("token")
 		if err != nil {
-			respondWithError(w, http.StatusUnauthorized, err.Error())
+			respond.Error(w, http.StatusUnauthorized, err)
 			return
 		}
 
@@ -45,25 +57,25 @@ func (app *App) JWT(handler authedHandler) http.HandlerFunc {
 
 		token, err := jwt.Parse(app.Env.JwtSecret, tokenString)
 		if err != nil {
-			respondWithError(w, http.StatusUnauthorized, err.Error())
+			respond.Error(w, http.StatusUnauthorized, err)
 			return
 		}
 
 		userIDString, err := token.Claims.GetSubject()
 		if err != nil {
-			respondWithError(w, http.StatusUnauthorized, err.Error())
+			respond.Error(w, http.StatusUnauthorized, err)
 			return
 		}
 
 		userID, err := uuid.Parse(userIDString)
 		if err != nil {
-			respondWithError(w, http.StatusUnauthorized, err.Error())
+			respond.Error(w, http.StatusUnauthorized, err)
 			return
 		}
 
 		u, err := app.userService.GetByID(userID)
 		if err != nil {
-			respondWithError(w, http.StatusUnauthorized, err.Error())
+			respond.Error(w, http.StatusUnauthorized, err)
 			return
 		}
 
