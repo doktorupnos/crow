@@ -2,10 +2,12 @@ package app
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/httprate"
 )
 
 func RegisterEndpoints(r *chi.Mux, app *App) *chi.Mux {
@@ -50,6 +52,8 @@ func RegisterMiddleware(router *chi.Mux, app *App) {
 		}),
 		middleware.Logger,
 		middleware.Recoverer,
+		httprate.LimitAll(1_000, time.Minute),
+		httprate.LimitByRealIP(100, time.Minute),
 	)
 }
 
