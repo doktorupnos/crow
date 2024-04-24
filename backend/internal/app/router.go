@@ -2,7 +2,6 @@ package app
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -13,7 +12,7 @@ func ConfiguredRouter(app *App) http.Handler {
 	router := chi.NewRouter()
 
 	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins: []string{app.Env.CorsOrigin},
+		AllowedOrigins: []string{app.Env.Server.CorsOrigin},
 		AllowedHeaders: []string{"*"},
 		AllowedMethods: []string{
 			http.MethodGet,
@@ -84,28 +83,13 @@ func PostLikeRouter(app *App) http.Handler {
 	return router
 }
 
-// AdminRouter returns a configured router that handles all admin endpoints.
 func AdminRouter(app *App) http.Handler {
 	router := chi.NewRouter()
 
 	router.Post("/jwt", app.JWT(app.ValidateJWT))
-
-	router.Post("/panic", func(w http.ResponseWriter, _ *http.Request) {
-		panic("The server automatically recovers from panics")
-	})
-
-	router.Get("/error", func(w http.ResponseWriter, _ *http.Request) {
-		respondWithError(
-			w,
-			http.StatusInternalServerError,
-			http.StatusText(http.StatusInternalServerError),
-		)
-	})
-
-	router.Post("/sleep", func(w http.ResponseWriter, _ *http.Request) {
-		time.Sleep(time.Minute)
-		w.WriteHeader(http.StatusOK)
-	})
+	router.Get("/error", HandleError)
+	router.Post("/panic", HandlePanic)
+	router.Post("/sleep", HandleSleep)
 
 	return router
 }

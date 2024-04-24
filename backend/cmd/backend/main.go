@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"log"
 
@@ -24,11 +25,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db, err := database.Connect(env.DSN)
+	data, err := json.MarshalIndent(env, "", "\t")
+	if err != nil {
+		log.Println("Marshalling env:", env)
+	} else {
+		log.Println(`"Env":`, string(data))
+	}
+
+	db, err := database.Connect(env.Database.DSN)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println(env.ServerAddr)
+	log.Println("Serving from:", env.Server.Addr)
 	app.New(env, db).Run()
 }

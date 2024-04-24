@@ -2,13 +2,17 @@ package app
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/doktorupnos/crow/backend/internal/post"
+	"github.com/doktorupnos/crow/backend/internal/respond"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
+
+var errMissingURLParameter = errors.New("missing URL parameter")
 
 func (app *App) CreatePost(w http.ResponseWriter, r *http.Request, u user.User) {
 	type RequestBody struct {
@@ -19,12 +23,12 @@ func (app *App) CreatePost(w http.ResponseWriter, r *http.Request, u user.User) 
 	defer r.Body.Close()
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := app.postService.Create(u, body.Body); err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+	if err := app.postService.Create(u, body.Body, app.Env.Posts.BodyLimit); err != nil {
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
@@ -43,18 +47,18 @@ func (app *App) GetAllPosts(w http.ResponseWriter, r *http.Request, u user.User)
 	if name != "" {
 		u, err = app.userService.GetByName(name)
 		if err != nil {
-			respondWithError(w, http.StatusNotFound, err.Error())
+			respond.Error(w, http.StatusNotFound, err)
 			return
 		}
-		posts, err = app.postService.LoadAllByID(r, app.Env.DefaultPostsPageSize, u.ID)
+		posts, err = app.postService.LoadAllByID(r, app.Env.Pagination.DefaultPostsPageSize, u.ID)
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
+			respond.Error(w, http.StatusInternalServerError, err)
 			return
 		}
 	} else {
-		posts, err = app.postService.Load(r, app.Env.DefaultPostsPageSize, u.ID)
+		posts, err = app.postService.Load(r, app.Env.Pagination.DefaultPostsPageSize, u.ID)
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
+			respond.Error(w, http.StatusInternalServerError, err)
 			return
 		}
 	}
@@ -71,19 +75,19 @@ func (app *App) GetAllPosts(w http.ResponseWriter, r *http.Request, u user.User)
 		})
 	}
 
-	respondWithJSON(w, http.StatusOK, respPosts)
+	respond.JSON(w, http.StatusOK, respPosts)
 }
 
 func (app *App) UpdatePost(w http.ResponseWriter, r *http.Request, u user.User) {
 	postIDString := chi.URLParam(r, "id")
 	if postIDString == "" {
-		respondWithError(w, http.StatusBadRequest, "missing URL parameter")
+		respond.Error(w, http.StatusBadRequest, errMissingURLParameter)
 		return
 	}
 
 	postID, err := uuid.Parse(postIDString)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -95,12 +99,12 @@ func (app *App) UpdatePost(w http.ResponseWriter, r *http.Request, u user.User) 
 	defer r.Body.Close()
 	err = json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := app.postService.Update(postID, u.ID, body.Body); err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+	if err := app.postService.Update(postID, u.ID, body.Body, app.Env.Posts.BodyLimit); err != nil {
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 }
@@ -108,18 +112,18 @@ func (app *App) UpdatePost(w http.ResponseWriter, r *http.Request, u user.User) 
 func (app *App) DeletePost(w http.ResponseWriter, r *http.Request, u user.User) {
 	postIDString := chi.URLParam(r, "id")
 	if postIDString == "" {
-		respondWithError(w, http.StatusBadRequest, "missing URL parameter")
+		respond.Error(w, http.StatusBadRequest, errMissingURLParameter)
 		return
 	}
 
 	postID, err := uuid.Parse(postIDString)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := app.postService.Delete(postID, u.ID); err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 

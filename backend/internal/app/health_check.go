@@ -1,14 +1,19 @@
 package app
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/doktorupnos/crow/backend/internal/respond"
+)
+
+type HealthCheckResponse struct {
+	Status string `json:"status"`
+}
 
 func HealthCheck(w http.ResponseWriter, _ *http.Request) {
-	type statusResponse struct {
-		Status string `json:"status"`
-	}
-	respondWithJSON(
+	respond.JSON(
 		w,
 		http.StatusOK,
-		statusResponse{http.StatusText(http.StatusOK)},
+		HealthCheckResponse{http.StatusText(http.StatusOK)},
 	)
 }

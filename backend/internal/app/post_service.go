@@ -17,8 +17,8 @@ func NewPostService(pr post.PostRepo) *PostService {
 	return &PostService{pr}
 }
 
-func (s *PostService) Create(u user.User, body string) error {
-	if err := validateBody(body); err != nil {
+func (s *PostService) Create(u user.User, body string, limit int) error {
+	if err := validateBody(body, limit); err != nil {
 		return err
 	}
 
@@ -74,8 +74,8 @@ func (s *PostService) LoadByID(id uuid.UUID) (post.Post, error) {
 	return s.pr.LoadByID(id)
 }
 
-func (s *PostService) Update(postID, userID uuid.UUID, body string) error {
-	if err := validateBody(body); err != nil {
+func (s *PostService) Update(postID, userID uuid.UUID, body string, limit int) error {
+	if err := validateBody(body, limit); err != nil {
 		return err
 	}
 
@@ -85,7 +85,7 @@ func (s *PostService) Update(postID, userID uuid.UUID, body string) error {
 	}
 
 	if p.UserID != userID {
-		return PostErrNotOwner
+		return ErrNotPostOwner
 	}
 
 	p.Body = body
@@ -99,7 +99,7 @@ func (s *PostService) Delete(id, userID uuid.UUID) error {
 	}
 
 	if p.UserID != userID {
-		return PostErrNotOwner
+		return ErrNotPostOwner
 	}
 
 	return s.pr.Delete(p)
@@ -112,18 +112,18 @@ func (e PostErr) Error() string {
 }
 
 const (
-	PostErrEmpty    = PostErr("Post is empty")
-	PostErrTooBig   = PostErr("Post is too big")
-	PostErrNotOwner = PostErr("Post does not belong this user")
+	ErrPostEmpty    = PostErr("Post is empty")
+	ErrPostTooBig   = PostErr("Post is too big")
+	ErrNotPostOwner = PostErr("Post does not belong this user")
 )
 
-func validateBody(body string) error {
+func validateBody(body string, limit int) error {
 	if len(body) == 0 {
-		return PostErrEmpty
+		return ErrPostEmpty
 	}
 
-	if len(body) > 128 {
-		return PostErrTooBig
+	if len(body) > limit {
+		return ErrPostTooBig
 	}
 
 	return nil

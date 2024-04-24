@@ -2,13 +2,17 @@ package app
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
 
+	"github.com/doktorupnos/crow/backend/internal/respond"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
+
+var errDecodeRequestBody = errors.New("failed to decode request body")
 
 func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 	type RequestBody struct {
@@ -20,7 +24,7 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "unable to decode request body")
+		respond.Error(w, http.StatusBadRequest, errDecodeRequestBody)
 		return
 	}
 
@@ -29,39 +33,39 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(err.Error(), "duplicate key") {
 			err = ErrUserNameTaken
 		}
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
-	respondWithJWT(w, http.StatusCreated, app.Env.JwtSecret, userID.String(), app.Env.JwtLifetime)
+	respond.JWT(w, http.StatusCreated, app.Env.JWT.Secret, userID.String(), app.Env.JWT.Lifetime)
 }
 
 func (app *App) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := app.userService.GetAll()
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respond.Error(w, http.StatusInternalServerError, err)
 		return
 	}
-	respondWithJSON(w, http.StatusOK, users)
+	respond.JSON(w, http.StatusOK, users)
 }
 
 func (app *App) GetUserByName(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "name")
 	if name == "" {
-		respondWithError(w, http.StatusBadRequest, "missing URL parameter")
+		respond.Error(w, http.StatusBadRequest, errMissingURLParameter)
 		return
 	}
 
 	u, err := app.userService.GetByName(name)
 	if err != nil {
-		respondWithError(w, http.StatusNotFound, err.Error())
+		respond.Error(w, http.StatusNotFound, err)
 		return
 	}
-	respondWithJSON(w, http.StatusOK, u)
+	respond.JSON(w, http.StatusOK, u)
 }
 
 func (app *App) DeleteUser(w http.ResponseWriter, r *http.Request, u user.User) {
 	if err := app.userService.Delete(u); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respond.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -77,20 +81,20 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request, u user.User) 
 	defer r.Body.Close()
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "is this even running")
+		respond.Error(w, http.StatusBadRequest, errDecodeRequestBody)
 		return
 	}
 
 	if err := app.userService.Update(u, body.Name, body.Password); err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	u, err = app.userService.GetByID(u.ID)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respond.Error(w, http.StatusInternalServerError, err)
 	}
-	respondWithJSON(w, http.StatusOK, u)
+	respond.JSON(w, http.StatusOK, u)
 }
 
 func (app *App) Follow(w http.ResponseWriter, r *http.Request, u user.User) {
@@ -102,18 +106,18 @@ func (app *App) Follow(w http.ResponseWriter, r *http.Request, u user.User) {
 	defer r.Body.Close()
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	id, err := uuid.Parse(body.Id)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := app.userService.Follow(u, id); err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -128,18 +132,18 @@ func (app *App) UnFollow(w http.ResponseWriter, r *http.Request, u user.User) {
 	defer r.Body.Close()
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	id, err := uuid.Parse(body.Id)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := app.userService.Unfollow(u, id); err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -160,59 +164,59 @@ func (app *App) extractTargetUser(r *http.Request, u user.User) (user.User, erro
 func (app *App) Following(w http.ResponseWriter, r *http.Request, u user.User) {
 	target, err := app.extractTargetUser(r, u)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respond.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	us, err := app.userService.Following(r, app.Env.DefaultFollowPageSize, target.ID)
+	us, err := app.userService.Following(r, app.Env.Pagination.DefaultFollowPageSize, target.ID)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respond.Error(w, http.StatusInternalServerError, err)
 		return
 	}
-	respondWithJSON(w, http.StatusOK, us)
+	respond.JSON(w, http.StatusOK, us)
 }
 
 func (app *App) Followers(w http.ResponseWriter, r *http.Request, u user.User) {
 	target, err := app.extractTargetUser(r, u)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respond.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	us, err := app.userService.Followers(r, app.Env.DefaultFollowPageSize, target.ID)
+	us, err := app.userService.Followers(r, app.Env.Pagination.DefaultFollowPageSize, target.ID)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respond.Error(w, http.StatusInternalServerError, err)
 		return
 	}
-	respondWithJSON(w, http.StatusOK, us)
+	respond.JSON(w, http.StatusOK, us)
 }
 
 func (app *App) FollowingCount(w http.ResponseWriter, r *http.Request, u user.User) {
 	target, err := app.extractTargetUser(r, u)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respond.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
 	count, err := app.userService.FollowingCount(target)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respond.Error(w, http.StatusInternalServerError, err)
 		return
 	}
-	respondWithJSON(w, http.StatusOK, count)
+	respond.JSON(w, http.StatusOK, count)
 }
 
 func (app *App) FollowerCount(w http.ResponseWriter, r *http.Request, u user.User) {
 	target, err := app.extractTargetUser(r, u)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respond.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
 	count, err := app.userService.FollowerCount(target)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respond.Error(w, http.StatusInternalServerError, err)
 		return
 	}
-	respondWithJSON(w, http.StatusOK, count)
+	respond.JSON(w, http.StatusOK, count)
 }

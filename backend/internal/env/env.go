@@ -7,76 +7,145 @@ import (
 	"time"
 )
 
-// Env groups all the environment variables the server depends on
+const (
+	defaultPostBodyLimit   = 280
+	defaultShutdownTimeout = time.Minute
+)
+
 type Env struct {
-	ServerAddr            string
-	CorsOrigin            string
-	DSN                   string
-	JwtSecret             string
-	JwtLifetime           time.Duration
+	Server     Server
+	Database   Database
+	JWT        JWT
+	Pagination Pagination
+	Posts      Posts
+}
+
+type Server struct {
+	Addr            string
+	CorsOrigin      string
+	ShutdownTimeout time.Duration
+}
+
+type Database struct {
+	DSN string
+}
+
+type JWT struct {
+	Secret   string
+	Lifetime time.Duration
+}
+
+type Pagination struct {
 	DefaultPostsPageSize  int
 	DefaultFollowPageSize int
 }
 
+type Posts struct {
+	BodyLimit int
+}
+
 func Load() (*Env, error) {
-	serverAddr, ok := os.LookupEnv("ADDR")
-	if !ok {
-		return nil, envNotSet("ADDR")
+	addr, err := lookupEnv("ADDR")
+	if err != nil {
+		return nil, err
 	}
 
-	corsOrigin, ok := os.LookupEnv("CORS_ORIGIN")
-	if !ok {
-		return nil, envNotSet("CORS_ORIGIN")
+	corsOrigin, err := lookupEnv("CORS_ORIGIN")
+	if err != nil {
+		return nil, err
 	}
 
-	dsn, ok := os.LookupEnv("DSN")
-	if !ok {
-		return nil, envNotSet("DSN")
+	shutdownTimeoutString, set := os.LookupEnv("SHUTDOWN_TIMEOUT")
+	shutdownTimeout := defaultShutdownTimeout
+	if set {
+		var err error
+		shutdownTimeout, err = time.ParseDuration(shutdownTimeoutString)
+		if err != nil {
+			shutdownTimeout = defaultShutdownTimeout
+		}
 	}
 
-	jwtSecret, ok := os.LookupEnv("JWT_SECRET")
-	if !ok {
-		return nil, envNotSet("JWT_SECRET")
+	dsn, err := lookupEnv("DSN")
+	if err != nil {
+		return nil, err
 	}
 
-	jwtLifetimeString, ok := os.LookupEnv("JWT_LIFETIME")
-	if !ok {
-		return nil, envNotSet("JWT_LIFETIME")
+	jwtSecret, err := lookupEnv("JWT_SECRET")
+	if err != nil {
+		return nil, err
+	}
+
+	jwtLifetimeString, err := lookupEnv("JWT_LIFETIME")
+	if err != nil {
+		return nil, err
 	}
 	jwtLifetime, err := time.ParseDuration(jwtLifetimeString)
 	if err != nil {
 		return nil, err
 	}
 
-	defaultPostsPageSizeString, ok := os.LookupEnv("DEFAULT_POSTS_PAGE_SIZE")
-	if !ok {
-		return nil, envNotSet("DEFAULT_POSTS_PAGE_SIZE")
+	defaultPostsPageSizeString, err := lookupEnv("DEFAULT_POSTS_PAGE_SIZE")
+	if err != nil {
+		return nil, err
 	}
 	defaultPostsPageSize, err := strconv.Atoi(defaultPostsPageSizeString)
 	if err != nil {
 		return nil, err
 	}
 
-	defaultFollowsPageSizeString, ok := os.LookupEnv("DEFAULT_FOLLOWS_PAGE_SIZE")
-	if !ok {
-		return nil, envNotSet("DEFAULT_FOLLOWS_PAGE_SIZE")
+	defaultFollowsPageSizeString, err := lookupEnv("DEFAULT_FOLLOWS_PAGE_SIZE")
+	if err != nil {
+		return nil, err
 	}
 	defaultFollowsPageSize, err := strconv.Atoi(defaultFollowsPageSizeString)
 	if err != nil {
 		return nil, err
 	}
 
+	postsBodyLimitString, set := os.LookupEnv("POSTS_BODY_LIMIT")
+	postsBodyLimit := defaultPostBodyLimit
+	if set {
+		var err error
+		postsBodyLimit, err = strconv.Atoi(postsBodyLimitString)
+		if err != nil {
+			return nil, err
+		}
+		if postsBodyLimit <= 0 {
+			postsBodyLimit = defaultFollowsPageSize
+		}
+	}
+
 	return &Env{
-		ServerAddr:            serverAddr,
-		CorsOrigin:            corsOrigin,
-		DSN:                   dsn,
-		JwtSecret:             jwtSecret,
-		JwtLifetime:           jwtLifetime,
-		DefaultPostsPageSize:  defaultPostsPageSize,
-		DefaultFollowPageSize: defaultFollowsPageSize,
+		Server: Server{
+			Addr:            addr,
+			CorsOrigin:      corsOrigin,
+			ShutdownTimeout: shutdownTimeout,
+		},
+		Database: Database{
+			DSN: dsn,
+		},
+		JWT: JWT{
+			Secret:   jwtSecret,
+			Lifetime: jwtLifetime,
+		},
+		Pagination: Pagination{
+			DefaultPostsPageSize:  defaultPostsPageSize,
+			DefaultFollowPageSize: defaultFollowsPageSize,
+		},
+		Posts: Posts{
+			BodyLimit: postsBodyLimit,
+		},
 	}, nil
 }
 
-func envNotSet(name string) error {
+func lookupEnv(key string) (value string, err error) {
+	value, set := os.LookupEnv(key)
+	if !set {
+		return "", errEnvNotSet(key)
+	}
+	return value, nil
+}
+
+func errEnvNotSet(name string) error {
 	return fmt.Errorf("%s environment variable is not set", name)
 }
