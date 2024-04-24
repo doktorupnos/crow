@@ -2,7 +2,6 @@ package app
 
 import (
 	"net/http"
-	"unicode/utf8"
 
 	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/post"
@@ -123,7 +122,7 @@ func validateBody(body string, limit int) error {
 		return ErrPostEmpty
 	}
 
-	if utf8.RuneCountInString(body) > limit {
+	if len(body) > limit {
 		return ErrPostTooBig
 	}
 

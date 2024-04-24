@@ -1,11 +1,12 @@
 package app
 
 import (
-	"context"
-	"log"
+	"net/http"
+	"time"
 
 	"github.com/doktorupnos/crow/backend/internal/database"
 	"github.com/doktorupnos/crow/backend/internal/env"
+	"github.com/doktorupnos/crow/backend/internal/shutdown"
 	"gorm.io/gorm"
 )
 
@@ -30,9 +31,13 @@ func New(env *env.Env, db *gorm.DB) *App {
 
 func (app *App) Run() {
 	router := ConfiguredRouter(app)
-	server := GracefulServer(app, router)
-	if err := server.ListenAndServe(context.Background()); err != nil {
-		log.Fatal(err)
+	server := &http.Server{
+		Addr:    app.Env.Server.Addr,
+		Handler: router,
+
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  1 * time.Minute,
 	}
-	log.Println("graceful shutdown!")
+	shutdown.ListenAndServe(server, app.Env.Server.ShutdownTimeout)
 }
