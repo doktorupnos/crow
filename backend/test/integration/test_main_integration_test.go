@@ -11,8 +11,12 @@ import (
 	"github.com/doktorupnos/crow/backend/internal/app"
 	"github.com/doktorupnos/crow/backend/internal/database"
 	"github.com/doktorupnos/crow/backend/internal/env"
+	"github.com/go-chi/chi/v5"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
+
+const apiPrefix = "/api"
 
 var (
 	environment *env.Env
@@ -52,22 +56,25 @@ func TestMain(m *testing.M) {
 	}
 
 	var err error
-	db, err = database.Connect(environment.Database.DSN)
+	db, err = database.Connect(environment.Database.DSN, &gorm.Config{
+		Logger: logger.Discard,
+	})
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 
 	application = app.New(environment, db)
-	router = app.ConfiguredRouter(application)
+	router := chi.NewMux()
+	router = app.RegisterEndpoints(router, application)
 	server = httptest.NewServer(router)
 	client = server.Client()
 
-	usersEndpoint = server.URL + "/users"
-	loginEndpoint = server.URL + "/login"
-	logoutEndpoint = server.URL + "/logout"
-	validateJWTEndpoint = server.URL + "/admin/jwt"
-	postsEndpoint = server.URL + "/posts"
+	usersEndpoint = server.URL + apiPrefix + "/users"
+	loginEndpoint = server.URL + apiPrefix + "/login"
+	logoutEndpoint = server.URL + apiPrefix + "/logout"
+	validateJWTEndpoint = server.URL + apiPrefix + "/admin/jwt"
+	postsEndpoint = server.URL + apiPrefix + "/posts"
 
 	defer server.Close()
 	m.Run()
