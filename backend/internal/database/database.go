@@ -12,8 +12,8 @@ import (
 )
 
 // Connect creates a new connection with a Postgres database through GORM.
-func Connect(dataSourceName string) (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.Open(dataSourceName), &gorm.Config{})
+func Connect(dataSourceName string, config *gorm.Config) (*gorm.DB, error) {
+	db, err := gorm.Open(postgres.Open(dataSourceName), config)
 	if err != nil {
 		return nil, err
 	}

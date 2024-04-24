@@ -7,6 +7,7 @@ import (
 	"github.com/doktorupnos/crow/backend/internal/database"
 	"github.com/doktorupnos/crow/backend/internal/env"
 	"github.com/doktorupnos/crow/backend/internal/shutdown"
+	"github.com/go-chi/chi/v5"
 	"gorm.io/gorm"
 )
 
@@ -30,7 +31,9 @@ func New(env *env.Env, db *gorm.DB) *App {
 }
 
 func (app *App) Run() {
-	router := ConfiguredRouter(app)
+	router := chi.NewMux()
+	RegisterEndpoints(router, app)
+	RegisterMiddleware(router, app)
 	server := &http.Server{
 		Addr:    app.Env.Server.Addr,
 		Handler: router,

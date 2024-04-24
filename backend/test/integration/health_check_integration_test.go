@@ -10,7 +10,7 @@ func TestHealthCheckIntegration(t *testing.T) {
 		t.SkipNow()
 	}
 
-	resp, err := client.Get(server.URL + "/healthz")
+	resp, err := client.Get(server.URL + apiPrefix + "/healthz")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}

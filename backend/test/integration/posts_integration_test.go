@@ -3,7 +3,6 @@ package integration
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 	"testing"
@@ -27,9 +26,6 @@ func TestPostsWorkflowIntegration(t *testing.T) {
 	createTestPost(t, token, "4")
 	createTestPost(t, token, "5")
 	posts := getPosts(t, token, "page=1")
-	for _, post := range posts {
-		t.Log(post.Body)
-	}
 	assertEqual(t, len(posts), 2)
 }
 
@@ -48,11 +44,6 @@ func createTestPost(t testing.TB, token *http.Cookie, body string) {
 		t.Fatal(err)
 	}
 
-	data, err := io.ReadAll(resp.Body)
-	if err == nil {
-		fmt.Println(string(data))
-	}
-
 	assertStatusCode(t, resp.StatusCode, http.StatusCreated)
 }
 
@@ -62,8 +53,7 @@ func getPosts(t testing.TB, token *http.Cookie, queryParameters ...string) []pos
 		queryString = "?" + strings.Join(queryParameters, "&")
 	}
 	url := postsEndpoint + queryString
-	t.Log(url)
-	getPostsReq, err := http.NewRequest(http.MethodGet, postsEndpoint+queryString, noBody)
+	getPostsReq, err := http.NewRequest(http.MethodGet, url, noBody)
 	if err != nil {
 		t.Fatal(err)
 	}

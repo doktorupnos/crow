@@ -9,6 +9,7 @@ import (
 	"github.com/doktorupnos/crow/backend/internal/database"
 	"github.com/doktorupnos/crow/backend/internal/env"
 	"github.com/joho/godotenv"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -32,7 +33,7 @@ func main() {
 		log.Println(`"Env":`, string(data))
 	}
 
-	db, err := database.Connect(env.Database.DSN)
+	db, err := database.Connect(env.Database.DSN, &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
