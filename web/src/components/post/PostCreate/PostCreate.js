@@ -14,9 +14,10 @@ const PostCreate = ({ appendNewPost }) => {
   const handleChange = (event) => {
     const postText = event.target.value;
     if (postText.trim() !== "") {
-      setTextValue(event.target.value);
+      const trimmedText = postText.substring(0, 280);
+      return setTextValue(trimmedText);
     } else {
-      setTextValue("");
+      return setTextValue("");
     }
   };
 
