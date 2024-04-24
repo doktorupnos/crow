@@ -32,8 +32,8 @@ func New(env *env.Env, db *gorm.DB) *App {
 
 func (app *App) Run() {
 	router := chi.NewMux()
-	RegisterEndpoints(router, app)
 	RegisterMiddleware(router, app)
+	RegisterEndpoints(router, app)
 	server := &http.Server{
 		Addr:    app.Env.Server.Addr,
 		Handler: router,
