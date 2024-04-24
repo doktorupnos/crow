@@ -36,19 +36,19 @@ func (app *App) ViewProfile(w http.ResponseWriter, r *http.Request, u user.User)
 		self = true
 	} else {
 		// set following if the user 'u' follows the target
-		following, err = app.userService.FollowsUser(u, target)
+		following, err = app.followService.FollowsUser(u, target)
 		if err != nil {
 			respond.Error(w, http.StatusBadRequest, err)
 			return
 		}
 	}
 
-	followingCount, err := app.userService.FollowingCount(target)
+	followingCount, err := app.followService.FollowingCount(target)
 	if err != nil {
 		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
-	followerCount, err := app.userService.FollowerCount(target)
+	followerCount, err := app.followService.FollowerCount(target)
 	if err != nil {
 		respond.Error(w, http.StatusBadRequest, err)
 		return

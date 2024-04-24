@@ -9,7 +9,6 @@ import (
 	"github.com/doktorupnos/crow/backend/internal/respond"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 )
 
 var errDecodeRequestBody = errors.New("failed to decode request body")
@@ -97,58 +96,6 @@ func (app *App) UpdateUser(w http.ResponseWriter, r *http.Request, u user.User) 
 	respond.JSON(w, http.StatusOK, u)
 }
 
-func (app *App) Follow(w http.ResponseWriter, r *http.Request, u user.User) {
-	type RequestBody struct {
-		Id string `json:"user_id"`
-	}
-	body := RequestBody{}
-
-	defer r.Body.Close()
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
-	}
-
-	id, err := uuid.Parse(body.Id)
-	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
-	}
-
-	if err := app.userService.Follow(u, id); err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-}
-
-func (app *App) UnFollow(w http.ResponseWriter, r *http.Request, u user.User) {
-	type RequestBody struct {
-		Id string `json:"user_id"`
-	}
-	body := RequestBody{}
-
-	defer r.Body.Close()
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
-	}
-
-	id, err := uuid.Parse(body.Id)
-	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
-	}
-
-	if err := app.userService.Unfollow(u, id); err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-}
-
 func (app *App) extractTargetUser(r *http.Request, u user.User) (user.User, error) {
 	target := u
 	if uq := r.URL.Query().Get("u"); uq != "" {
@@ -159,64 +106,4 @@ func (app *App) extractTargetUser(r *http.Request, u user.User) (user.User, erro
 		}
 	}
 	return target, nil
-}
-
-func (app *App) Following(w http.ResponseWriter, r *http.Request, u user.User) {
-	target, err := app.extractTargetUser(r, u)
-	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	us, err := app.userService.Following(r, app.Env.Pagination.DefaultFollowPageSize, target.ID)
-	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-	respond.JSON(w, http.StatusOK, us)
-}
-
-func (app *App) Followers(w http.ResponseWriter, r *http.Request, u user.User) {
-	target, err := app.extractTargetUser(r, u)
-	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	us, err := app.userService.Followers(r, app.Env.Pagination.DefaultFollowPageSize, target.ID)
-	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-	respond.JSON(w, http.StatusOK, us)
-}
-
-func (app *App) FollowingCount(w http.ResponseWriter, r *http.Request, u user.User) {
-	target, err := app.extractTargetUser(r, u)
-	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	count, err := app.userService.FollowingCount(target)
-	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-	respond.JSON(w, http.StatusOK, count)
-}
-
-func (app *App) FollowerCount(w http.ResponseWriter, r *http.Request, u user.User) {
-	target, err := app.extractTargetUser(r, u)
-	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	count, err := app.userService.FollowerCount(target)
-	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-	respond.JSON(w, http.StatusOK, count)
 }

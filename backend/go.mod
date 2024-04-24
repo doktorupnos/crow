@@ -5,16 +5,17 @@ go 1.21.4
 require (
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/cors v1.2.1
+	github.com/go-chi/httprate v0.9.0
 	github.com/golang-jwt/jwt/v5 v5.1.0
 	github.com/google/uuid v1.4.0
 	github.com/joho/godotenv v1.5.1
-	github.com/quii/go-graceful-shutdown v0.6.0
 	golang.org/x/crypto v0.14.0
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
 )
 
 require (
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.4.3 // indirect

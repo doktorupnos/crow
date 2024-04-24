@@ -1,11 +1,8 @@
 package user
 
 import (
-	"net/http"
 	"regexp"
 
-	"github.com/doktorupnos/crow/backend/internal/follow"
-	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/passwd"
 	"github.com/google/uuid"
 )
@@ -66,81 +63,6 @@ func (s *Service) Update(u User, name, password string) error {
 
 func (s *Service) Delete(u User) error {
 	return s.r.Delete(u)
-}
-
-func (s *Service) Follow(u User, id uuid.UUID) error {
-	o, err := s.GetByID(id)
-	if err != nil {
-		return err
-	}
-
-	return s.r.Follow(u, o)
-}
-
-func (s *Service) Unfollow(u User, id uuid.UUID) error {
-	o, err := s.GetByID(id)
-	if err != nil {
-		return err
-	}
-
-	return s.r.Unfollow(u, o)
-}
-
-func (s *Service) Following(
-	r *http.Request,
-	defaultPageSize int,
-	userID uuid.UUID,
-) ([]follow.Follow, error) {
-	page := pages.ExtractPage(r)
-	limit := pages.ExtractLimit(r)
-	if limit == 0 {
-		limit = defaultPageSize
-	}
-
-	return s.r.Following(LoadParams{
-		UserID: userID,
-		PaginationParams: pages.PaginationParams{
-			PageNumber: page,
-			PageSize:   limit,
-		},
-	})
-}
-
-type LoadParams struct {
-	UserID uuid.UUID
-	pages.PaginationParams
-}
-
-func (s *Service) Followers(
-	r *http.Request,
-	defaultPageSize int,
-	userID uuid.UUID,
-) ([]follow.Follow, error) {
-	page := pages.ExtractPage(r)
-	limit := pages.ExtractLimit(r)
-	if limit == 0 {
-		limit = defaultPageSize
-	}
-
-	return s.r.Followers(LoadParams{
-		UserID: userID,
-		PaginationParams: pages.PaginationParams{
-			PageNumber: page,
-			PageSize:   limit,
-		},
-	})
-}
-
-func (s *Service) FollowingCount(u User) (int, error) {
-	return s.r.FollowingCount(u)
-}
-
-func (s *Service) FollowerCount(u User) (int, error) {
-	return s.r.FollowersCount(u)
-}
-
-func (s *Service) FollowsUser(u, t User) (bool, error) {
-	return s.r.FollowsUser(u, t)
 }
 
 type ErrUser string
