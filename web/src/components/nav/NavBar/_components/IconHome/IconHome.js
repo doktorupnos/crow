@@ -1,11 +1,12 @@
 import Image from "next/image";
-import Link from "next/link";
 
-import styles from "./IconHome.module.scss";
+const handleLink = async () => {
+  return (location.href = "/home");
+};
 
 const IconHome = () => {
   return (
-    <Link href="/home" className={styles.icon_home}>
+    <button onClick={handleLink}>
       <Image
         src="/images/crow/logo.svg"
         alt="home"
@@ -13,7 +14,7 @@ const IconHome = () => {
         height={30}
         draggable="false"
       />
-    </Link>
+    </button>
   );
 };
 
