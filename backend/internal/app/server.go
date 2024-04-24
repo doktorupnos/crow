@@ -9,7 +9,7 @@ import (
 
 func GracefulServer(app *App, router http.Handler) *gracefulshutdown.Server {
 	server := &http.Server{
-		Addr:    app.Env.ServerAddr,
+		Addr:    app.Env.Server.Addr,
 		Handler: router,
 
 		// Good practice to set timeouts to avoid Slowloris attacks.

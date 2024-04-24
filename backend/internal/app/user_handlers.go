@@ -36,7 +36,7 @@ func (app *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
-	respond.JWT(w, http.StatusCreated, app.Env.JwtSecret, userID.String(), app.Env.JwtLifetime)
+	respond.JWT(w, http.StatusCreated, app.Env.JWT.Secret, userID.String(), app.Env.JWT.Lifetime)
 }
 
 func (app *App) GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -168,7 +168,7 @@ func (app *App) Following(w http.ResponseWriter, r *http.Request, u user.User) {
 		return
 	}
 
-	us, err := app.userService.Following(r, app.Env.DefaultFollowPageSize, target.ID)
+	us, err := app.userService.Following(r, app.Env.Pagination.DefaultFollowPageSize, target.ID)
 	if err != nil {
 		respond.Error(w, http.StatusInternalServerError, err)
 		return
@@ -183,7 +183,7 @@ func (app *App) Followers(w http.ResponseWriter, r *http.Request, u user.User) {
 		return
 	}
 
-	us, err := app.userService.Followers(r, app.Env.DefaultFollowPageSize, target.ID)
+	us, err := app.userService.Followers(r, app.Env.Pagination.DefaultFollowPageSize, target.ID)
 	if err != nil {
 		respond.Error(w, http.StatusInternalServerError, err)
 		return

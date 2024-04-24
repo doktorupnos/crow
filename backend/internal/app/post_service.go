@@ -2,6 +2,7 @@ package app
 
 import (
 	"net/http"
+	"unicode/utf8"
 
 	"github.com/doktorupnos/crow/backend/internal/pages"
 	"github.com/doktorupnos/crow/backend/internal/post"
@@ -17,8 +18,8 @@ func NewPostService(pr post.PostRepo) *PostService {
 	return &PostService{pr}
 }
 
-func (s *PostService) Create(u user.User, body string) error {
-	if err := validateBody(body); err != nil {
+func (s *PostService) Create(u user.User, body string, limit int) error {
+	if err := validateBody(body, limit); err != nil {
 		return err
 	}
 
@@ -74,8 +75,8 @@ func (s *PostService) LoadByID(id uuid.UUID) (post.Post, error) {
 	return s.pr.LoadByID(id)
 }
 
-func (s *PostService) Update(postID, userID uuid.UUID, body string) error {
-	if err := validateBody(body); err != nil {
+func (s *PostService) Update(postID, userID uuid.UUID, body string, limit int) error {
+	if err := validateBody(body, limit); err != nil {
 		return err
 	}
 
@@ -117,12 +118,12 @@ const (
 	ErrNotPostOwner = PostErr("Post does not belong this user")
 )
 
-func validateBody(body string) error {
+func validateBody(body string, limit int) error {
 	if len(body) == 0 {
 		return ErrPostEmpty
 	}
 
-	if len(body) > 128 {
+	if utf8.RuneCountInString(body) > limit {
 		return ErrPostTooBig
 	}
 

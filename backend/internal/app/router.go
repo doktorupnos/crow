@@ -15,7 +15,7 @@ func ConfiguredRouter(app *App) http.Handler {
 	router := chi.NewRouter()
 
 	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins: []string{app.Env.CorsOrigin},
+		AllowedOrigins: []string{app.Env.Server.CorsOrigin},
 		AllowedHeaders: []string{"*"},
 		AllowedMethods: []string{
 			http.MethodGet,
