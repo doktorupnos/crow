@@ -38,6 +38,7 @@ const PostCreate = ({ appendNewPost }) => {
       let response = await postCreate(textValue);
       if (response) {
         appendNewPost();
+        setTextValue("");
       }
     } catch (error) {
       return console.error(`Failed to create post! [${error.message}] `);
