@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - '*'
+      - "*"
     paths:
-      - 'backend/**'
+      - "backend/**"
   pull_request:
     branches:
-      - 'main'
+      - "main"
     paths:
-      - 'backend/**'
+      - "backend/**"
 
 env:
   REGISTRY: ghcr.io/doktorupnos
@@ -40,9 +40,8 @@ jobs:
 
       - name: Build backend image
         run: |
-            docker build -t ${{ env.REGISTRY }}/${{ github.event.repository.name }}/backend:${GITHUB_REF##*/} -f /backend/build/package/Dockerfile /backend/build/package
+          docker build backend -f /backend/build/package/Dockerfile -t ${{ env.REGISTRY }}/${{ github.event.repository.name }}/backend:${GITHUB_REF##*/}
 
       - name: Push backend image
         run: |
-            docker push ${{ env.REGISTRY }}/${{ github.event.repository.name }}/backend:${GITHUB_REF##*/}
-
+          docker push ${{ env.REGISTRY }}/${{ github.event.repository.name }}/backend:${GITHUB_REF##*/}

@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine:latest as builder
+FROM golang:1.22-alpine as builder
 
 WORKDIR /app
 
@@ -7,9 +7,9 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-w -s" -o backend ./cmd/backend/
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-w -s" -o backend ../../cmd/backend/main.go
 
-FROM scratch
+FROM alpine:latest
 
 WORKDIR /app
 
