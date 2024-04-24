@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
 
@@ -34,18 +35,22 @@ func RegisterEndpoints(r *chi.Mux, app *App) *chi.Mux {
 }
 
 func RegisterMiddleware(router *chi.Mux, app *App) {
-	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins: []string{app.Env.Server.CorsOrigin},
-		AllowedHeaders: []string{"*"},
-		AllowedMethods: []string{
-			http.MethodGet,
-			http.MethodPost,
-			http.MethodOptions,
-			http.MethodPut,
-			http.MethodDelete,
-		},
-		AllowCredentials: true,
-	}))
+	router.Use(
+		cors.Handler(cors.Options{
+			AllowedOrigins: []string{app.Env.Server.CorsOrigin},
+			AllowedHeaders: []string{"*"},
+			AllowedMethods: []string{
+				http.MethodGet,
+				http.MethodPost,
+				http.MethodOptions,
+				http.MethodPut,
+				http.MethodDelete,
+			},
+			AllowCredentials: true,
+		}),
+		middleware.Logger,
+		middleware.Recoverer,
+	)
 }
 
 // UserRouter returns a configured router that handles all user endpoints.
