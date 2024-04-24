@@ -9,9 +9,11 @@ import (
 )
 
 func ConfiguredRouter(app *App) http.Handler {
-	router := chi.NewRouter()
+	apiRouter := chi.NewRouter()
 
-	router.Use(cors.Handler(cors.Options{
+	r := chi.NewRouter()
+
+	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{app.Env.Server.CorsOrigin},
 		AllowedHeaders: []string{"*"},
 		AllowedMethods: []string{
@@ -23,30 +25,30 @@ func ConfiguredRouter(app *App) http.Handler {
 		},
 		AllowCredentials: true,
 	}))
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 
-	router.Get("/healthz", HealthCheck)
+	r.Get("/healthz", HealthCheck)
 
-	router.Post("/login", app.BasicAuth(app.Login))
-	router.Post("/logout", app.JWT(app.Logout))
+	r.Post("/login", app.BasicAuth(app.Login))
+	r.Post("/logout", app.JWT(app.Logout))
 
-	router.Mount("/users", UserRouter(app))
-	router.Get("/profile", app.JWT(app.ViewProfile))
+	r.Get("/profile", app.JWT(app.ViewProfile))
 
-	router.Post("/follow", app.JWT(app.Follow))
-	router.Post("/unfollow", app.JWT(app.UnFollow))
-	router.Get("/following", app.JWT(app.Following))
-	router.Get("/followers", app.JWT(app.Followers))
-	router.Get("/following_count", app.JWT(app.FollowingCount))
-	router.Get("/followers_count", app.JWT(app.FollowerCount))
+	r.Post("/follow", app.JWT(app.Follow))
+	r.Post("/unfollow", app.JWT(app.UnFollow))
+	r.Get("/following", app.JWT(app.Following))
+	r.Get("/followers", app.JWT(app.Followers))
+	r.Get("/following_count", app.JWT(app.FollowingCount))
+	r.Get("/followers_count", app.JWT(app.FollowerCount))
 
-	router.Mount("/posts", PostRouter(app))
-	router.Mount("/post_likes", PostLikeRouter(app))
+	r.Mount("/users", UserRouter(app))
+	r.Mount("/posts", PostRouter(app))
+	r.Mount("/post_likes", PostLikeRouter(app))
+	r.Mount("/admin", AdminRouter(app))
 
-	router.Mount("/admin", AdminRouter(app))
-
-	return router
+	apiRouter.Mount("/api", r)
+	return apiRouter
 }
 
 // UserRouter returns a configured router that handles all user endpoints.

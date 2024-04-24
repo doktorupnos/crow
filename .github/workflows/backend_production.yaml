@@ -3,7 +3,7 @@ name: Release backend to Production
 on:
   workflow_dispatch:
     tags:
-      - '*'
+      - "*"
 
 env:
   REGISTRY: ghcr.io/doktorupnos
@@ -32,9 +32,8 @@ jobs:
 
       - name: Build backend image
         run: |
-            docker build backend -t ${{ env.REGISTRY }}/${{ github.event.repository.name }}/backend:${GITHUB_REF##*/}
+          docker build backend -f backend/build/package/Dockerfile -t ${{ env.REGISTRY }}/${{ github.event.repository.name }}/backend:${GITHUB_REF##*/}
 
       - name: Push backend image
         run: |
-            docker push ${{ env.REGISTRY }}/${{ github.event.repository.name }}/backend:${GITHUB_REF##*/}
-
+          docker push ${{ env.REGISTRY }}/${{ github.event.repository.name }}/backend:${GITHUB_REF##*/}
