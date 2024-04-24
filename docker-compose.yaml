@@ -2,7 +2,7 @@ version: '3'
 
 services:
   postgres:
-    image: postgres:16.1-alpine:latest
+    image: postgres:16.1-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -29,7 +29,9 @@ services:
       - DEFAULT_POSTS_PAGE_SIZE=5
       - DEFAULT_FOLLOWS_PAGE_SIZE=10
 
-    build: "./backend"
+    build: 
+      context: "./backend"
+      dockerfile: "./build/package/Dockerfile"
     depends_on:
       - postgres
   # web:
