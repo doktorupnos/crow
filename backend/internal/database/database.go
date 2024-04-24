@@ -34,7 +34,7 @@ func automigrate(db *gorm.DB) error {
 		return err
 	}
 
-	if err := db.SetupJoinTable(&post.Post{}, "Likes", &like.PostLike{}); err != nil {
+	if err := db.SetupJoinTable(&post.Post{}, "Likes", &like.Like{}); err != nil {
 		log.Println("Failed to setup the Likes join table")
 		return err
 	}

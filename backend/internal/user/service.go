@@ -1,23 +1,24 @@
-package app
+package user
 
 import (
 	"net/http"
 	"regexp"
 
+	"github.com/doktorupnos/crow/backend/internal/follow"
 	"github.com/doktorupnos/crow/backend/internal/pages"
-	"github.com/doktorupnos/crow/backend/internal/user"
+	"github.com/doktorupnos/crow/backend/internal/passwd"
 	"github.com/google/uuid"
 )
 
-type UserService struct {
-	ur user.UserRepo
+type Service struct {
+	r Repo
 }
 
-func NewUserService(ur user.UserRepo) *UserService {
-	return &UserService{ur}
+func NewService(r Repo) *Service {
+	return &Service{r}
 }
 
-func (s *UserService) Create(name, password string) (uuid.UUID, error) {
+func (s *Service) Create(name, password string) (uuid.UUID, error) {
 	if err := validateName(name); err != nil {
 		return uuid.UUID{}, err
 	}
@@ -25,27 +26,27 @@ func (s *UserService) Create(name, password string) (uuid.UUID, error) {
 		return uuid.UUID{}, err
 	}
 
-	hashed, err := hashPassword(password)
+	hashed, err := passwd.Hash(password)
 	if err != nil {
 		return uuid.UUID{}, err
 	}
 
-	return s.ur.Create(user.User{Name: name, Password: hashed})
+	return s.r.Create(User{Name: name, Password: hashed})
 }
 
-func (s *UserService) GetAll() ([]user.User, error) {
-	return s.ur.GetAll()
+func (s *Service) GetAll() ([]User, error) {
+	return s.r.GetAll()
 }
 
-func (s *UserService) GetByName(name string) (user.User, error) {
-	return s.ur.GetByName(name)
+func (s *Service) GetByName(name string) (User, error) {
+	return s.r.GetByName(name)
 }
 
-func (s *UserService) GetByID(id uuid.UUID) (user.User, error) {
-	return s.ur.GetByID(id)
+func (s *Service) GetByID(id uuid.UUID) (User, error) {
+	return s.r.GetByID(id)
 }
 
-func (s *UserService) Update(u user.User, name, password string) error {
+func (s *Service) Update(u User, name, password string) error {
 	if err := validateName(name); err != nil {
 		return err
 	}
@@ -53,50 +54,50 @@ func (s *UserService) Update(u user.User, name, password string) error {
 		return err
 	}
 
-	hashed, err := hashPassword(password)
+	hashed, err := passwd.Hash(password)
 	if err != nil {
 		return err
 	}
 
 	u.Name = name
 	u.Password = hashed
-	return s.ur.Update(u)
+	return s.r.Update(u)
 }
 
-func (s *UserService) Delete(u user.User) error {
-	return s.ur.Delete(u)
+func (s *Service) Delete(u User) error {
+	return s.r.Delete(u)
 }
 
-func (s *UserService) Follow(u user.User, id uuid.UUID) error {
+func (s *Service) Follow(u User, id uuid.UUID) error {
 	o, err := s.GetByID(id)
 	if err != nil {
 		return err
 	}
 
-	return s.ur.Follow(u, o)
+	return s.r.Follow(u, o)
 }
 
-func (s *UserService) Unfollow(u user.User, id uuid.UUID) error {
+func (s *Service) Unfollow(u User, id uuid.UUID) error {
 	o, err := s.GetByID(id)
 	if err != nil {
 		return err
 	}
 
-	return s.ur.Unfollow(u, o)
+	return s.r.Unfollow(u, o)
 }
 
-func (s *UserService) Following(
+func (s *Service) Following(
 	r *http.Request,
 	defaultPageSize int,
 	userID uuid.UUID,
-) ([]user.Follow, error) {
+) ([]follow.Follow, error) {
 	page := pages.ExtractPage(r)
 	limit := pages.ExtractLimit(r)
 	if limit == 0 {
 		limit = defaultPageSize
 	}
 
-	return s.ur.Following(user.LoadParams{
+	return s.r.Following(LoadParams{
 		UserID: userID,
 		PaginationParams: pages.PaginationParams{
 			PageNumber: page,
@@ -105,18 +106,23 @@ func (s *UserService) Following(
 	})
 }
 
-func (s *UserService) Followers(
+type LoadParams struct {
+	UserID uuid.UUID
+	pages.PaginationParams
+}
+
+func (s *Service) Followers(
 	r *http.Request,
 	defaultPageSize int,
 	userID uuid.UUID,
-) ([]user.Follow, error) {
+) ([]follow.Follow, error) {
 	page := pages.ExtractPage(r)
 	limit := pages.ExtractLimit(r)
 	if limit == 0 {
 		limit = defaultPageSize
 	}
 
-	return s.ur.Followers(user.LoadParams{
+	return s.r.Followers(LoadParams{
 		UserID: userID,
 		PaginationParams: pages.PaginationParams{
 			PageNumber: page,
@@ -125,16 +131,16 @@ func (s *UserService) Followers(
 	})
 }
 
-func (s *UserService) FollowingCount(u user.User) (int, error) {
-	return s.ur.FollowingCount(u)
+func (s *Service) FollowingCount(u User) (int, error) {
+	return s.r.FollowingCount(u)
 }
 
-func (s *UserService) FollowerCount(u user.User) (int, error) {
-	return s.ur.FollowersCount(u)
+func (s *Service) FollowerCount(u User) (int, error) {
+	return s.r.FollowersCount(u)
 }
 
-func (s *UserService) FollowsUser(u, t user.User) (bool, error) {
-	return s.ur.FollowsUser(u, t)
+func (s *Service) FollowsUser(u, t User) (bool, error) {
+	return s.r.FollowsUser(u, t)
 }
 
 type ErrUser string

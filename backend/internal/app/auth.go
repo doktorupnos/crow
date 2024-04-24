@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/doktorupnos/crow/backend/internal/jwt"
+	"github.com/doktorupnos/crow/backend/internal/passwd"
 	"github.com/doktorupnos/crow/backend/internal/respond"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/google/uuid"
@@ -36,7 +37,7 @@ func (app *App) BasicAuth(handler authedHandler) http.HandlerFunc {
 			return
 		}
 
-		if !passwordsMatch(u.Password, password) {
+		if !passwd.Match(u.Password, password) {
 			respond.Error(w, http.StatusUnauthorized, ErrWrongPassword)
 			return
 		}
@@ -81,4 +82,8 @@ func (app *App) JWT(handler authedHandler) http.HandlerFunc {
 
 		handler(w, r, u)
 	}
+}
+
+func (app *App) ValidateJWT(w http.ResponseWriter, r *http.Request, u user.User) {
+	w.WriteHeader(http.StatusOK)
 }

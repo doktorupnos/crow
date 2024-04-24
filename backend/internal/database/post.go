@@ -45,7 +45,7 @@ func (r *GormPostRepo) Load(params post.LoadParams) ([]post.FeedPost, error) {
 		}
 
 		var likes int64
-		if err := r.db.Model(&like.PostLike{}).
+		if err := r.db.Model(&like.Like{}).
 			Where("post_id = ?", p.ID).
 			Count(&likes).
 			Error; err != nil {
@@ -53,7 +53,7 @@ func (r *GormPostRepo) Load(params post.LoadParams) ([]post.FeedPost, error) {
 		}
 
 		var c int64
-		if err := r.db.Model(&like.PostLike{}).
+		if err := r.db.Model(&like.Like{}).
 			Where("post_id = ? AND user_id = ?", p.ID, params.UserID).
 			Count(&c).
 			Error; err != nil {
@@ -102,7 +102,7 @@ func (r *GormPostRepo) LoadAllByID(params post.LoadParams) ([]post.FeedPost, err
 		}
 
 		var likes int64
-		if err := r.db.Model(&like.PostLike{}).
+		if err := r.db.Model(&like.Like{}).
 			Where("post_id = ?", p.ID).
 			Count(&likes).
 			Error; err != nil {
@@ -110,7 +110,7 @@ func (r *GormPostRepo) LoadAllByID(params post.LoadParams) ([]post.FeedPost, err
 		}
 
 		var c int64
-		if err := r.db.Model(&like.PostLike{}).
+		if err := r.db.Model(&like.Like{}).
 			Where("post_id = ? AND user_id = ?", p.ID, params.UserID).
 			Count(&c).
 			Error; err != nil {

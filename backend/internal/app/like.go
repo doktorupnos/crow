@@ -28,7 +28,7 @@ func (app *App) LikePost(w http.ResponseWriter, r *http.Request, u user.User) {
 		return
 	}
 
-	err = app.postLikeService.Create(u.ID, postID)
+	err = app.likeService.Create(u.ID, postID)
 	if err != nil {
 		respond.Error(w, http.StatusBadRequest, err)
 		return
@@ -56,7 +56,7 @@ func (app *App) UnlikePost(w http.ResponseWriter, r *http.Request, u user.User) 
 		return
 	}
 
-	err = app.postLikeService.Delete(u.ID, postID)
+	err = app.likeService.Delete(u.ID, postID)
 	if err != nil {
 		respond.Error(w, http.StatusBadRequest, err)
 		return

@@ -6,27 +6,29 @@ import (
 
 	"github.com/doktorupnos/crow/backend/internal/database"
 	"github.com/doktorupnos/crow/backend/internal/env"
+	"github.com/doktorupnos/crow/backend/internal/like"
+	"github.com/doktorupnos/crow/backend/internal/post"
 	"github.com/doktorupnos/crow/backend/internal/shutdown"
+	"github.com/doktorupnos/crow/backend/internal/user"
 	"github.com/go-chi/chi/v5"
 	"gorm.io/gorm"
 )
 
-// App groups all the state the server needs to run.
 type App struct {
-	Env             *env.Env
-	DB              *gorm.DB
-	userService     *UserService
-	postService     *PostService
-	postLikeService *PostLikeService
+	Env         *env.Env
+	DB          *gorm.DB
+	userService *user.Service
+	postService *post.Service
+	likeService *like.Service
 }
 
 func New(env *env.Env, db *gorm.DB) *App {
 	return &App{
-		Env:             env,
-		DB:              db,
-		userService:     NewUserService(database.NewGormUserRepo(db)),
-		postService:     NewPostService(database.NewGormPostRepo(db)),
-		postLikeService: NewPostLikeService(database.NewGormPostLikeRepo(db)),
+		Env:         env,
+		DB:          db,
+		userService: user.NewService(database.NewGormUserRepo(db)),
+		postService: post.NewService(database.NewGormPostRepo(db)),
+		likeService: like.NewService(database.NewGormLikeRepo(db)),
 	}
 }
 
