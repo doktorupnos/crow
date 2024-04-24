@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Fetch profile data.
 export const fetchProfile = async (user) => {
-  const endpoint = "http://api:8000/profile";
+  const endpoint = "//crow.zapto.org/api/profile";
   try {
     if (!user) {
       const response = await axios.get(endpoint, {
@@ -27,7 +27,7 @@ export const fetchProfile = async (user) => {
 export const followUser = async (uuid) => {
   try {
     let response = await axios.post(
-      "http://api:8000/follow",
+      "//crow.zapto.org/api/follow",
       { user_id: uuid },
       { withCredentials: true },
     );
@@ -48,7 +48,7 @@ export const followUser = async (uuid) => {
 export const unfollowUser = async (uuid) => {
   try {
     let response = await axios.post(
-      "http://api:8000/unfollow",
+      "//crow.zapto.org/api/unfollow",
       { user_id: uuid },
       { withCredentials: true },
     );
@@ -67,7 +67,7 @@ export const unfollowUser = async (uuid) => {
 
 // Fetch user follow list.
 export const fetchFollow = async (name, page, type) => {
-  const endpoint = "http://api:8000/followers";
+  const endpoint = "//crow.zapto.org/api/followers";
   try {
     let response = await axios.get(
       type
