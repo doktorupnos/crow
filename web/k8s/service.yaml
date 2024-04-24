@@ -9,4 +9,3 @@ spec:
     - protocol: TCP
       port: 443
       targetPort: 3000
-  type: ClusterIP
