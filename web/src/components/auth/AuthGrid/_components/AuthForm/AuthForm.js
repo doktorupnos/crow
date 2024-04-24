@@ -35,7 +35,8 @@ const AuthForm = ({ method }) => {
         setErrorMessage(`${error.response.data.error}!`);
         return console.error(`Failed to auth user! [${error.message}]`);
       } else {
-        return console.error(`Service unavailable! [${error.message}]`)
+        return console.error(`Service unavailable! [${error.message}]`);
+      }
     }
   }
 
