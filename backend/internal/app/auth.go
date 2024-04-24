@@ -55,7 +55,7 @@ func (app *App) JWT(handler authedHandler) http.HandlerFunc {
 
 		tokenString := c.Value
 
-		token, err := jwt.Parse(app.Env.JwtSecret, tokenString)
+		token, err := jwt.Parse(app.Env.JWT.Secret, tokenString)
 		if err != nil {
 			respond.Error(w, http.StatusUnauthorized, err)
 			return

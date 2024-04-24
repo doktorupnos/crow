@@ -8,9 +8,9 @@ import (
 )
 
 func (app *App) Login(w http.ResponseWriter, r *http.Request, u user.User) {
-	respond.JWT(w, http.StatusOK, app.Env.JwtSecret, u.ID.String(), app.Env.JwtLifetime)
+	respond.JWT(w, http.StatusOK, app.Env.JWT.Secret, u.ID.String(), app.Env.JWT.Lifetime)
 }
 
 func (app *App) Logout(w http.ResponseWriter, r *http.Request, u user.User) {
-	respond.JWT(w, http.StatusOK, app.Env.JwtSecret, u.ID.String(), 0)
+	respond.JWT(w, http.StatusOK, app.Env.JWT.Secret, u.ID.String(), 0)
 }

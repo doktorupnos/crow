@@ -27,7 +27,7 @@ func (app *App) CreatePost(w http.ResponseWriter, r *http.Request, u user.User) 
 		return
 	}
 
-	if err := app.postService.Create(u, body.Body); err != nil {
+	if err := app.postService.Create(u, body.Body, app.Env.Posts.BodyLimit); err != nil {
 		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
@@ -50,13 +50,13 @@ func (app *App) GetAllPosts(w http.ResponseWriter, r *http.Request, u user.User)
 			respond.Error(w, http.StatusNotFound, err)
 			return
 		}
-		posts, err = app.postService.LoadAllByID(r, app.Env.DefaultPostsPageSize, u.ID)
+		posts, err = app.postService.LoadAllByID(r, app.Env.Pagination.DefaultPostsPageSize, u.ID)
 		if err != nil {
 			respond.Error(w, http.StatusInternalServerError, err)
 			return
 		}
 	} else {
-		posts, err = app.postService.Load(r, app.Env.DefaultPostsPageSize, u.ID)
+		posts, err = app.postService.Load(r, app.Env.Pagination.DefaultPostsPageSize, u.ID)
 		if err != nil {
 			respond.Error(w, http.StatusInternalServerError, err)
 			return
@@ -103,7 +103,7 @@ func (app *App) UpdatePost(w http.ResponseWriter, r *http.Request, u user.User) 
 		return
 	}
 
-	if err := app.postService.Update(postID, u.ID, body.Body); err != nil {
+	if err := app.postService.Update(postID, u.ID, body.Body, app.Env.Posts.BodyLimit); err != nil {
 		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}

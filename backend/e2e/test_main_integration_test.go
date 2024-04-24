@@ -35,15 +35,21 @@ var noBody = strings.NewReader(``)
 
 func TestMain(m *testing.M) {
 	environment = &env.Env{
-		DSN:                   `postgres://postgres:postgres@localhost:5432/crow`,
-		JwtSecret:             "+3xObWCCIAQf/N1ltJD27kZ5gfjmfbUBG4ViZ/6oHI3rpVFmhAo7yzwWg4mivB1Jea8UuwooegxTdZhZgLkZZA==",
-		JwtLifetime:           5 * time.Minute,
-		DefaultPostsPageSize:  3,
-		DefaultFollowPageSize: 5,
+		Database: env.Database{
+			DSN: `postgres://postgres:postgres@localhost:5432/crow`,
+		},
+		JWT: env.JWT{
+			Secret:   "+3xObWCCIAQf/N1ltJD27kZ5gfjmfbUBG4ViZ/6oHI3rpVFmhAo7yzwWg4mivB1Jea8UuwooegxTdZhZgLkZZA==",
+			Lifetime: 5 * time.Minute,
+		},
+		Pagination: env.Pagination{
+			DefaultPostsPageSize:  3,
+			DefaultFollowPageSize: 5,
+		},
 	}
 
 	var err error
-	db, err = database.Connect(environment.DSN)
+	db, err = database.Connect(environment.Database.DSN)
 	if err != nil {
 		log.Fatal(err)
 		return

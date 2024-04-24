@@ -24,11 +24,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db, err := database.Connect(env.DSN)
+	db, err := database.Connect(env.Database.DSN)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println(env.ServerAddr)
+	log.Println(env.Server.Addr)
 	app.New(env, db).Run()
 }
