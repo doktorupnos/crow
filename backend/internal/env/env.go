@@ -2,13 +2,15 @@ package env
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"time"
 )
 
-const DefaultPostBodyLimit = 280
+const (
+	defaultPostBodyLimit   = 280
+	defaultShutdownTimeout = time.Minute
+)
 
 type Env struct {
 	Server     Server
@@ -19,8 +21,9 @@ type Env struct {
 }
 
 type Server struct {
-	Addr       string
-	CorsOrigin string
+	Addr            string
+	CorsOrigin      string
+	ShutdownTimeout time.Duration
 }
 
 type Database struct {
@@ -50,6 +53,16 @@ func Load() (*Env, error) {
 	corsOrigin, err := lookupEnv("CORS_ORIGIN")
 	if err != nil {
 		return nil, err
+	}
+
+	shutdownTimeoutString, set := os.LookupEnv("SHUTDOWN_TIMEOUT")
+	shutdownTimeout := defaultShutdownTimeout
+	if set {
+		var err error
+		shutdownTimeout, err = time.ParseDuration(shutdownTimeoutString)
+		if err != nil {
+			shutdownTimeout = defaultShutdownTimeout
+		}
 	}
 
 	dsn, err := lookupEnv("DSN")
@@ -90,7 +103,7 @@ func Load() (*Env, error) {
 	}
 
 	postsBodyLimitString, set := os.LookupEnv("POSTS_BODY_LIMIT")
-	postsBodyLimit := DefaultPostBodyLimit
+	postsBodyLimit := defaultPostBodyLimit
 	if set {
 		var err error
 		postsBodyLimit, err = strconv.Atoi(postsBodyLimitString)
@@ -102,12 +115,11 @@ func Load() (*Env, error) {
 		}
 	}
 
-	log.Println("POSTS_BODY_LIMIT", postsBodyLimit)
-
 	return &Env{
 		Server: Server{
-			Addr:       addr,
-			CorsOrigin: corsOrigin,
+			Addr:            addr,
+			CorsOrigin:      corsOrigin,
+			ShutdownTimeout: shutdownTimeout,
 		},
 		Database: Database{
 			DSN: dsn,

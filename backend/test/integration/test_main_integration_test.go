@@ -1,4 +1,4 @@
-package integration_test
+package integration
 
 import (
 	"log"
@@ -45,6 +45,9 @@ func TestMain(m *testing.M) {
 		Pagination: env.Pagination{
 			DefaultPostsPageSize:  3,
 			DefaultFollowPageSize: 5,
+		},
+		Posts: env.Posts{
+			BodyLimit: 280,
 		},
 	}
 
