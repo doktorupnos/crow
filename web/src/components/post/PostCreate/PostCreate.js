@@ -14,9 +14,10 @@ const PostCreate = ({ appendNewPost }) => {
   const handleChange = (event) => {
     const postText = event.target.value;
     if (postText.trim() !== "") {
-      setTextValue(event.target.value);
+      const trimmedText = postText.substring(0, 280);
+      return setTextValue(trimmedText);
     } else {
-      setTextValue("");
+      return setTextValue("");
     }
   };
 
@@ -37,6 +38,7 @@ const PostCreate = ({ appendNewPost }) => {
       let response = await postCreate(textValue);
       if (response) {
         appendNewPost();
+        setTextValue("");
       }
     } catch (error) {
       return console.error(`Failed to create post! [${error.message}] `);
