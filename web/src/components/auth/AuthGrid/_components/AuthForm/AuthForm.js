@@ -31,10 +31,11 @@ const AuthForm = ({ method }) => {
         return (location.href = "/home");
       }
     } catch (error) {
-      if (error.response.data.error) {
+      if (error.response && error.response.data && error.response.data.error) {
         setErrorMessage(`${error.response.data.error}!`);
-      }
-      return console.error(`Failed to auth user! [${error.message}]`);
+        return console.error(`Failed to auth user! [${error.message}]`);
+      } else {
+        return console.error(`Service unavailable! [${error.message}]`)
     }
   }
 
