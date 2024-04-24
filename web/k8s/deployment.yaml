@@ -1,5 +1,6 @@
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: web
 spec:
@@ -13,7 +14,7 @@ spec:
         app: web
     spec:
       containers:
-        - name: api-gateway
+        - name: web
           image: ghcr.io/doktorupnos/crow/web:web-temp
           imagePullPolicy: Always
           ports:

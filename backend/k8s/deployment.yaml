@@ -1,22 +1,23 @@
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: api-gateway
+  name: api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-gateway
+      app: api
   template:
     metadata:
       labels:
-        app: api-gateway
+        app: api
     spec:
       containers:
-        - name: api-gateway
+        - name: api
           image: ghcr.io/doktorupnos/crow/backend:master
           ports:
-            - containerPort: 8080
+            - containerPort: 8000
           env:
             - name: ADDR
               value: "localhost:8000"
