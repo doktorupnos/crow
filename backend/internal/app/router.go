@@ -1,9 +1,11 @@
 package app
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
+	"github.com/doktorupnos/crow/backend/internal/respond"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -95,10 +97,10 @@ func AdminRouter(app *App) http.Handler {
 	})
 
 	router.Get("/error", func(w http.ResponseWriter, _ *http.Request) {
-		respondWithError(
+		respond.Error(
 			w,
 			http.StatusInternalServerError,
-			http.StatusText(http.StatusInternalServerError),
+			errors.New(http.StatusText(http.StatusInternalServerError)),
 		)
 	})
 

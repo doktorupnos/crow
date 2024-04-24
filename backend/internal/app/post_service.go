@@ -85,7 +85,7 @@ func (s *PostService) Update(postID, userID uuid.UUID, body string) error {
 	}
 
 	if p.UserID != userID {
-		return PostErrNotOwner
+		return ErrNotPostOwner
 	}
 
 	p.Body = body
@@ -99,7 +99,7 @@ func (s *PostService) Delete(id, userID uuid.UUID) error {
 	}
 
 	if p.UserID != userID {
-		return PostErrNotOwner
+		return ErrNotPostOwner
 	}
 
 	return s.pr.Delete(p)
@@ -112,18 +112,18 @@ func (e PostErr) Error() string {
 }
 
 const (
-	PostErrEmpty    = PostErr("Post is empty")
-	PostErrTooBig   = PostErr("Post is too big")
-	PostErrNotOwner = PostErr("Post does not belong this user")
+	ErrPostEmpty    = PostErr("Post is empty")
+	ErrPostTooBig   = PostErr("Post is too big")
+	ErrNotPostOwner = PostErr("Post does not belong this user")
 )
 
 func validateBody(body string) error {
 	if len(body) == 0 {
-		return PostErrEmpty
+		return ErrPostEmpty
 	}
 
 	if len(body) > 128 {
-		return PostErrTooBig
+		return ErrPostTooBig
 	}
 
 	return nil
