@@ -40,7 +40,7 @@ jobs:
 
       - name: Build backend image
         run: |
-          docker build backend -f /backend/build/package/Dockerfile -t ${{ env.REGISTRY }}/${{ github.event.repository.name }}/backend:${GITHUB_REF##*/}
+          docker build backend -f backend/build/package/Dockerfile -t ${{ env.REGISTRY }}/${{ github.event.repository.name }}/backend:${GITHUB_REF##*/}
 
       - name: Push backend image
         run: |
