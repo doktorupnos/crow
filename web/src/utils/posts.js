@@ -2,19 +2,18 @@ import axios from "axios";
 
 // Fetch user posts.
 export const fetchPosts = async (user, page, limit) => {
+  const endpoint = "//crow.zapto.org/api/posts";
   try {
     let response;
     if (user) {
-      response = await axios.get(
-        `${process.env.postGetEndPoint}?u=${user}&page=${page}`,
-        { withCredentials: true },
-      );
+      response = await axios.get(`${endpoint}?u=${user}&page=${page}`, {
+        withCredentials: true,
+      });
       return response.data;
     } else {
-      response = await axios.get(
-        `${process.env.postGetEndPoint}?page=${page}&limit=${limit}`,
-        { withCredentials: true },
-      );
+      response = await axios.get(`${endpoint}?page=${page}&limit=${limit}`, {
+        withCredentials: true,
+      });
     }
     if (response.status == 200) {
       return response.data;
@@ -33,7 +32,7 @@ export const fetchPosts = async (user, page, limit) => {
 export const postLike = async (id) => {
   try {
     let response = await axios.post(
-      process.env.postLikeEndPoint,
+      "//crow.zapto.org/api/post_likes",
       { post_id: id },
       { withCredentials: true },
     );
@@ -53,7 +52,7 @@ export const postLike = async (id) => {
 // Remove like from user post.
 export const postUnlike = async (id) => {
   try {
-    let response = await axios.delete(process.env.postLikeEndPoint, {
+    let response = await axios.delete("//crow.zapto.org/api/posts", {
       data: { post_id: id },
       withCredentials: true,
     });
@@ -74,7 +73,7 @@ export const postUnlike = async (id) => {
 export const postCreate = async (body) => {
   try {
     let response = await axios.post(
-      process.env.postGetEndPoint,
+      "//crow.zapto.org/api/posts",
       { body: body },
       { withCredentials: true },
     );
@@ -94,7 +93,7 @@ export const postCreate = async (body) => {
 // Delete user post.
 export const postDelete = async (id) => {
   try {
-    let response = await axios.delete(`${process.env.postGetEndPoint}/${id}`, {
+    let response = await axios.delete(`//crow.zapto.org/api/posts/${id}`, {
       withCredentials: true,
     });
     if (response.status == 200) {
