@@ -1,16 +1,27 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: web-ingress
+  annotations:
+    cert-manager.io/certificate-name: web-tls
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    nginx.ingress.kubernetes.io/rewrite-target: /
+
+  name: webapp-ingress
+
 spec:
+  ingressClassName: "nginx"
   rules:
     - host: crow.zapto.org
       http:
         paths:
-          - path: /
-            pathType: Prefix
-            backend:
+          - backend:
               service:
-                name: web-service
+                name: web
                 port:
-                  number: 80
+                  number: 443
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - crow.zapto.org
+      secretName: web-tls
