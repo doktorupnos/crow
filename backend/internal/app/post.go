@@ -45,12 +45,13 @@ func (app *App) GetAllPosts(w http.ResponseWriter, r *http.Request, u user.User)
 
 	name := r.URL.Query().Get("u")
 	if name != "" {
-		u, err = app.userService.GetByName(name)
+		target := user.User{}
+		target, err = app.userService.GetByName(name)
 		if err != nil {
 			respond.Error(w, http.StatusNotFound, err)
 			return
 		}
-		posts, err = app.postService.LoadAllByID(r, app.Env.Pagination.DefaultPostsPageSize, u.ID)
+		posts, err = app.postService.LoadAllByID(r, app.Env.Pagination.DefaultPostsPageSize, target.ID)
 		if err != nil {
 			respond.Error(w, http.StatusInternalServerError, err)
 			return

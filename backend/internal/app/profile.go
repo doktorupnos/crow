@@ -32,7 +32,7 @@ func (app *App) ViewProfile(w http.ResponseWriter, r *http.Request, u user.User)
 		}
 	}
 
-	if target.Name == u.Name {
+	if target.ID == u.ID {
 		self = true
 	} else {
 		// set following if the user 'u' follows the target
