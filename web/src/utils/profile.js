@@ -4,13 +4,13 @@ import axios from "axios";
 export const fetchProfile = async (user) => {
   try {
     if (!user) {
-      const response = await axios.get("//crow.zapto.org/api/profile", {
+      const response = await axios.get("https://crow.zapto.org/api/profile", {
         withCredentials: true,
       });
       return response.data;
     } else {
       const response = await axios.get(
-        `//crow.zapto.org/api/profile?u=${user}`,
+        `https://crow.zapto.org/api/profile?u=${user}`,
         { withCredentials: true },
       );
       return response.data;
@@ -27,7 +27,7 @@ export const fetchProfile = async (user) => {
 export const followUser = async (uuid) => {
   try {
     let response = await axios.post(
-      "//crow.zapto.org/api/follow",
+      "https://crow.zapto.org/api/follow",
       { user_id: uuid },
       { withCredentials: true },
     );
@@ -48,7 +48,7 @@ export const followUser = async (uuid) => {
 export const unfollowUser = async (uuid) => {
   try {
     let response = await axios.post(
-      "//crow.zapto.org/api/unfollow",
+      "https://crow.zapto.org/api/unfollow",
       { user_id: uuid },
       { withCredentials: true },
     );
@@ -70,8 +70,8 @@ export const fetchFollow = async (name, page, type) => {
   try {
     let response = await axios.get(
       type
-        ? `//crow.zapto.org/api/followers?u=${name}&page=${page}`
-        : `//crow.zapto.org/api/following?u=${name}&page=${page}`,
+        ? `https://crow.zapto.org/api/followers?u=${name}&page=${page}`
+        : `https://crow.zapto.org/api/following?u=${name}&page=${page}`,
       { withCredentials: true },
     );
     if (response.status == 200) {

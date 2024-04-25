@@ -4,7 +4,7 @@ import axios from "axios";
 export const validSession = async () => {
   try {
     let response = await axios.post(
-      "crow.zapto.org/api/admin/jwt",
+      "https://crow.zapto.org/api/admin/jwt",
       {},
       { withCredentials: true },
     );
@@ -21,9 +21,13 @@ export const validSession = async () => {
 // Register user.
 export const userRegister = async (fields) => {
   try {
-    let response = await axios.post("//crow.zapto.org/api/users", fields, {
-      withCredentials: true,
-    });
+    let response = await axios.post(
+      "https://crow.zapto.org/api/users",
+      fields,
+      {
+        withCredentials: true,
+      },
+    );
     if (response.status == 201) {
       return true;
     } else {
@@ -38,7 +42,7 @@ export const userRegister = async (fields) => {
 export const userLogin = async (creds) => {
   try {
     let response = await axios.post(
-      "//crow.zapto.org/api/login",
+      "https://crow.zapto.org/api/login",
       {},
       {
         auth: {

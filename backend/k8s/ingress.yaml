@@ -2,6 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  name: api-ingress
   annotations:
     cert-manager.io/certificate-name: api-tls
     cert-manager.io/cluster-issuer: letsencrypt-production
@@ -10,22 +11,19 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/use-regex: "true"
-
-  name: api-ingress
-
 spec:
   ingressClassName: "nginx"
   rules:
     - host: crow.zapto.org
       http:
         paths:
-          - backend:
+          - path: /api(/|$)(.*)
+            pathType: Prefix
+            backend:
               service:
                 name: api
                 port:
                   number: 443
-            path: /api(/|$)(.*)
-            pathType: Prefix
   tls:
     - hosts:
         - crow.zapto.org
