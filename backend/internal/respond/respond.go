@@ -48,6 +48,7 @@ func JWT(
 	http.SetCookie(w, &http.Cookie{
 		Name:  "token",
 		Value: signedToken,
+		Path:  "/",
 	})
 	w.WriteHeader(statusCode)
 }
