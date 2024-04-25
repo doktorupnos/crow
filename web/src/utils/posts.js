@@ -52,7 +52,7 @@ export const postLike = async (id) => {
 // Remove like from user post.
 export const postUnlike = async (id) => {
   try {
-    let response = await axios.delete("https://crow.zapto.org/api/posts", {
+    let response = await axios.delete("https://crow.zapto.org/api/post_likes", {
       data: { post_id: id },
       withCredentials: true,
     });
