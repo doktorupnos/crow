@@ -74,6 +74,7 @@ func (e ErrUser) Error() string {
 const (
 	ErrUserNameEmpty         = ErrUser("name empty")
 	ErrUserNameTooBig        = ErrUser("name too big")
+	ErrUserNameTooSmall      = ErrUser("password too small")
 	ErrUserNameMalformed     = ErrUser("name malformed")
 	ErrUserNameTaken         = ErrUser("name taken")
 	ErrUserPasswordEmpty     = ErrUser("password empty")
@@ -81,14 +82,20 @@ const (
 	ErrUserPasswordMalformed = ErrUser("password malformed")
 )
 
-const pattern = "^[a-zA-Z0-9_]+$"
-
-var userRegex = regexp.MustCompile(pattern)
+var (
+	userRegex     = regexp.MustCompile("^[a-zA-Z0-9_.]+$")
+	passwordRegex = regexp.MustCompile("^[a-zA-Z0-9!@#$%^&*]")
+)
 
 func validateName(name string) error {
 	if len(name) == 0 {
 		return ErrUserNameEmpty
 	}
+
+	if len(name) < 4 {
+		return ErrUserNameTooSmall
+	}
+
 	if len(name) > 20 {
 		return ErrUserNameTooBig
 	}
@@ -109,7 +116,7 @@ func validatePassword(password string) error {
 		return ErrUserPasswordTooBig
 	}
 
-	if !userRegex.MatchString(password) {
+	if !passwordRegex.MatchString(password) {
 		return ErrUserPasswordMalformed
 	}
 
