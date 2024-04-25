@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 const handleLogout = async () => {
-  document.cookie = "token=0";
+  document.cookie = "token=0; path=/api";
   return (location.href = "/auth");
 };
 
