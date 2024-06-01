@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"sync"
+	"time"
 
 	"golang.org/x/net/websocket"
 )
@@ -91,6 +92,19 @@ func (s *ChatServer) world(conn *websocket.Conn) {
 
 		log.Println("from", conn.RemoteAddr(), ":", message)
 		s.broadcast(message)
+	}
+}
+
+// feed is an example handler documenting a websocket subscription feed.
+// A client "subscribes" to the feed and receives real-time updates.
+func (s *ChatServer) feed(conn *websocket.Conn) {
+	s.accept(conn)
+
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+	for ; true; <-ticker.C {
+		message := fmt.Sprintf("%d\n", time.Now().UnixNano())
+		websocket.Message.Send(conn, message)
 	}
 }
 
