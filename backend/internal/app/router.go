@@ -34,6 +34,7 @@ func RegisterEndpoints(r *chi.Mux, app *App) *chi.Mux {
 	r.Mount("/admin", AdminRouter(app))
 
 	r.Handle("/ws/echo", websocket.Handler(app.chatServer.accept))
+	r.Handle("/ws/world", websocket.Handler(app.chatServer.world))
 
 	apiRouter.Mount("/api", r)
 	return apiRouter
