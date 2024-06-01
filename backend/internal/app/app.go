@@ -19,6 +19,7 @@ import (
 type App struct {
 	Env           *env.Env
 	DB            *gorm.DB
+	chatServer    *ChatServer
 	userService   *user.Service
 	postService   *post.Service
 	likeService   *like.Service
@@ -30,6 +31,7 @@ func New(env *env.Env, db *gorm.DB) *App {
 	return &App{
 		Env:           env,
 		DB:            db,
+		chatServer:    NewChatServer(),
 		userService:   us,
 		postService:   post.NewService(database.NewGormPostRepo(db)),
 		likeService:   like.NewService(database.NewGormLikeRepo(db)),
@@ -49,5 +51,6 @@ func (app *App) Run() {
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  1 * time.Minute,
 	}
+
 	shutdown.ListenAndServe(server, app.Env.Server.ShutdownTimeout)
 }
