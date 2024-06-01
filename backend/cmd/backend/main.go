@@ -17,13 +17,13 @@ func main() {
 	flag.Parse()
 	if *local {
 		if err := godotenv.Load(); err != nil {
-			log.Fatal(err)
+			log.Fatal("Loading env: ", err)
 		}
 	}
 
 	env, err := env.Load()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Loading env:", err)
 	}
 
 	data, err := json.MarshalIndent(env, "", "\t")
@@ -35,7 +35,7 @@ func main() {
 
 	db, err := database.Connect(env.Database.DSN, &gorm.Config{})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Connecting to database: ", err)
 	}
 
 	log.Println("Serving from:", env.Server.Addr)

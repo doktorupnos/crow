@@ -27,16 +27,13 @@ type App struct {
 
 func New(env *env.Env, db *gorm.DB) *App {
 	us := user.NewService(database.NewGormUserRepo(db))
-	ps := post.NewService(database.NewGormPostRepo(db))
-	ls := like.NewService(database.NewGormLikeRepo(db))
-	fs := follow.NewService(database.NewGormFollowRepo(db), us)
 	return &App{
 		Env:           env,
 		DB:            db,
 		userService:   us,
-		postService:   ps,
-		likeService:   ls,
-		followService: fs,
+		postService:   post.NewService(database.NewGormPostRepo(db)),
+		likeService:   like.NewService(database.NewGormLikeRepo(db)),
+		followService: follow.NewService(database.NewGormFollowRepo(db), us),
 	}
 }
 
