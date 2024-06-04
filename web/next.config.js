@@ -14,6 +14,7 @@ module.exports = {
     unfollowEndPoint: "//localhost:8000/api/unfollow",
     followersEndPoint: "//localhost:8000/api/followers",
     followingEndPoint: "//localhost:8000/api/following",
+    messageEchoEndPoint: "//localhost:8000/api/ws/echo",
   },
   reactStrictMode: false,
 };
