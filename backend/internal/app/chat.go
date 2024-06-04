@@ -5,20 +5,41 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"sync"
 	"time"
 
-	"golang.org/x/net/websocket"
+	"github.com/doktorupnos/crow/backend/internal/channel"
+	"github.com/doktorupnos/crow/backend/internal/message"
+	"github.com/doktorupnos/crow/backend/internal/respond"
+	"github.com/doktorupnos/crow/backend/internal/user"
+	"github.com/gorilla/websocket"
 )
 
 type ChatServer struct {
-	conns map[*websocket.Conn]struct{}
-	mu    sync.Mutex
+	conns    map[*websocket.Conn]struct{}
+	ms       *message.Service
+	upgrader websocket.Upgrader
+	mu       sync.Mutex
 }
 
-func NewChatServer() *ChatServer {
+func NewChatServer(ms *message.Service) *ChatServer {
 	return &ChatServer{
 		conns: make(map[*websocket.Conn]struct{}),
+		ms:    ms,
+	}
+}
+
+func (s *ChatServer) upgrade(f func(*websocket.Conn)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		conn, err := s.upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Println("upgrade:", err)
+			respond.Error(w, http.StatusInternalServerError, err)
+			return
+		}
+		defer conn.Close()
+		f(conn)
 	}
 }
 
@@ -43,13 +64,13 @@ func (s *ChatServer) disconnect(conn *websocket.Conn) {
 	delete(s.conns, conn)
 }
 
-// echo is an example handler documenting the websocket send-receive model
+// echo is an example handler documenting the websocket send-receive model.
+// It should be used by the front-end as a way to test single message communication
 func (s *ChatServer) echo(conn *websocket.Conn) {
 	s.accept(conn)
 
 	for {
-		var message string
-		err := websocket.Message.Receive(conn, &message)
+		_, body, err := conn.ReadMessage()
 		if err != nil {
 			if errors.Is(err, io.EOF) {
 				// TODO: Architect the behavior of closing connections for chat rooms
@@ -63,18 +84,17 @@ func (s *ChatServer) echo(conn *websocket.Conn) {
 			continue
 		}
 
-		log.Println("from", conn.RemoteAddr(), ":", message)
-		websocket.Message.Send(conn, fmt.Sprintf("Echo: %s", message))
+		body = []byte(fmt.Sprintf("Echo: %s", body))
+		conn.WriteMessage(websocket.TextMessage, body)
 	}
 }
 
-// world is an example handler documenting websocket broadcasting
-func (s *ChatServer) world(conn *websocket.Conn) {
+// cosmos is an example handler documenting websocket broadcasting
+func (s *ChatServer) cosmos(conn *websocket.Conn, u user.User, c channel.Channel) {
 	s.accept(conn)
 
 	for {
-		var message string
-		err := websocket.Message.Receive(conn, &message)
+		_, body, err := conn.ReadMessage()
 		if err != nil {
 			if errors.Is(err, io.EOF) {
 				log.Println("reading message: client disconnected: EOF")
@@ -87,8 +107,13 @@ func (s *ChatServer) world(conn *websocket.Conn) {
 			continue
 		}
 
-		log.Println("from", conn.RemoteAddr(), ":", message)
-		s.broadcast(message)
+		log.Println("from", conn.RemoteAddr(), "by", u.Name, ":", string(body))
+		s.ms.Create(message.CreateParams{
+			Body:    string(body),
+			User:    u,
+			Channel: c,
+		})
+		s.broadcast(body)
 	}
 }
 
@@ -101,17 +126,17 @@ func (s *ChatServer) feed(conn *websocket.Conn) {
 	defer ticker.Stop()
 	for ; true; <-ticker.C {
 		message := fmt.Sprintf("%d\n", time.Now().UnixNano())
-		websocket.Message.Send(conn, message)
+		conn.WriteMessage(websocket.TextMessage, []byte(message))
 	}
 }
 
-func (s *ChatServer) broadcast(message string) {
+func (s *ChatServer) broadcast(body []byte) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	for conn := range s.conns {
 		go func(conn *websocket.Conn) {
-			if err := websocket.Message.Send(conn, message); err != nil {
+			if err := conn.WriteMessage(websocket.TextMessage, body); err != nil {
 				log.Println("broadcasting to", conn.RemoteAddr(), ":", err)
 			}
 		}(conn)

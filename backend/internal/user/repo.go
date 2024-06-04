@@ -5,10 +5,10 @@ import (
 )
 
 type Repo interface {
-	Create(u User) (uuid.UUID, error)
+	Create(User) (uuid.UUID, error)
 	GetAll() ([]User, error)
-	GetByName(name string) (User, error)
-	GetByID(id uuid.UUID) (User, error)
-	Update(u User) error
-	Delete(u User) error
+	GetByName(string) (User, error)
+	GetByID(uuid.UUID) (User, error)
+	Update(User) error
+	Delete(User) error
 }
