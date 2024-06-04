@@ -79,10 +79,7 @@ func (s *ChatServer) world(conn *websocket.Conn) {
 			if errors.Is(err, io.EOF) {
 				log.Println("reading message: client disconnected: EOF")
 
-				s.mu.Lock()
-				defer s.mu.Unlock()
-				delete(s.conns, conn)
-
+				s.disconnect(conn)
 				break
 			}
 
