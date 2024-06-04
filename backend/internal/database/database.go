@@ -2,9 +2,12 @@
 package database
 
 import (
+	"errors"
 	"log"
 
+	"github.com/doktorupnos/crow/backend/internal/channel"
 	"github.com/doktorupnos/crow/backend/internal/like"
+	"github.com/doktorupnos/crow/backend/internal/message"
 	"github.com/doktorupnos/crow/backend/internal/post"
 	"github.com/doktorupnos/crow/backend/internal/user"
 	"gorm.io/driver/postgres"
@@ -40,6 +43,25 @@ func automigrate(db *gorm.DB) error {
 
 	if err := db.SetupJoinTable(&post.Post{}, "Likes", &like.Like{}); err != nil {
 		log.Println("Failed to setup the Likes join table")
+		return err
+	}
+
+	if err := db.AutoMigrate(&channel.Channel{}); err != nil {
+		return err
+	}
+
+	cosmos := channel.Channel{
+		Name: "cosmos",
+	}
+	result := db.Where("name = ?", "cosmos").First(&cosmos)
+	if err := result.Error; err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		db.Create(&cosmos)
+		log.Println("cosmos created")
+	} else {
+		log.Printf("creating cosmos: %q\n", err)
+	}
+
+	if err := db.AutoMigrate(&message.Message{}); err != nil {
 		return err
 	}
 

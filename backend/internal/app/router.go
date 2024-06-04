@@ -8,7 +8,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/httprate"
-	"golang.org/x/net/websocket"
 )
 
 func RegisterEndpoints(r *chi.Mux, app *App) *chi.Mux {
@@ -33,9 +32,10 @@ func RegisterEndpoints(r *chi.Mux, app *App) *chi.Mux {
 	r.Mount("/post_likes", PostLikeRouter(app))
 	r.Mount("/admin", AdminRouter(app))
 
-	r.Handle("/ws/echo", websocket.Handler(app.chatServer.echo))
-	r.Handle("/ws/world", websocket.Handler(app.chatServer.world))
-	r.Handle("/ws/feed", websocket.Handler(app.chatServer.feed))
+	r.Handle("/chat", app.WS(app.chatServer.cosmos))
+
+	r.Handle("/ws/echo", app.chatServer.upgrade(app.chatServer.echo))
+	r.Handle("/ws/feed", app.chatServer.upgrade(app.chatServer.feed))
 
 	apiRouter.Mount("/api", r)
 	return apiRouter

@@ -9,9 +9,9 @@ import (
 )
 
 type Post struct {
-	Body  string      `json:"body"    gorm:"not null"`
+	Body  string      `json:"body" gorm:"not null"`
 	Likes []user.User `json:"-" gorm:"many2many:post_likes"`
-	User  user.User   `json:"-"       gorm:"foreignKey:UserID; not null;constraint:onDelete:CASCADE"`
+	User  user.User   `json:"-" gorm:"foreignKey:UserID; not null;constraint:onDelete:CASCADE"`
 	model.Model
 	UserID uuid.UUID `json:"user_id"`
 }
