@@ -94,6 +94,18 @@ func (app *App) ValidateJWT(w http.ResponseWriter, r *http.Request, u user.User)
 	w.WriteHeader(http.StatusOK)
 }
 
+func (app *App) extractChannel(r *http.Request) (channel.Channel, error) {
+	name := r.URL.Query().Get("channel")
+	if name == "" {
+		return channel.Channel{}, fmt.Errorf("channel: %q not found", name)
+	}
+	c, err := app.channelService.GetByName(name)
+	if err != nil {
+		return channel.Channel{}, err
+	}
+	return c, nil
+}
+
 func (app *App) WS(f func(conn *websocket.Conn, u user.User, c channel.Channel)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		u, err := app.extractUser(w, r)
@@ -102,13 +114,7 @@ func (app *App) WS(f func(conn *websocket.Conn, u user.User, c channel.Channel))
 			return
 		}
 
-		channelName := r.URL.Query().Get("channel")
-		if channelName == "" {
-			respond.Error(w, http.StatusBadRequest, fmt.Errorf("channel: %q not found", channelName))
-			return
-		}
-
-		c, err := app.channelService.GetByName(channelName)
+		c, err := app.extractChannel(r)
 		if err != nil {
 			respond.Error(w, http.StatusBadRequest, err)
 			return

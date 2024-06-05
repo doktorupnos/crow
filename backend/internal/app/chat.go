@@ -142,3 +142,12 @@ func (s *ChatServer) broadcast(body []byte) {
 		}(conn)
 	}
 }
+
+func (app *App) GetAllMessages(w http.ResponseWriter, r *http.Request) {
+	c, err := app.extractChannel(r)
+	if err != nil {
+		respond.Error(w, http.StatusBadRequest, err)
+		return
+	}
+	app.messageService.Load(r, app.Env.Pagination.DefaultFollowPageSize, c.ID)
+}

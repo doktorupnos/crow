@@ -27,22 +27,25 @@ type App struct {
 	postService    *post.Service
 	likeService    *like.Service
 	followService  *follow.Service
+	messageService *message.Service
 	channelService *channel.Service
 	upgrader       websocket.Upgrader
 }
 
 func New(env *env.Env, db *gorm.DB) *App {
 	us := user.NewService(database.NewGormUserRepo(db))
+	ms := message.NewService(database.NewGormMessageRepo(db))
 	return &App{
 		Env: env,
 		DB:  db,
 		chatServer: NewChatServer(
-			message.NewService(database.NewGormMessageRepo(db)),
+			ms,
 		),
 		userService:    us,
 		postService:    post.NewService(database.NewGormPostRepo(db)),
 		likeService:    like.NewService(database.NewGormLikeRepo(db)),
 		followService:  follow.NewService(database.NewGormFollowRepo(db), us),
+		messageService: ms,
 		channelService: channel.NewService(database.NewGormChannelRepo(db)),
 		upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool {

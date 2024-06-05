@@ -36,8 +36,9 @@ type JWT struct {
 }
 
 type Pagination struct {
-	DefaultPostsPageSize  int
-	DefaultFollowPageSize int
+	DefaultPostsPageSize   int
+	DefaultFollowPageSize  int
+	DefaultMessagePageSize int
 }
 
 type Posts struct {
@@ -102,6 +103,15 @@ func Load() (*Env, error) {
 		return nil, err
 	}
 
+	defaultMessagePageSizeString, err := lookupEnv("DEFAULT_MESSAGE_PAGE_SIZE")
+	if err != nil {
+		return nil, err
+	}
+	defaultMessagePageSize, err := strconv.Atoi(defaultMessagePageSizeString)
+	if err != nil {
+		return nil, err
+	}
+
 	postsBodyLimitString, set := os.LookupEnv("POSTS_BODY_LIMIT")
 	postsBodyLimit := defaultPostBodyLimit
 	if set {
@@ -129,8 +139,9 @@ func Load() (*Env, error) {
 			Lifetime: jwtLifetime,
 		},
 		Pagination: Pagination{
-			DefaultPostsPageSize:  defaultPostsPageSize,
-			DefaultFollowPageSize: defaultFollowsPageSize,
+			DefaultPostsPageSize:   defaultPostsPageSize,
+			DefaultFollowPageSize:  defaultFollowsPageSize,
+			DefaultMessagePageSize: defaultMessagePageSize,
 		},
 		Posts: Posts{
 			BodyLimit: postsBodyLimit,
