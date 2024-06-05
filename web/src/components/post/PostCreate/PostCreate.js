@@ -21,25 +21,21 @@ const PostCreate = ({ appendNewPost }) => {
     }
   };
 
+  // Auto Resize Text Input
   useEffect(() => {
-    const autoResize = () => {
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-        textareaRef.current.style.height =
-          textareaRef.current.scrollHeight + "px";
-      }
-    };
-    autoResize();
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height =
+        textareaRef.current.scrollHeight + "px";
+    }
   }, [textValue]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      let response = await postCreate(textValue);
-      if (response) {
-        appendNewPost();
-        setTextValue("");
-      }
+      await postCreate(textValue);
+      appendNewPost();
+      setTextValue("");
     } catch (error) {
       return console.error(`Failed to create post! [${error.message}] `);
     }
@@ -49,11 +45,12 @@ const PostCreate = ({ appendNewPost }) => {
     <form onSubmit={handleSubmit} className={styles.post_block}>
       <textarea
         ref={textareaRef}
-        className={styles.post_text}
+        className={styles.post_create_text}
         type="text"
         value={textValue}
         onChange={handleChange}
         placeholder="Quoth the raven.."
+        rows={1}
         required
       />
       <button className={styles.post_button} type="submit">

@@ -24,8 +24,7 @@ const MessageCreate = ({ ws }) => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height =
-        Math.min(textareaRef.current.scrollHeight, window.innerHeight * 0.2) +
-        "px";
+        textareaRef.current.scrollHeight + "px";
     }
   }, [textValue]);
 

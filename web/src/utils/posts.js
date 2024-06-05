@@ -29,6 +29,30 @@ export const fetchPosts = async (user, page, limit) => {
   }
 };
 
+// Create user post.
+export const postCreate = async (body) => {
+  try {
+    let response = await fetch(process.env.postGetEndPoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ body: body }),
+    });
+    if (response.status != 201) {
+      throw error;
+    }
+    return true;
+  } catch (error) {
+    if (error.response?.status == 401) {
+      location.href = "/auth";
+      throw error;
+    }
+    throw error;
+  }
+};
+
 // Like user post.
 export const postLike = async (id) => {
   try {
@@ -58,27 +82,6 @@ export const postUnlike = async (id) => {
       withCredentials: true,
     });
     if (response.status == 200) {
-      return true;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    if (error.response.status == 401) {
-      location.href = "/auth";
-    }
-    throw error;
-  }
-};
-
-// Create user post.
-export const postCreate = async (body) => {
-  try {
-    let response = await axios.post(
-      process.env.postGetEndPoint,
-      { body: body },
-      { withCredentials: true },
-    );
-    if (response.status == 201) {
       return true;
     } else {
       return null;
