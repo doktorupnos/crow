@@ -36,11 +36,19 @@ func (s *Service) GetAll() ([]User, error) {
 }
 
 func (s *Service) GetByName(name string) (User, error) {
-	return s.r.GetByName(name)
+	u, err := s.r.GetByName(name)
+	if err != nil {
+		return User{}, ErrUserDoesNotExist
+	}
+	return u, nil
 }
 
 func (s *Service) GetByID(id uuid.UUID) (User, error) {
-	return s.r.GetByID(id)
+	u, err := s.r.GetByID(id)
+	if err != nil {
+		return User{}, ErrUserDoesNotExist
+	}
+	return u, nil
 }
 
 func (s *Service) Update(u User, name, password string) error {
@@ -72,6 +80,7 @@ func (e ErrUser) Error() string {
 }
 
 const (
+	ErrUserDoesNotExist      = ErrUser("user does not exist")
 	ErrUserNameEmpty         = ErrUser("name empty")
 	ErrUserNameTooBig        = ErrUser("name too big")
 	ErrUserNameTooSmall      = ErrUser("password too small")
