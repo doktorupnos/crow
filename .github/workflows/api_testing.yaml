@@ -1,9 +1,17 @@
-name: Release backend to Production
+name: Test backend
 
 on:
   workflow_dispatch:
-    tags:
+  push:
+    branches:
       - "*"
+    paths:
+      - "api/**"
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "api/**"
 
 env:
   REGISTRY: ghcr.io/doktorupnos
@@ -30,10 +38,10 @@ jobs:
           ecr: auto
           logout: true
 
-      - name: Build backend image
+      - name: Build api image
         run: |
-          docker build backend -f backend/build/package/Dockerfile -t ${{ env.REGISTRY }}/${{ github.event.repository.name }}/backend:${GITHUB_REF##*/}
+          docker build api -f api/build/Dockerfile -t ${{ env.REGISTRY }}/${{ github.event.repository.name }}/api:${GITHUB_REF##*/}
 
-      - name: Push backend image
+      - name: Push api image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.event.repository.name }}/backend:${GITHUB_REF##*/}
+          docker push ${{ env.REGISTRY }}/${{ github.event.repository.name }}/api:${GITHUB_REF##*/}

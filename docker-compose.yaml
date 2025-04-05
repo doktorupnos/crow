@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   postgres:
@@ -29,11 +29,12 @@ services:
       - DEFAULT_POSTS_PAGE_SIZE=5
       - DEFAULT_FOLLOWS_PAGE_SIZE=10
 
-    build: 
-      context: "./backend"
-      dockerfile: "./build/package/Dockerfile"
+    build:
+      context: "./api"
+      dockerfile: "./build/Dockerfile"
     depends_on:
       - postgres
+
   # web:
   #    restart: on-failure
   #    ports:
@@ -43,7 +44,7 @@ services:
   #    build: "./web"
   #    depends_on:
   #      - postgres
-  #      - backend
+  #      - api
 
 networks:
   crownet:
