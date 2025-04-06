@@ -17,78 +17,97 @@ func (e AuthError) Error() string {
 
 const (
 	ErrMissingBasicAuth = AuthError("missing Authorizaton Basic header")
-	ErrPassword         = AuthError("wrong password")
+	ErrWrongPassword    = AuthError("wrong password")
 )
 
-type AuthHandler func(http.ResponseWriter, *http.Request, database.User)
+type AuthHandler func(http.ResponseWriter, *http.Request, database.User) error
 
-func (s *State) BasicAuth(handler AuthHandler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (s *State) BasicAuth(handler AuthHandler) ErrorHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		username, password, ok := r.BasicAuth()
 		if !ok {
-			respond.Error(w, http.StatusBadRequest, ErrMissingBasicAuth)
-			return
+			return APIError{
+				Code: http.StatusBadRequest,
+				Err:  ErrMissingBasicAuth,
+			}
 		}
 
 		user, err := s.DB.GetUserByName(r.Context(), username)
 		if err != nil {
-			respond.Error(w, http.StatusBadRequest, err)
-			return
+			return APIError{
+				Code: http.StatusBadRequest,
+				Err:  err,
+			}
 		}
 
 		if !PasswordsMatch(user.Password, password) {
-			respond.Error(w, http.StatusUnauthorized, ErrPassword)
-			return
+			return APIError{
+				Code: http.StatusUnauthorized,
+				Err:  ErrWrongPassword,
+			}
 		}
 
-		handler(w, r, user)
+		return handler(w, r, user)
 	}
 }
 
-func (s *State) Login(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) Login(w http.ResponseWriter, r *http.Request, user database.User) error {
 	respond.JWT(w, http.StatusOK, s.Secret, user.ID.String(), s.ExpiresIn)
+	return nil
 }
 
-func (s *State) Logout(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) Logout(w http.ResponseWriter, r *http.Request, user database.User) error {
 	respond.JWT(w, http.StatusOK, s.Secret, user.ID.String(), 0)
+	return nil
 }
 
-func (s *State) JWT(handler AuthHandler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (s *State) JWT(handler AuthHandler) ErrorHandler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		c, err := r.Cookie("token")
 		if err != nil {
-			respond.Error(w, http.StatusUnauthorized, err)
-			return
+			return APIError{
+				Code: http.StatusUnauthorized,
+				Err:  err,
+			}
 		}
 
 		token, err := jwt.Parse(s.Secret, c.Value)
 		if err != nil {
-			respond.Error(w, http.StatusUnauthorized, err)
-			return
+			return APIError{
+				Code: http.StatusUnauthorized,
+				Err:  err,
+			}
 		}
 
 		subject, err := token.Claims.GetSubject()
 		if err != nil {
-			respond.Error(w, http.StatusUnauthorized, err)
-			return
+			return APIError{
+				Code: http.StatusUnauthorized,
+				Err:  err,
+			}
 		}
 
 		userID, err := uuid.Parse(subject)
 		if err != nil {
-			respond.Error(w, http.StatusUnauthorized, err)
-			return
+			return APIError{
+				Code: http.StatusUnauthorized,
+				Err:  err,
+			}
 		}
 
 		user, err := s.DB.GetUserByID(r.Context(), userID)
 		if err != nil {
-			respond.Error(w, http.StatusUnauthorized, err)
-			return
+			return APIError{
+				Code: http.StatusUnauthorized,
+				Err:  err,
+			}
 		}
 
-		handler(w, r, user)
+		return handler(w, r, user)
 	}
 }
 
-func (s *State) ValidateJWT(w http.ResponseWriter, _ *http.Request, _ database.User) {
+func (s *State) ValidateJWT(w http.ResponseWriter, _ *http.Request, _ database.User) error {
 	w.WriteHeader(http.StatusOK)
+	return nil
 }

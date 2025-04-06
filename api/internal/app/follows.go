@@ -13,18 +13,22 @@ type FollowRequest struct {
 	UserID string `json:"user_id"`
 }
 
-func (s *State) CreateFollow(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) CreateFollow(w http.ResponseWriter, r *http.Request, user database.User) error {
 	var req FollowRequest
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&req); err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 
 	targetID, err := uuid.Parse(req.UserID)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 
 	err = s.DB.CreateFollow(r.Context(), database.CreateFollowParams{
@@ -32,25 +36,29 @@ func (s *State) CreateFollow(w http.ResponseWriter, r *http.Request, user databa
 		Followee: targetID,
 	})
 	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
+		return err
 	}
 
 	w.WriteHeader(http.StatusOK)
+	return nil
 }
 
-func (s *State) DeleteFollow(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) DeleteFollow(w http.ResponseWriter, r *http.Request, user database.User) error {
 	var req FollowRequest
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&req); err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 
 	targetID, err := uuid.Parse(req.UserID)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 
 	err = s.DB.DeleteFollow(r.Context(), database.DeleteFollowParams{
@@ -58,23 +66,25 @@ func (s *State) DeleteFollow(w http.ResponseWriter, r *http.Request, user databa
 		Followee: targetID,
 	})
 	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
+		return err
 	}
 
 	w.WriteHeader(http.StatusOK)
+	return nil
 }
 
 // TODO: same code. Only method changes. Restructure later
 
-func (s *State) GetFollowerCount(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) GetFollowerCount(w http.ResponseWriter, r *http.Request, user database.User) error {
 	target := user.ID
 
 	if r.URL.Query().Has("u") {
 		id, err := uuid.Parse(r.URL.Query().Get("u"))
 		if err != nil {
-			respond.Error(w, http.StatusBadRequest, err)
-			return
+			return APIError{
+				Code: http.StatusBadRequest,
+				Err:  err,
+			}
 		}
 
 		target = id
@@ -82,21 +92,23 @@ func (s *State) GetFollowerCount(w http.ResponseWriter, r *http.Request, user da
 
 	count, err := s.DB.GetFollowerCount(r.Context(), target)
 	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
+		return err
 	}
 
 	respond.JSON(w, http.StatusOK, count)
+	return nil
 }
 
-func (s *State) GetFollowingCount(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) GetFollowingCount(w http.ResponseWriter, r *http.Request, user database.User) error {
 	target := user.ID
 
 	if r.URL.Query().Has("u") {
 		id, err := uuid.Parse(r.URL.Query().Get("u"))
 		if err != nil {
-			respond.Error(w, http.StatusBadRequest, err)
-			return
+			return APIError{
+				Code: http.StatusBadRequest,
+				Err:  err,
+			}
 		}
 
 		target = id
@@ -104,14 +116,14 @@ func (s *State) GetFollowingCount(w http.ResponseWriter, r *http.Request, user d
 
 	count, err := s.DB.GetFollowingCount(r.Context(), target)
 	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
+		return err
 	}
 
 	respond.JSON(w, http.StatusOK, count)
+	return nil
 }
 
-func (s *State) GetFollowers(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) GetFollowers(w http.ResponseWriter, r *http.Request, user database.User) error {
 	target := user
 
 	queries := r.URL.Query()
@@ -120,16 +132,20 @@ func (s *State) GetFollowers(w http.ResponseWriter, r *http.Request, user databa
 		name := queries.Get(key)
 		u, err := s.DB.GetUserByName(r.Context(), name)
 		if err != nil {
-			respond.Error(w, http.StatusBadRequest, err)
-			return
+			return APIError{
+				Code: http.StatusBadRequest,
+				Err:  err,
+			}
 		}
 		target = u
 	}
 
 	pages, err := extractPagination(r)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 
 	followers, err := s.DB.GetFollowers(r.Context(), database.GetFollowersParams{
@@ -138,13 +154,14 @@ func (s *State) GetFollowers(w http.ResponseWriter, r *http.Request, user databa
 		Offset:   pages.Offset,
 	})
 	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
+		return err
 	}
+
 	respond.JSON(w, http.StatusOK, followers)
+	return nil
 }
 
-func (s *State) GetFollowing(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) GetFollowing(w http.ResponseWriter, r *http.Request, user database.User) error {
 	target := user
 
 	queries := r.URL.Query()
@@ -153,16 +170,20 @@ func (s *State) GetFollowing(w http.ResponseWriter, r *http.Request, user databa
 		name := queries.Get(key)
 		u, err := s.DB.GetUserByName(r.Context(), name)
 		if err != nil {
-			respond.Error(w, http.StatusBadRequest, err)
-			return
+			return APIError{
+				Code: http.StatusBadRequest,
+				Err:  err,
+			}
 		}
 		target = u
 	}
 
 	pages, err := extractPagination(r)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 
 	following, err := s.DB.GetFollowing(r.Context(), database.GetFollowingParams{
@@ -171,8 +192,9 @@ func (s *State) GetFollowing(w http.ResponseWriter, r *http.Request, user databa
 		Offset:   pages.Offset,
 	})
 	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
+		return err
 	}
+
 	respond.JSON(w, http.StatusOK, following)
+	return nil
 }

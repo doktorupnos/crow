@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"regexp"
@@ -13,27 +14,32 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *State) CreateUser(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-
+func (s *State) CreateUser(w http.ResponseWriter, r *http.Request) error {
 	var req CreateUserRequest
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&req)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  fmt.Errorf("invalid JSON: %w", err),
+		}
 	}
 
 	err = req.Validate()
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  fmt.Errorf("invalid request body: %w", err),
+		}
 	}
 
 	hashedPassword, err := Hash(req.Password)
 	if err != nil {
 		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  fmt.Errorf("invalid password: %w", err),
+		}
 	}
 
 	now := time.Now()
@@ -46,13 +52,15 @@ func (s *State) CreateUser(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		if strings.Contains(err.Error(), "violates unique constraint") {
-			respond.Error(w, http.StatusBadRequest, ErrUsernameTaken)
-		} else {
-			respond.Error(w, http.StatusInternalServerError, err)
+			return APIError{
+				Code: http.StatusBadRequest,
+				Err:  ErrUsernameTaken,
+			}
 		}
-		return
+		return err
 	}
 
+	// TODO: replace with slog
 	log.Printf("%#v\n", user)
 
 	respond.JWT(
@@ -62,6 +70,7 @@ func (s *State) CreateUser(w http.ResponseWriter, r *http.Request) {
 		user.ID.String(),
 		s.ExpiresIn,
 	)
+	return nil
 }
 
 type CreateUserError string

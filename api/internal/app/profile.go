@@ -17,7 +17,7 @@ type ProfileResponse struct {
 	Follows   bool      `json:"following"`
 }
 
-func (s *State) Profile(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) Profile(w http.ResponseWriter, r *http.Request, user database.User) error {
 	queries := r.URL.Query()
 
 	target := user
@@ -25,8 +25,10 @@ func (s *State) Profile(w http.ResponseWriter, r *http.Request, user database.Us
 		name := queries.Get("u")
 		u, err := s.DB.GetUserByName(r.Context(), name)
 		if err != nil {
-			respond.Error(w, http.StatusBadRequest, err)
-			return
+			return APIError{
+				Code: http.StatusBadRequest,
+				Err:  err,
+			}
 		}
 		target = u
 	}
@@ -35,13 +37,17 @@ func (s *State) Profile(w http.ResponseWriter, r *http.Request, user database.Us
 
 	followers, err := s.DB.GetFollowerCount(r.Context(), target.ID)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 	following, err := s.DB.GetFollowingCount(r.Context(), target.ID)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 
 	follows, err := s.DB.FollowsUser(r.Context(), database.FollowsUserParams{
@@ -49,8 +55,10 @@ func (s *State) Profile(w http.ResponseWriter, r *http.Request, user database.Us
 		Followee: target.ID,
 	})
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 
 	resp := ProfileResponse{
@@ -62,4 +70,6 @@ func (s *State) Profile(w http.ResponseWriter, r *http.Request, user database.Us
 		Follows:   follows,
 	}
 	respond.JSON(w, http.StatusOK, resp)
+
+	return nil
 }

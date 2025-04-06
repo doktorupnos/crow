@@ -16,12 +16,14 @@ type CreatePostRequest struct {
 	Body string `json:"body"`
 }
 
-func (s *State) CreatePost(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) CreatePost(w http.ResponseWriter, r *http.Request, user database.User) error {
 	var req CreatePostRequest
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&req); err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 
 	// TODO: validate request
@@ -35,13 +37,14 @@ func (s *State) CreatePost(w http.ResponseWriter, r *http.Request, user database
 		UserID:    user.ID,
 	})
 	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
+		return err
 	}
 
 	log.Printf("%#v\n", post)
 
 	w.WriteHeader(http.StatusCreated)
+
+	return nil
 }
 
 type Pagination struct {
@@ -91,19 +94,20 @@ type PostResponse struct {
 	Self        bool      `json:"self"`
 }
 
-func (s *State) GetPosts(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) GetPosts(w http.ResponseWriter, r *http.Request, user database.User) error {
 	if r.URL.Query().Has("u") {
-		s.getPostsByUser(w, r, user)
-		return
+		return s.getPostsByUser(w, r, user)
 	}
-	s.getAllPosts(w, r, user)
+	return s.getAllPosts(w, r, user)
 }
 
-func (s *State) getAllPosts(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) getAllPosts(w http.ResponseWriter, r *http.Request, user database.User) error {
 	pages, err := extractPagination(r)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 
 	posts, err := s.DB.GetPosts(r.Context(), database.GetPostsParams{
@@ -111,16 +115,14 @@ func (s *State) getAllPosts(w http.ResponseWriter, r *http.Request, user databas
 		Offset: pages.Offset,
 	})
 	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
+		return err
 	}
 
 	response := make([]PostResponse, 0, len(posts))
 	for _, post := range posts {
 		likes, err := s.DB.GetLikesForPost(r.Context(), post.ID)
 		if err != nil {
-			respond.Error(w, http.StatusInternalServerError, err)
-			return
+			return err
 		}
 
 		likedByUser, err := s.DB.UserLikesPost(r.Context(), database.UserLikesPostParams{
@@ -128,8 +130,7 @@ func (s *State) getAllPosts(w http.ResponseWriter, r *http.Request, user databas
 			PostID: post.ID,
 		})
 		if err != nil {
-			respond.Error(w, http.StatusInternalServerError, err)
-			return
+			return err
 		}
 
 		response = append(response, PostResponse{
@@ -146,13 +147,17 @@ func (s *State) getAllPosts(w http.ResponseWriter, r *http.Request, user databas
 	}
 
 	respond.JSON(w, http.StatusOK, response)
+
+	return nil
 }
 
-func (s *State) getPostsByUser(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) getPostsByUser(w http.ResponseWriter, r *http.Request, user database.User) error {
 	pages, err := extractPagination(r)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 
 	posts, err := s.DB.GetPostsByUser(r.Context(), database.GetPostsByUserParams{
@@ -161,16 +166,14 @@ func (s *State) getPostsByUser(w http.ResponseWriter, r *http.Request, user data
 		Offset: pages.Offset,
 	})
 	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
+		return err
 	}
 
 	response := make([]PostResponse, 0, len(posts))
 	for _, post := range posts {
 		likes, err := s.DB.GetLikesForPost(r.Context(), post.ID)
 		if err != nil {
-			respond.Error(w, http.StatusInternalServerError, err)
-			return
+			return err
 		}
 
 		likedByUser, err := s.DB.UserLikesPost(r.Context(), database.UserLikesPostParams{
@@ -178,8 +181,7 @@ func (s *State) getPostsByUser(w http.ResponseWriter, r *http.Request, user data
 			PostID: post.ID,
 		})
 		if err != nil {
-			respond.Error(w, http.StatusInternalServerError, err)
-			return
+			return err
 		}
 
 		response = append(response, PostResponse{
@@ -196,13 +198,17 @@ func (s *State) getPostsByUser(w http.ResponseWriter, r *http.Request, user data
 	}
 
 	respond.JSON(w, http.StatusOK, response)
+
+	return nil
 }
 
-func (s *State) DeletePost(w http.ResponseWriter, r *http.Request, user database.User) {
+func (s *State) DeletePost(w http.ResponseWriter, r *http.Request, user database.User) error {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
-		return
+		return APIError{
+			Code: http.StatusBadRequest,
+			Err:  err,
+		}
 	}
 
 	err = s.DB.DeletePost(r.Context(), database.DeletePostParams{
@@ -210,9 +216,9 @@ func (s *State) DeletePost(w http.ResponseWriter, r *http.Request, user database
 		UserID: user.ID,
 	})
 	if err != nil {
-		respond.Error(w, http.StatusInternalServerError, err)
-		return
+		return err
 	}
 
 	w.WriteHeader(http.StatusOK)
+	return nil
 }

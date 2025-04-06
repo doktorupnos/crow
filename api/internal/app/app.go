@@ -14,6 +14,8 @@ import (
 func Run() {
 	fmt.Println("Full Rewrite!")
 
+	// TODO: environment
+
 	db, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/crow?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
@@ -31,6 +33,8 @@ func Run() {
 		Addr:    addr,
 		Handler: router,
 	}
+
+	// TODO: graceful shutdown
 
 	log.Println("api serving on", addr)
 	err = server.ListenAndServe()
