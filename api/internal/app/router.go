@@ -11,7 +11,7 @@ import (
 )
 
 type State struct {
-	DB        database.Querier
+	DB        *database.Queries
 	Secret    string
 	ExpiresIn time.Duration
 }
@@ -25,7 +25,12 @@ func Router(s *State) http.Handler {
 	mux.HandleFunc("POST /api/logout", WithError(s.BasicAuth(s.Logout)))
 	mux.HandleFunc("POST /api/admin/jwt", WithError(s.JWT(s.ValidateJWT)))
 
-	mux.HandleFunc("POST /api/users", WithError(s.CreateUser))
+	userServer := &UserServer{
+		Service:      &UserServicePG{db: s.DB},
+		JWTSecret:    s.Secret,
+		JWTExpiresIn: s.ExpiresIn,
+	}
+	mux.HandleFunc("POST /api/users", WithError(userServer.CreateUser))
 
 	mux.HandleFunc("POST /api/posts", WithError(s.JWT(s.CreatePost)))
 	mux.HandleFunc("GET /api/posts", WithError(s.JWT(s.GetPosts)))
