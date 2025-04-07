@@ -1,12 +1,15 @@
 <h1 align="center">Crow</h1>
 
+![API CI](https://github.com/doktorupnos/crow/actions/workflows/api_ci.yaml/badge.svg)
+
 Crow is a centralized microblogging and networking platform that allows users to connect and post short blog material.
 Its emphasis is simplicity, and privacy.
 
 The project was developed as part of our university course "[Special Topics in Software Engineering](https://ice.uniwa.gr/en/education-1/undergraduate/courses/special-topics-in-software-engineering/)" and is licensed under GPLv3.
 
 ## ✏️Development Methodology
-During the development of this project, we will be using a private access [Kanban](https://en.wikipedia.org/wiki/Kanban) 
+
+During the development of this project, we will be using a private access [Kanban](https://en.wikipedia.org/wiki/Kanban)
 Board using [Trello](https://trello.com/).
 
 ![image](https://github.com/doktorupnos/wip-chat/assets/30930688/aa7fe0d2-fd69-407e-a94c-65f87049da84)
@@ -19,7 +22,7 @@ Board using [Trello](https://trello.com/).
 
 ## 📐Architecture
 
-Decoupled RESTful web service and a SPA front end. 
+Decoupled RESTful web service and a SPA front end.
 
 ## 🧑‍🔧Backend
 
@@ -31,8 +34,8 @@ The communication with the Postgres Database is done via ORM. [GORM](https://gor
 
 An example:
 
-Under the `user` package, the model `user.User` is defined. An interface `user.Repo` declares all the methods a type must implement in order to be used as a `user.Repo`. Then in the database layer a type named `GormUserRepo` implements `user.Repo`. `GormUserRepo` encapsulates the database communication but does is not aware of  any business logic. 
-Finally, the business logic is implemented by a type named `user.Service`. 
+Under the `user` package, the model `user.User` is defined. An interface `user.Repo` declares all the methods a type must implement in order to be used as a `user.Repo`. Then in the database layer a type named `GormUserRepo` implements `user.Repo`. `GormUserRepo` encapsulates the database communication but does is not aware of any business logic.
+Finally, the business logic is implemented by a type named `user.Service`.
 It is worth noting that `user.Service` doesn't depend on a specific data source, it could be a database, a message broker or a KINESIS stream. Or a in memory structure making it easy to test via mocking.
 
 ### 🧬Dependency Injection
@@ -47,17 +50,17 @@ The Repository pattern allows for the decoupling of the data from the business l
 
 Authentication middleware makes up for DRY code.
 
-Basic password authentication was used in the `POST /api/login` and `DELETE /api/users` endpoints. 
+Basic password authentication was used in the `POST /api/login` and `DELETE /api/users` endpoints.
 While JWT access tokens are used across the majority of the API to handle safe access to resources.
 
 ### 🧪Integration Testing
 
-Initially integration testing was done by connecting to a local Postgres database. 
-This approach is cumbersome. 
+Initially integration testing was done by connecting to a local Postgres database.
+This approach is cumbersome.
 A new developer needs to setup the database according to a special configuration in order to just run tests.
 
-Then, we used docker compose. 
-However this came with its own problems. 
+Then, we used docker compose.
+However this came with its own problems.
 Port collisions, stale data, lack of automation, race conditions. These problems results in flaky tests.
 
 We concluded to use [testcontainters](https://testcontainers.com/).
