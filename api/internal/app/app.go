@@ -6,19 +6,30 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/doktorupnos/crow/api/internal/database"
+	"github.com/pressly/goose/v3"
 )
 
 func Run() {
 	fmt.Println("Full Rewrite!")
 
 	// TODO: environment
+	dsn, ok := os.LookupEnv("DSN")
+	if !ok {
+		log.Fatal("DSN environment variable is not set")
+	}
 
-	db, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/crow?sslmode=disable")
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	goose.SetLogger(log.Default())
+	if err := goose.Up(db, "sql/schema"); err != nil {
+		log.Fatalf("database migration failed: %v", err)
 	}
 
 	state := &State{

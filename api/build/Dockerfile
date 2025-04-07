@@ -1,6 +1,7 @@
 FROM golang:1.24.2-alpine AS builder
 
 WORKDIR /app
+
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -15,7 +16,12 @@ RUN go build \
 FROM scratch
 
 WORKDIR /app
+
+# Copy the built api binary
 COPY --from=builder /api .
+
+# Copy the database migration files
+COPY --from=builder /app/sql/schema sql/schema
 
 EXPOSE 8000
 
