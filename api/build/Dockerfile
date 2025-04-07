@@ -10,7 +10,7 @@ RUN go build \
   -tags netgo \
   -ldflags="-w -s -extldflags '-static'" \
   -trimpath \
-  -o /api ./cmd/api/main.go
+  -o /api
 
 FROM scratch
 
