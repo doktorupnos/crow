@@ -21,7 +21,7 @@ const PostGrid = ({ user }) => {
       try {
         let response;
         if (user) {
-          response = await fetchPosts(user, page, null);
+          response = await fetchPosts(user.name, page, null);
         } else {
           response = await fetchPosts(null, page, null);
         }
@@ -80,7 +80,8 @@ const PostGrid = ({ user }) => {
 
   return (
     <>
-      <PostCreate appendNewPost={appendNewPost} />
+      {user && user.self && <PostCreate appendNewPost={appendNewPost} />}
+
       {postList.length > 0 && (
         <>
           <div className={styles.post_grid}>{postList}</div>
