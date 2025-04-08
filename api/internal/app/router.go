@@ -48,7 +48,7 @@ func Router(s *State) http.Handler {
 
 	mux.HandleFunc("GET /api/profile", WithError(s.JWT(s.Profile)))
 
-	return Logger(mux)
+	return Logger(CORS(mux))
 }
 
 type ErrorHandler func(http.ResponseWriter, *http.Request) error
@@ -80,9 +80,20 @@ func WithError(handler ErrorHandler) http.HandlerFunc {
 	}
 }
 
-func Healthz(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
+func CORS(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		handler.ServeHTTP(w, r)
+	})
 }
 
 type SpyResponseWriter struct {
@@ -111,4 +122,9 @@ func Logger(handler http.Handler) http.HandlerFunc {
 		handler.ServeHTTP(sw, r)
 		log.Printf("%s %q %d", method, path, sw.Code)
 	}
+}
+
+func Healthz(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
 }
