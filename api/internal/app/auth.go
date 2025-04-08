@@ -3,6 +3,7 @@ package app
 import (
 	"net/http"
 
+	"github.com/doktorupnos/crow/api/internal/app/passwd"
 	"github.com/doktorupnos/crow/api/internal/database"
 	"github.com/doktorupnos/crow/api/internal/jwt"
 	"github.com/doktorupnos/crow/api/internal/respond"
@@ -32,7 +33,7 @@ func (s *State) BasicAuth(handler AuthHandler) ErrorHandler {
 			}
 		}
 
-		user, err := s.DB.GetUserByName(r.Context(), username)
+		user, err := s.db.GetUserByName(r.Context(), username)
 		if err != nil {
 			return APIError{
 				Code: http.StatusBadRequest,
@@ -40,7 +41,7 @@ func (s *State) BasicAuth(handler AuthHandler) ErrorHandler {
 			}
 		}
 
-		if !PasswordsMatch(user.Password, password) {
+		if !passwd.Match(user.Password, password) {
 			return APIError{
 				Code: http.StatusUnauthorized,
 				Err:  ErrWrongPassword,
@@ -52,12 +53,12 @@ func (s *State) BasicAuth(handler AuthHandler) ErrorHandler {
 }
 
 func (s *State) Login(w http.ResponseWriter, r *http.Request, user database.User) error {
-	respond.JWT(w, http.StatusOK, s.Secret, user.ID.String(), s.ExpiresIn)
+	respond.JWT(w, http.StatusOK, s.secret, user.ID.String(), s.expiresIn)
 	return nil
 }
 
 func (s *State) Logout(w http.ResponseWriter, r *http.Request, user database.User) error {
-	respond.JWT(w, http.StatusOK, s.Secret, user.ID.String(), 0)
+	respond.JWT(w, http.StatusOK, s.secret, user.ID.String(), 0)
 	return nil
 }
 
@@ -71,7 +72,7 @@ func (s *State) JWT(handler AuthHandler) ErrorHandler {
 			}
 		}
 
-		token, err := jwt.Parse(s.Secret, c.Value)
+		token, err := jwt.Parse(s.secret, c.Value)
 		if err != nil {
 			return APIError{
 				Code: http.StatusUnauthorized,
@@ -95,7 +96,7 @@ func (s *State) JWT(handler AuthHandler) ErrorHandler {
 			}
 		}
 
-		user, err := s.DB.GetUserByID(r.Context(), userID)
+		user, err := s.db.GetUserByID(r.Context(), userID)
 		if err != nil {
 			return APIError{
 				Code: http.StatusUnauthorized,

@@ -1,4 +1,4 @@
-package app
+package passwd
 
 import "golang.org/x/crypto/bcrypt"
 
@@ -10,7 +10,7 @@ func Hash(password string) (string, error) {
 	return string(hashed), nil
 }
 
-func PasswordsMatch(hashedPassword, password string) bool {
+func Match(hashedPassword, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	return err == nil
 }

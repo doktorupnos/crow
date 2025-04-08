@@ -22,7 +22,7 @@ func (s *State) CreateLike(w http.ResponseWriter, r *http.Request, user database
 		}
 	}
 
-	err := s.DB.CreateLike(r.Context(), database.CreateLikeParams{
+	err := s.db.CreateLike(r.Context(), database.CreateLikeParams{
 		UserID: user.ID,
 		PostID: req.PostID,
 	})
@@ -44,7 +44,7 @@ func (s *State) DeleteLike(w http.ResponseWriter, r *http.Request, user database
 		}
 	}
 
-	err := s.DB.DeleteLike(r.Context(), database.DeleteLikeParams{
+	err := s.db.DeleteLike(r.Context(), database.DeleteLikeParams{
 		UserID: user.ID,
 		PostID: req.PostID,
 	})

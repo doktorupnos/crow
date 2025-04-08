@@ -23,7 +23,7 @@ func (s *State) Profile(w http.ResponseWriter, r *http.Request, user database.Us
 	target := user
 	if queries.Has("u") {
 		name := queries.Get("u")
-		u, err := s.DB.GetUserByName(r.Context(), name)
+		u, err := s.db.GetUserByName(r.Context(), name)
 		if err != nil {
 			return APIError{
 				Code: http.StatusBadRequest,
@@ -35,14 +35,14 @@ func (s *State) Profile(w http.ResponseWriter, r *http.Request, user database.Us
 
 	self := target.ID == user.ID
 
-	followers, err := s.DB.GetFollowerCount(r.Context(), target.ID)
+	followers, err := s.db.GetFollowerCount(r.Context(), target.ID)
 	if err != nil {
 		return APIError{
 			Code: http.StatusBadRequest,
 			Err:  err,
 		}
 	}
-	following, err := s.DB.GetFollowingCount(r.Context(), target.ID)
+	following, err := s.db.GetFollowingCount(r.Context(), target.ID)
 	if err != nil {
 		return APIError{
 			Code: http.StatusBadRequest,
@@ -50,7 +50,7 @@ func (s *State) Profile(w http.ResponseWriter, r *http.Request, user database.Us
 		}
 	}
 
-	follows, err := s.DB.FollowsUser(r.Context(), database.FollowsUserParams{
+	follows, err := s.db.FollowsUser(r.Context(), database.FollowsUserParams{
 		Follower: user.ID,
 		Followee: target.ID,
 	})

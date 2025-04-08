@@ -29,7 +29,7 @@ func (s *State) CreatePost(w http.ResponseWriter, r *http.Request, user database
 	// TODO: validate request
 
 	now := time.Now()
-	post, err := s.DB.CreatePost(r.Context(), database.CreatePostParams{
+	post, err := s.db.CreatePost(r.Context(), database.CreatePostParams{
 		ID:        uuid.New(),
 		CreatedAt: now,
 		UpdatedAt: now,
@@ -110,7 +110,7 @@ func (s *State) getAllPosts(w http.ResponseWriter, r *http.Request, user databas
 		}
 	}
 
-	posts, err := s.DB.GetPosts(r.Context(), database.GetPostsParams{
+	posts, err := s.db.GetPosts(r.Context(), database.GetPostsParams{
 		Limit:  pages.Limit,
 		Offset: pages.Offset,
 	})
@@ -120,12 +120,12 @@ func (s *State) getAllPosts(w http.ResponseWriter, r *http.Request, user databas
 
 	response := make([]PostResponse, 0, len(posts))
 	for _, post := range posts {
-		likes, err := s.DB.GetLikesForPost(r.Context(), post.ID)
+		likes, err := s.db.GetLikesForPost(r.Context(), post.ID)
 		if err != nil {
 			return err
 		}
 
-		likedByUser, err := s.DB.UserLikesPost(r.Context(), database.UserLikesPostParams{
+		likedByUser, err := s.db.UserLikesPost(r.Context(), database.UserLikesPostParams{
 			UserID: user.ID,
 			PostID: post.ID,
 		})
@@ -160,7 +160,7 @@ func (s *State) getPostsByUser(w http.ResponseWriter, r *http.Request, user data
 		}
 	}
 
-	posts, err := s.DB.GetPostsByUser(r.Context(), database.GetPostsByUserParams{
+	posts, err := s.db.GetPostsByUser(r.Context(), database.GetPostsByUserParams{
 		Name:   r.URL.Query().Get("u"),
 		Limit:  pages.Limit,
 		Offset: pages.Offset,
@@ -171,12 +171,12 @@ func (s *State) getPostsByUser(w http.ResponseWriter, r *http.Request, user data
 
 	response := make([]PostResponse, 0, len(posts))
 	for _, post := range posts {
-		likes, err := s.DB.GetLikesForPost(r.Context(), post.ID)
+		likes, err := s.db.GetLikesForPost(r.Context(), post.ID)
 		if err != nil {
 			return err
 		}
 
-		likedByUser, err := s.DB.UserLikesPost(r.Context(), database.UserLikesPostParams{
+		likedByUser, err := s.db.UserLikesPost(r.Context(), database.UserLikesPostParams{
 			UserID: user.ID,
 			PostID: post.ID,
 		})
@@ -211,7 +211,7 @@ func (s *State) DeletePost(w http.ResponseWriter, r *http.Request, user database
 		}
 	}
 
-	err = s.DB.DeletePost(r.Context(), database.DeletePostParams{
+	err = s.db.DeletePost(r.Context(), database.DeletePostParams{
 		ID:     id,
 		UserID: user.ID,
 	})

@@ -31,7 +31,7 @@ func (s *State) CreateFollow(w http.ResponseWriter, r *http.Request, user databa
 		}
 	}
 
-	err = s.DB.CreateFollow(r.Context(), database.CreateFollowParams{
+	err = s.db.CreateFollow(r.Context(), database.CreateFollowParams{
 		Follower: user.ID,
 		Followee: targetID,
 	})
@@ -61,7 +61,7 @@ func (s *State) DeleteFollow(w http.ResponseWriter, r *http.Request, user databa
 		}
 	}
 
-	err = s.DB.DeleteFollow(r.Context(), database.DeleteFollowParams{
+	err = s.db.DeleteFollow(r.Context(), database.DeleteFollowParams{
 		Follower: user.ID,
 		Followee: targetID,
 	})
@@ -90,7 +90,7 @@ func (s *State) GetFollowerCount(w http.ResponseWriter, r *http.Request, user da
 		target = id
 	}
 
-	count, err := s.DB.GetFollowerCount(r.Context(), target)
+	count, err := s.db.GetFollowerCount(r.Context(), target)
 	if err != nil {
 		return err
 	}
@@ -114,7 +114,7 @@ func (s *State) GetFollowingCount(w http.ResponseWriter, r *http.Request, user d
 		target = id
 	}
 
-	count, err := s.DB.GetFollowingCount(r.Context(), target)
+	count, err := s.db.GetFollowingCount(r.Context(), target)
 	if err != nil {
 		return err
 	}
@@ -130,7 +130,7 @@ func (s *State) GetFollowers(w http.ResponseWriter, r *http.Request, user databa
 	key := "u"
 	if queries.Has(key) {
 		name := queries.Get(key)
-		u, err := s.DB.GetUserByName(r.Context(), name)
+		u, err := s.db.GetUserByName(r.Context(), name)
 		if err != nil {
 			return APIError{
 				Code: http.StatusBadRequest,
@@ -148,7 +148,7 @@ func (s *State) GetFollowers(w http.ResponseWriter, r *http.Request, user databa
 		}
 	}
 
-	followers, err := s.DB.GetFollowers(r.Context(), database.GetFollowersParams{
+	followers, err := s.db.GetFollowers(r.Context(), database.GetFollowersParams{
 		Followee: target.ID,
 		Limit:    pages.Limit,
 		Offset:   pages.Offset,
@@ -168,7 +168,7 @@ func (s *State) GetFollowing(w http.ResponseWriter, r *http.Request, user databa
 	key := "u"
 	if queries.Has(key) {
 		name := queries.Get(key)
-		u, err := s.DB.GetUserByName(r.Context(), name)
+		u, err := s.db.GetUserByName(r.Context(), name)
 		if err != nil {
 			return APIError{
 				Code: http.StatusBadRequest,
@@ -186,7 +186,7 @@ func (s *State) GetFollowing(w http.ResponseWriter, r *http.Request, user databa
 		}
 	}
 
-	following, err := s.DB.GetFollowing(r.Context(), database.GetFollowingParams{
+	following, err := s.db.GetFollowing(r.Context(), database.GetFollowingParams{
 		Follower: target.ID,
 		Limit:    pages.Limit,
 		Offset:   pages.Offset,

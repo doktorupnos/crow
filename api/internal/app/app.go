@@ -33,9 +33,9 @@ func Run() {
 	}
 
 	state := &State{
-		DB:        database.New(db),
-		Secret:    "makaronia",
-		ExpiresIn: time.Hour,
+		db:        database.New(db),
+		secret:    "makaronia",
+		expiresIn: time.Hour,
 	}
 	router := Router(state)
 
