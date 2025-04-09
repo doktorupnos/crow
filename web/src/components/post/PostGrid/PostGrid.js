@@ -40,6 +40,7 @@ const PostGrid = ({ user }) => {
       }
     };
     getPosts(page);
+    console.log(user);
   }, [page, user]);
 
   useEffect(() => {
@@ -80,8 +81,9 @@ const PostGrid = ({ user }) => {
 
   return (
     <>
-      {user && user.self && <PostCreate appendNewPost={appendNewPost} />}
-
+      {(!user || (user && user.self)) && (
+        <PostCreate appendNewPost={appendNewPost} />
+      )}
       {postList.length > 0 && (
         <>
           <div className={styles.post_grid}>{postList}</div>
