@@ -39,7 +39,9 @@ func WithError(handler ErrorHandler) http.HandlerFunc {
 
 func Healthz(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
+	if _, err := w.Write([]byte("OK")); err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+	}
 }
 
 func CORS(handler http.Handler) http.Handler {

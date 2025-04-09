@@ -41,8 +41,9 @@ func Run() {
 
 	const addr = ":8000"
 	server := &http.Server{
-		Addr:    addr,
-		Handler: router,
+		Addr:              addr,
+		Handler:           router,
+		ReadHeaderTimeout: 1 * time.Second,
 	}
 
 	// TODO: graceful shutdown

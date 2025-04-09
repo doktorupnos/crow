@@ -55,30 +55,30 @@ type Pagination struct {
 func extractPagination(r *http.Request) (Pagination, error) {
 	queries := r.URL.Query()
 
-	limit := 10
+	var limit int32 = 10
 	if queries.Has("limit") {
 		str := queries.Get("limit")
 		if str != "null" {
-			l, err := strconv.Atoi(str)
+			l, err := strconv.ParseInt(str, 10, 32)
 			if err != nil {
 				return Pagination{}, err
 			}
-			limit = l
+			limit = int32(l)
 		}
 	}
 
-	page := 0
+	var page int32 = 0
 	if queries.Has("page") {
-		p, err := strconv.Atoi(queries.Get("page"))
+		p, err := strconv.ParseInt("page", 10, 32)
 		if err != nil {
 			return Pagination{}, err
 		}
-		page = p
+		page = int32(p)
 	}
 
 	return Pagination{
-		Limit:  int32(limit),
-		Offset: int32(page) * int32(limit),
+		Limit:  limit,
+		Offset: page * limit,
 	}, nil
 }
 
