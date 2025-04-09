@@ -6,8 +6,11 @@ on:
 
 jobs:
   tests:
-    name: Run Tests
+    name: Tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./api
 
     steps:
       - name: Check out code
@@ -22,6 +25,24 @@ jobs:
         with:
           go-version: "1.24.2"
 
-      - name: 🧪 Run Tests
+      - name: 🧪 Tests
         run: go test -v ./...
         working-directory: ./api
+
+      - name: Formatting
+        run: test -z $(go fmt ./...)
+
+      - name: vet
+        run: go vet ./...
+
+      - name: staticcheck
+        uses: dominikh/staticcheck-action@v1
+        with:
+          version: latest
+          working-directory: ./api
+
+      - name: Install gosec
+        run: go install github.com/securego/gosec/v2/cmd/gosec@latest
+
+      - name: Run gosec
+        run: gosec ./...
