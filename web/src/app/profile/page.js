@@ -64,7 +64,7 @@ const Profile = () => {
         {userDataLoad ? (
           <>
             <ProfileGrid userData={userData} />
-            <PostGrid user={userData.name} />
+            <PostGrid user={userData} />
           </>
         ) : userDataLoad === false ? (
           <>

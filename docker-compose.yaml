@@ -1,8 +1,6 @@
-version: '3'
-
 services:
   postgres:
-    image: postgres:16.1-alpine
+    image: postgres:17.2-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -14,26 +12,28 @@ services:
     ports:
       - "5432:5432"
 
-  backend:
+  api:
     restart: on-failure
     ports:
       - "8000:8000"
     networks:
       - crownet
     environment:
-      - ADDR=backend:8000
+      - DSN=postgres://postgres:postgres@postgres:5432/crow?sslmode=disable
+
+      - ADDR=api:8000
       - CORS_ORIGIN=http://*
       - JWT_SECRET=+3xObWCCIAQf/N1ltJD27kZ5gfjmfbUBG4ViZ/6oHI3rpVFmhAo7yzwWg4mivB1Jea8UuwooegxTdZhZgLkZZA==
       - JWT_LIFETIME=1h
-      - DSN=postgres://postgres:postgres@postgres:5432/crow
       - DEFAULT_POSTS_PAGE_SIZE=5
       - DEFAULT_FOLLOWS_PAGE_SIZE=10
-
-    build: 
-      context: "./backend"
-      dockerfile: "./build/package/Dockerfile"
+    build:
+      context: "./api"
+      dockerfile: "./build/Dockerfile"
+    image: api:latest
     depends_on:
       - postgres
+
   # web:
   #    restart: on-failure
   #    ports:
@@ -43,7 +43,7 @@ services:
   #    build: "./web"
   #    depends_on:
   #      - postgres
-  #      - backend
+  #      - api
 
 networks:
   crownet:
