@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/doktorupnos/crow/api/internal/database"
@@ -16,13 +15,12 @@ import (
 func Run() {
 	fmt.Println("Full Rewrite!")
 
-	// TODO: environment
-	dsn, ok := os.LookupEnv("DSN")
-	if !ok {
-		log.Fatal("DSN environment variable is not set")
+	env, err := NewEnv()
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	db, err := sql.Open("postgres", dsn)
+	db, err := sql.Open("postgres", env.DSN)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,8 +32,8 @@ func Run() {
 
 	state := &State{
 		db:        database.New(db),
-		secret:    "makaronia",
-		expiresIn: time.Hour,
+		secret:    env.JWT.Secret,
+		expiresIn: env.JWT.ExpiresIn,
 	}
 	router := Router(state)
 
