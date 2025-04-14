@@ -17,7 +17,7 @@ type State struct {
 func Router(state *State) http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /api/healthz", Healthz)
+	mux.HandleFunc("GET /api/healthz", WithError(Healthz))
 
 	mux.HandleFunc("POST /api/login", WithError(state.BasicAuth(state.Login)))
 	mux.HandleFunc("POST /api/logout", WithError(state.BasicAuth(state.Logout)))

@@ -1,6 +1,7 @@
 package user_test
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
@@ -8,6 +9,8 @@ import (
 )
 
 func TestCreateRequest_Validate(t *testing.T) {
+	t.Parallel()
+
 	cases := map[string]struct {
 		req  user.CreateRequest
 		want error
@@ -47,8 +50,10 @@ func TestCreateRequest_Validate(t *testing.T) {
 
 	for name, tt := range cases {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
 			err := tt.req.Validate()
-			if err != tt.want {
+			if !errors.Is(err, tt.want) {
 				t.Errorf("Validate(%#v) = %v, want %v", tt.req, err, tt.want)
 			}
 		})
