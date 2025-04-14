@@ -18,7 +18,12 @@ func TestHealthz(t *testing.T) {
 	if err != nil {
 		t.Fatal("Get() unexpected error:", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		err := resp.Body.Close()
+		if err != nil {
+			t.Log("error closing response body:", err)
+		}
+	}()
 
 	gotStatus := resp.StatusCode
 	wantStatus := http.StatusOK
