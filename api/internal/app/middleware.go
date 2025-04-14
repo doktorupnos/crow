@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -16,7 +17,7 @@ type APIError struct {
 }
 
 func (e APIError) Error() string {
-	return string(e.Err.Error())
+	return e.Err.Error()
 }
 
 func WithError(handler ErrorHandler) http.HandlerFunc {
@@ -26,21 +27,29 @@ func WithError(handler ErrorHandler) http.HandlerFunc {
 			return
 		}
 
-		v, ok := err.(APIError)
-		if !ok {
+		e := &APIError{}
+		if !errors.As(err, e) {
 			const code = http.StatusInternalServerError
 			respond.Error(w, code, errors.New(http.StatusText(code)))
 			return
 		}
 
-		respond.Error(w, v.Code, v.Err)
+		respond.Error(w, e.Code, e.Err)
 	}
 }
 
-func Healthz(w http.ResponseWriter, r *http.Request) {
+func Healthz(w http.ResponseWriter, r *http.Request) error {
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write([]byte("OK")); err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return err
+	}
+	return nil
+}
+
+func Error(w http.ResponseWriter, r *http.Request) error {
+	return APIError{
+		Code: http.StatusBadRequest,
+		Err:  fmt.Errorf("%w", errors.ErrUnsupported),
 	}
 }
 
