@@ -17,7 +17,7 @@ func (e AuthError) Error() string {
 }
 
 const (
-	ErrMissingBasicAuth = AuthError("missing Authorizaton Basic header")
+	ErrMissingBasicAuth = AuthError("missing Authorization Basic header")
 	ErrWrongPassword    = AuthError("wrong password")
 )
 
